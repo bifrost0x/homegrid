@@ -98,7 +98,7 @@ process environment variables and does not automatically load dotenv files.
 
 ## Development
 
-Requirements: Go 1.27+, Node.js 24+, and npm. Node.js is needed for frontend
+Requirements: Go 1.27+, Node.js 26+, and npm. Node.js is needed for frontend
 development and builds; it is not part of the production runtime.
 
 ```sh

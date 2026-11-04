@@ -55,6 +55,49 @@ Compose reads `.env` for interpolation. `HOMEGRID_LISTEN` and
 `HOMEGRID_DATA_DIR` are set explicitly inside the container to `0.0.0.0:8080`
 and `/data`; native execution does not automatically read `.env`.
 
+## Portainer stacks
+
+Paste `docker-compose.yml` into Portainer's stack editor. For access from another
+computer, add these variables in the stack's **Environment variables** section
+before deploying or updating the stack:
+
+```dotenv
+HOMEGRID_BIND_ADDRESS=0.0.0.0
+HOMEGRID_PORT=8095
+```
+
+Then open `http://<docker-host-ip>:8095`. Use the address of the Docker endpoint
+managed by Portainer. The Portainer server may run on a different host. Complete
+administrator setup from a trusted network before exposing the installation more
+broadly.
+
+Without `HOMEGRID_BIND_ADDRESS`, the Compose file publishes only to the Docker
+host's loopback interface. A healthy container and a successful image build do
+not mean the host port is reachable from the network. A `.env` file on your own
+computer is not automatically available to a stack pasted into Portainer.
+
+Alternatively, replace the stack's `ports` entry with an explicit mapping:
+
+```yaml
+ports:
+  - "8095:8080"
+```
+
+This also publishes on all host interfaces. Keep the existing stack name and
+`homegrid_data` volume when updating; do not delete the volume to repair a port
+mapping. If the page is still unreachable, inspect the container's published
+ports and health on the Docker endpoint:
+
+```sh
+docker port homegrid 8080/tcp
+docker exec homegrid /homegrid healthcheck
+```
+
+The published port should show `0.0.0.0:8095` or the intended LAN address. If the
+container is healthy and that mapping is present, check the host firewall and
+reachability of that host from your browser. Direct port access uses HTTP unless
+you have configured an HTTPS reverse proxy.
+
 ## Everyday commands
 
 ```sh
