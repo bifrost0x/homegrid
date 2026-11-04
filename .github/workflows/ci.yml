@@ -60,6 +60,34 @@ jobs:
           persist-credentials: false
       - name: Validate container build
         run: docker build --tag homegrid:ci .
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install browser test dependencies
+        working-directory: frontend
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Start disposable test container
+        run: |
+          docker run --detach --name homegrid-auth-check \
+            --read-only --cap-drop ALL --security-opt no-new-privileges:true \
+            --tmpfs /tmp:size=16m,mode=1777 \
+            --tmpfs /data:uid=65532,gid=65532,mode=0700 \
+            -p 127.0.0.1:8096:8080 homegrid:ci
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:8096/api/health; then exit 0; fi
+            sleep 1
+          done
+          exit 1
+      - name: Check browser sign-in
+        run: node tests/auth.mjs
+      - name: Remove disposable test container
+        if: always()
+        run: docker rm --force --volumes homegrid-auth-check || true
 
   secrets:
     name: Scan for secrets

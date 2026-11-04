@@ -172,7 +172,7 @@ function Auth({ setup }: { setup: boolean }) {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              minLength={3}
+              minLength={1}
               maxLength={64}
             />
           </label>

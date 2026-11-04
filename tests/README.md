@@ -1,5 +1,11 @@
 # Browser integration checks
 
+`node tests/auth.mjs` requires a fresh disposable installation on local port
+8096. It creates a temporary administrator with a one-character username through
+the API and verifies sign-in in a separate browser session. It must run before
+other suites initialize that installation. The container CI runs this regression
+against its newly built image with ephemeral data.
+
 The browser workflow operates on a separate Compose project and volume:
 
 ```sh
