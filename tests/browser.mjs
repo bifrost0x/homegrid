@@ -39,11 +39,12 @@ async function login(target = page) {
   await expect(
     target.getByRole("button", { name: "Open settings" }),
   ).toBeVisible();
+  await expect(target.locator(".dashboard-loading")).toBeHidden();
   const organize = target.getByRole("button", {
     name: "Organize",
     exact: true,
   });
-  if (await organize.count()) await organize.click();
+  if (await organize.isVisible()) await organize.click();
 }
 async function api(path, method = "GET", data) {
   return page.evaluate(
