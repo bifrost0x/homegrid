@@ -60,6 +60,12 @@ jobs:
           persist-credentials: false
       - name: Validate container build
         run: docker build --tag homegrid:ci .
+      - name: Validate Compose configurations
+        run: |
+          docker compose --env-file .env.example config --quiet
+          docker compose --env-file .env.example -p homegrid-verify \
+            -f docker-compose.yml -f docker-compose.dev.yml \
+            -f tests/compose.verify.yaml config --quiet
       - name: Set up Node.js
         uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:

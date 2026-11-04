@@ -1,7 +1,8 @@
 # HomeGrid 0.1.0
 
-Prepared release notes. The release and public container image have not been
-published.
+Prepared release notes. The GitHub release has not been published. The public
+container image is available as `ghcr.io/bifrost0x/homegrid:latest` for AMD64
+and ARM64.
 
 HomeGrid is licensed under the [Apache License 2.0](../LICENSE). Bundled
 third-party artwork retains its separate licenses and credits.
@@ -27,10 +28,11 @@ launch your services, built with Go, React and SQLite.
 
 ## Run it
 
-From the source directory with Docker and Compose installed:
+From the directory containing `docker-compose.yml`, with Docker and Compose installed:
 
 ```sh
-docker compose up --build -d --wait
+docker compose pull
+docker compose up -d --wait
 ```
 
 Open [localhost:8095](http://localhost:8095) and create the first administrator.

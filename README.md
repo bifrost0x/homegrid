@@ -10,20 +10,22 @@ Built with Go, React, and SQLite; packaged as one container.
 
 ## Start with Docker
 
-From a checkout or downloaded source archive, with Docker and Compose installed.
-The included [docker-compose.yml](docker-compose.yml) builds and starts HomeGrid:
+Save [docker-compose.yml](docker-compose.yml) in a directory on your Docker host.
+It downloads the public image `ghcr.io/bifrost0x/homegrid:latest` and starts HomeGrid:
 
 ```sh
-docker compose up --build -d --wait
+docker compose pull
+docker compose up -d --wait
 ```
 
 Open [localhost:8095](http://localhost:8095) and create your administrator account.
 There are no default credentials. Complete setup before making the installation
 available to other people. The default Compose configuration binds to localhost.
 
-This version builds from source; a public container image is not currently
-provided. The first build needs internet access to download build dependencies.
-See the [Docker guide](docs/docker.md) for LAN access, HTTPS, updates and backups.
+The image supports AMD64 and ARM64. Docker selects the matching architecture;
+no Go, Node.js or source checkout is needed on the server.
+See the [Docker guide](docs/docker.md) for LAN access, HTTPS, updates, backups
+and optional local source builds.
 
 ## Make it yours
 
@@ -78,7 +80,8 @@ See [security guidance](SECURITY.md) and [third-party icon credits](docs/third-p
 
 ## Configuration
 
-Copy [.env.example](.env.example) to `.env` if you want to customize Compose.
+Create `.env` beside `docker-compose.yml` to customize Compose, or use
+[.env.example](.env.example) as a starting point from a source checkout.
 Compose loads `.env` for variable interpolation; the native Go executable reads
 process environment variables and does not automatically load dotenv files.
 
@@ -86,7 +89,7 @@ process environment variables and does not automatically load dotenv files.
 | --- | --- | --- |
 | `HOMEGRID_BIND_ADDRESS` | `127.0.0.1` | Compose host binding; use `0.0.0.0` deliberately for LAN access |
 | `HOMEGRID_PORT` | `8095` | Compose host port |
-| `HOMEGRID_IMAGE` | `homegrid:0.1.0` | Local image name used by Compose |
+| `HOMEGRID_IMAGE` | `ghcr.io/bifrost0x/homegrid:latest` | Container image; may also be pinned to a published digest |
 | `TZ` | `UTC` | Container timezone |
 | `HOMEGRID_LISTEN` | `127.0.0.1:8080` | Native HTTP listen address; Compose explicitly uses `0.0.0.0:8080` inside the container |
 | `HOMEGRID_DATA_DIR` | `./data` | Native data directory; `/data` inside Compose |

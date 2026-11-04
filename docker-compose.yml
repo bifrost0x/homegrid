@@ -2,9 +2,7 @@ name: homegrid
 
 services:
   homegrid:
-    build:
-      context: .
-    image: ${HOMEGRID_IMAGE:-homegrid:0.1.0}
+    image: ${HOMEGRID_IMAGE:-ghcr.io/bifrost0x/homegrid:latest}
     container_name: homegrid
     restart: unless-stopped
     ports:

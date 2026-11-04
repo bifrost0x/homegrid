@@ -1,18 +1,19 @@
 # Run HomeGrid with Docker
 
 HomeGrid runs as one container with a named volume for SQLite and uploads. These
-instructions use Docker with the Compose plugin and a local source checkout or
-extracted source archive. A public registry image is not currently provided.
-The source build needs internet access; normal operation uses bundled frontend
-assets, icons and backgrounds. Optional browser favicons need access to the
-configured service.
+instructions use Docker with the Compose plugin and the public image
+`ghcr.io/bifrost0x/homegrid:latest` for AMD64 and ARM64. Only
+`docker-compose.yml` is required on the server; source code and build tools are
+optional. Normal operation uses bundled assets, icons and backgrounds. Optional
+browser favicons need access to the configured service.
 
 ## First start
 
 From the directory containing `docker-compose.yml`:
 
 ```sh
-docker compose up --build -d --wait
+docker compose pull
+docker compose up -d --wait
 docker compose ps
 ```
 
@@ -20,22 +21,18 @@ Open [localhost:8095](http://localhost:8095) and create the administrator accoun
 There are no default credentials. Finish setup before allowing other clients to
 reach the installation.
 
-Compose uses the project name `homegrid`, container `homegrid`, local image
-`homegrid:0.1.0`, and volume `homegrid_homegrid_data`. The container runs as
+Compose uses the project name `homegrid`, container `homegrid`, public image
+`ghcr.io/bifrost0x/homegrid:latest`, and volume `homegrid_homegrid_data`. The container runs as
 UID/GID 65532 with `/data` writable, a read-only root filesystem, a temporary
 `/tmp`, dropped capabilities, and no Docker socket. A fresh named volume needs
 no manual permission changes.
 
 ## LAN access and HTTPS
 
-The default host binding is `127.0.0.1:8095`. To allow LAN access, copy the
-provided environment example:
+The registry image is public and can be pulled without signing in to GitHub.
 
-```sh
-cp .env.example .env
-```
-
-Edit `.env` and set:
+The default host binding is `127.0.0.1:8095`. To allow LAN access, create or edit
+`.env` alongside `docker-compose.yml` and set:
 
 ```dotenv
 HOMEGRID_BIND_ADDRESS=0.0.0.0
@@ -69,6 +66,19 @@ docker compose restart
 
 `restart` does not apply changed Compose settings. Use
 `docker compose up -d --wait` after editing settings.
+
+## Optional source build
+
+For development, use a source checkout with the additional
+`docker-compose.dev.yml` override:
+
+```sh
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build -d --wait
+```
+
+This explicitly builds `homegrid:local` from the checkout. Continue including
+both `-f` arguments when managing that development installation. The default
+Compose file uses the public registry image.
 
 ## Back up
 
@@ -160,12 +170,15 @@ using only the original Compose file.
 ## Update and roll back
 
 1. Make a full stopped-volume backup.
-2. Update or replace the source checkout with the desired version.
-3. Run `docker compose up --build -d --wait` and check `docker compose logs`.
+2. Run `docker compose pull` to download the current image.
+3. Run `docker compose up -d --wait` and check `docker compose logs`.
+
+`latest` is a moving tag. For repeatable deployments or rollback, set
+`HOMEGRID_IMAGE` to a recorded `ghcr.io/bifrost0x/homegrid@sha256:...` digest.
 
 Database migrations run at startup. For rollback, use the old source/image with
 a restored pre-upgrade volume; schema downgrades are not supported. Preserve
-your `.env` when replacing source files.
+your `.env` and Compose overrides when updating deployment files.
 
 `docker compose down` removes the container and network while keeping data.
 **Do not run `docker compose down -v` unless you intend to delete the data
