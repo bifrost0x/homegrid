@@ -2,11 +2,12 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
+  DragOverlay,
   PointerSensor,
   KeyboardSensor,
   useSensor,
   useSensors,
-  closestCenter,
+  useDroppable,
   type DragEndEvent,
 } from "@dnd-kit/core";
 import {
@@ -61,7 +62,12 @@ import {
 } from "./components";
 import { SettingsPanel } from "./Settings";
 import { appearanceStyle, wallpaperUrl } from "./themes";
-import { launcherKeyboardCoordinates } from "./sorting";
+import {
+  applicationDrop,
+  launcherCollisionDetection,
+  launcherKeyboardCoordinates,
+  type ApplicationOrder,
+} from "./sorting";
 import { FirstRun } from "./FirstRun";
 function Brand() {
   return (
@@ -240,6 +246,11 @@ function Dashboard({ session }: { session: Session }) {
     cats = [...(catsQ.data ?? [])].sort((a, b) => a.sort_order - b.sort_order),
     settings = settingsQ.data ?? defaults;
   const [dialog, setDialog] = useState<DialogState>(null),
+    [draggedApp, setDraggedApp] = useState<Application | null>(null),
+    [moveFocus, setMoveFocus] = useState<{
+      id: number;
+      categoryId: number;
+    } | null>(null),
     [organizing, setOrganizing] = useState(false),
     [notice, setNotice] = useState(""),
     [dismissedUndo, setDismissedUndo] = useState(""),
@@ -257,6 +268,14 @@ function Dashboard({ session }: { session: Session }) {
       client.invalidateQueries({ queryKey: ["undo"] }),
     ]);
   };
+  useEffect(() => {
+    if (!moveFocus || busy) return;
+    const target =
+      document.getElementById("move-category-" + moveFocus.id) ??
+      document.getElementById("category-toggle-" + moveFocus.categoryId);
+    target?.focus();
+    setMoveFocus(null);
+  }, [moveFocus, busy]);
   const latestUndo = Array.isArray(undoQ.data) ? undoQ.data[0] : undefined;
   const availableUndo =
     latestUndo &&
@@ -345,6 +364,29 @@ function Dashboard({ session }: { session: Session }) {
   async function reorder(kind: "apps" | "categories", ids: number[]) {
     await action(() => api("/" + kind + "/reorder", "PUT", { ids }));
   }
+  function applyApplicationDrop(
+    order: ApplicationOrder | null,
+    restoreFocus = false,
+  ) {
+    if (!order || busy || !organizing) return;
+    if (
+      order.move &&
+      !cats.some((category) => category.id === order.move?.category_id)
+    )
+      return;
+    void action(
+      () => api("/apps/reorder", "PUT", order),
+      order.move
+        ? "Application moved to " +
+            cats.find((category) => category.id === order.move?.category_id)
+              ?.name +
+            "."
+        : undefined,
+    ).then(() => {
+      if (restoreFocus && order.move)
+        setMoveFocus({ id: order.move.id, categoryId: order.move.category_id });
+    });
+  }
   function move(kind: "apps" | "categories", id: number, offset: number) {
     if (kind === "apps") {
       void reorder("apps", moveApplication(apps, id, offset));
@@ -364,8 +406,29 @@ function Dashboard({ session }: { session: Session }) {
       );
   }
   function dragEnd(event: DragEndEvent) {
+    setDraggedApp(null);
+    if (busy || !organizing) return;
     if (!event.over || event.active.id === event.over.id) return;
     const [kind, id] = String(event.active.id).split("-");
+    if (kind === "app") {
+      const activeRect = event.active.rect.current.translated;
+      const targetRect = event.over.rect;
+      // In a grid, horizontal position distinguishes the two card halves.
+      const sameRow =
+        activeRect &&
+        Math.abs(activeRect.top - targetRect.top) < targetRect.height / 2;
+      const after = activeRect
+        ? sameRow
+          ? activeRect.left + activeRect.width / 2 >
+            targetRect.left + targetRect.width / 2
+          : activeRect.top + activeRect.height / 2 >
+            targetRect.top + targetRect.height / 2
+        : false;
+      applyApplicationDrop(
+        applicationDrop(apps, Number(id), String(event.over.id), after),
+      );
+      return;
+    }
     const [, over] = String(event.over.id).split("-");
     if (!String(event.over.id).startsWith(kind + "-")) return;
     const list = kind === "app" ? apps : cats;
@@ -563,7 +626,8 @@ function Dashboard({ session }: { session: Session }) {
           <div className="organize-guidance">
             <GripVertical size={16} />
             <span>
-              Drag to arrange. Use the arrows to move with a keyboard.
+              Drag to arrange. Use the arrows to reorder, or choose a category
+              to move an application.
             </span>
           </div>
         )}
@@ -575,17 +639,13 @@ function Dashboard({ session }: { session: Session }) {
         ) : apps.length ? (
           <DndContext
             sensors={sensors}
-            collisionDetection={(args) =>
-              closestCenter({
-                ...args,
-                droppableContainers: args.droppableContainers.filter(
-                  (container) =>
-                    String(container.id).startsWith(
-                      String(args.active.id).split("-")[0] + "-",
-                    ),
-                ),
-              })
+            collisionDetection={launcherCollisionDetection}
+            onDragStart={({ active }) =>
+              setDraggedApp(
+                apps.find((app) => "app-" + app.id === active.id) ?? null,
+              )
             }
+            onDragCancel={() => setDraggedApp(null)}
             onDragEnd={dragEnd}
           >
             <SortableContext
@@ -605,6 +665,7 @@ function Dashboard({ session }: { session: Session }) {
                       category={category}
                       apps={apps.filter((a) => a.category_id === category.id)}
                       allApps={apps}
+                      categories={cats}
                       index={index}
                       total={cats.length}
                       busy={busy}
@@ -636,6 +697,16 @@ function Dashboard({ session }: { session: Session }) {
                         setDialog({ kind: "delete-app", app })
                       }
                       onMoveApp={(app, offset) => move("apps", app.id, offset)}
+                      onMoveAppToCategory={(app, categoryId) =>
+                        applyApplicationDrop(
+                          applicationDrop(
+                            apps,
+                            app.id,
+                            "app-category-" + categoryId,
+                          ),
+                          true,
+                        )
+                      }
                       onFavorite={(app) =>
                         void action(
                           () =>
@@ -652,6 +723,18 @@ function Dashboard({ session }: { session: Session }) {
                   ))}
               </div>
             </SortableContext>
+            <DragOverlay dropAnimation={null}>
+              {draggedApp && (
+                <div className="app-card app-drag-preview" aria-hidden="true">
+                  <div className="app-link">
+                    <Icon app={draggedApp} />
+                    <span className="app-copy">
+                      <strong>{draggedApp.name}</strong>
+                    </span>
+                  </div>
+                </div>
+              )}
+            </DragOverlay>
           </DndContext>
         ) : null}
         {!loading && !queryError && !apps.length && (
@@ -822,6 +905,7 @@ function CategorySection({
   category,
   apps,
   allApps,
+  categories,
   index,
   total,
   busy,
@@ -834,6 +918,7 @@ function CategorySection({
   onEditApp,
   onDeleteApp,
   onMoveApp,
+  onMoveAppToCategory,
   organizing,
   onFavorite,
   onDuplicateApp,
@@ -841,6 +926,7 @@ function CategorySection({
   category: Category;
   apps: Application[];
   allApps: Application[];
+  categories: Category[];
   index: number;
   total: number;
   busy: boolean;
@@ -854,6 +940,7 @@ function CategorySection({
   onEditApp: (app: Application) => void;
   onDeleteApp: (app: Application) => void;
   onMoveApp: (app: Application, offset: number) => void;
+  onMoveAppToCategory: (app: Application, categoryId: number) => void;
   onFavorite: (app: Application) => void;
   onDuplicateApp: (app: Application) => void;
 }) {
@@ -861,14 +948,26 @@ function CategorySection({
     id: "category-" + category.id,
     disabled: busy || !organizing,
   });
+  const drop = useDroppable({
+    id: "app-category-" + category.id,
+    disabled: busy || !organizing,
+  });
   return (
     <section
-      ref={sortable.setNodeRef}
+      ref={(node) => {
+        sortable.setNodeRef(node);
+        drop.setNodeRef(node);
+      }}
       style={{
         transform: CSS.Transform.toString(sortable.transform),
         transition: sortable.transition,
       }}
-      className={"category-section " + (sortable.isDragging ? "dragging" : "")}
+      className={
+        "category-section " +
+        (sortable.isDragging ? "dragging " : "") +
+        (organizing ? "category-drop-target " : "") +
+        (drop.isOver ? "drop-active" : "")
+      }
       aria-label={category.name}
     >
       <div className="category-heading">
@@ -883,6 +982,7 @@ function CategorySection({
           </button>
         )}
         <button
+          id={"category-toggle-" + category.id}
           className="category-toggle"
           aria-expanded={!category.collapsed}
           onClick={onToggle}
@@ -941,6 +1041,7 @@ function CategorySection({
               <AppCard
                 key={app.id}
                 app={app}
+                categories={categories}
                 descriptions={descriptions}
                 busy={busy}
                 organizing={organizing}
@@ -950,6 +1051,9 @@ function CategorySection({
                 onDuplicate={() => onDuplicateApp(app)}
                 onDelete={() => onDeleteApp(app)}
                 onMove={(offset) => onMoveApp(app, offset)}
+                onMoveToCategory={(categoryId) =>
+                  onMoveAppToCategory(app, categoryId)
+                }
                 onFavorite={() => onFavorite(app)}
               />
             ))}
@@ -967,6 +1071,7 @@ function CategorySection({
 }
 function AppCard({
   app,
+  categories,
   descriptions,
   busy,
   first,
@@ -974,11 +1079,13 @@ function AppCard({
   onEdit,
   onDelete,
   onMove,
+  onMoveToCategory,
   organizing,
   onFavorite,
   onDuplicate,
 }: {
   app: Application;
+  categories: Category[];
   descriptions: boolean;
   busy: boolean;
   organizing: boolean;
@@ -987,6 +1094,7 @@ function AppCard({
   onEdit: () => void;
   onDelete: () => void;
   onMove: (offset: number) => void;
+  onMoveToCategory: (categoryId: number) => void;
   onFavorite: () => void;
   onDuplicate: () => void;
 }) {
@@ -1014,7 +1122,14 @@ function AppCard({
         className="app-link"
         href={example ? undefined : app.url}
         type={example ? "button" : undefined}
+        onAuxClick={(event) => {
+          if (organizing) event.preventDefault();
+        }}
         onClick={(event) => {
+          if (organizing) {
+            event.preventDefault();
+            return;
+          }
           if (isExampleApp(app)) {
             event.preventDefault();
             onEdit();
@@ -1104,6 +1219,22 @@ function AppCard({
           <Trash2 size={13} />
         </button>
       </div>
+      {organizing && (
+        <select
+          id={"move-category-" + app.id}
+          className="move-category-select"
+          aria-label={"Move " + app.name + " to category"}
+          value={app.category_id}
+          disabled={busy}
+          onChange={(event) => onMoveToCategory(Number(event.target.value))}
+        >
+          {categories.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.name}
+            </option>
+          ))}
+        </select>
+      )}
     </article>
   );
 }

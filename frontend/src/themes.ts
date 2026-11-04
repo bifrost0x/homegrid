@@ -12,7 +12,7 @@ export const designs: ReadonlyArray<{
   {
     id: "homegrid",
     name: "HomeGrid",
-    description: "Sage paper and quiet intersecting arcs",
+    description: "Alpine peaks, a mirror lake and morning light",
     theme: "light",
     accent: "sage",
     wallpaper: "homegrid",
@@ -20,7 +20,7 @@ export const designs: ReadonlyArray<{
   {
     id: "porcelain",
     name: "Porcelain",
-    description: "Cool ivory with cobalt folds",
+    description: "White island houses above a cobalt sea",
     theme: "light",
     accent: "blue",
     wallpaper: "porcelain",
@@ -28,7 +28,7 @@ export const designs: ReadonlyArray<{
   {
     id: "dune",
     name: "Dune",
-    description: "Warm sand and long amber contours",
+    description: "Golden dunes, wind-carved ridges and a wide horizon",
     theme: "light",
     accent: "amber",
     wallpaper: "dune",
@@ -36,7 +36,7 @@ export const designs: ReadonlyArray<{
   {
     id: "terracotta",
     name: "Terracotta",
-    description: "Clay, chalk and sun-cut circles",
+    description: "Red canyon walls under a dramatic sunset",
     theme: "light",
     accent: "rose",
     wallpaper: "terracotta",
@@ -44,7 +44,7 @@ export const designs: ReadonlyArray<{
   {
     id: "rosewood",
     name: "Rosewood",
-    description: "Mulberry dusk and layered rose arches",
+    description: "Crimson maples around a quiet Japanese pond",
     theme: "dark",
     accent: "rose",
     wallpaper: "rosewood",
@@ -52,7 +52,7 @@ export const designs: ReadonlyArray<{
   {
     id: "lavender",
     name: "Lavender",
-    description: "Lilac paper with floating violet planes",
+    description: "Lavender hills and a farmhouse at blue hour",
     theme: "light",
     accent: "violet",
     wallpaper: "lavender",
@@ -60,7 +60,7 @@ export const designs: ReadonlyArray<{
   {
     id: "forest",
     name: "Forest",
-    description: "Deep evergreen and precise fan shapes",
+    description: "Sunbeams, old cedars and a moss-covered river",
     theme: "dark",
     accent: "sage",
     wallpaper: "forest",
@@ -68,7 +68,7 @@ export const designs: ReadonlyArray<{
   {
     id: "lagoon",
     name: "Lagoon",
-    description: "Mineral teal with broad tidal curves",
+    description: "A turquoise lagoon and a secluded island beach",
     theme: "light",
     accent: "cyan",
     wallpaper: "lagoon",
@@ -76,7 +76,7 @@ export const designs: ReadonlyArray<{
   {
     id: "arctic",
     name: "Arctic",
-    description: "Glacial blue and overlapping facets",
+    description: "Blue icebergs beneath snow-covered mountains",
     theme: "light",
     accent: "blue",
     wallpaper: "arctic",
@@ -84,7 +84,7 @@ export const designs: ReadonlyArray<{
   {
     id: "midnight",
     name: "Midnight",
-    description: "Ink blue with fine orbital lines",
+    description: "Rainlit city architecture in blue and amber",
     theme: "dark",
     accent: "blue",
     wallpaper: "midnight",
@@ -92,7 +92,7 @@ export const designs: ReadonlyArray<{
   {
     id: "aurora",
     name: "Aurora",
-    description: "Night violet with sweeping color ribbons",
+    description: "Northern lights reflected in a mountain fjord",
     theme: "dark",
     accent: "violet",
     wallpaper: "aurora",
@@ -100,7 +100,7 @@ export const designs: ReadonlyArray<{
   {
     id: "ember",
     name: "Ember",
-    description: "Charcoal warmth and copper crescents",
+    description: "A volcanic coast beneath an orange evening sky",
     theme: "dark",
     accent: "amber",
     wallpaper: "ember",
@@ -110,7 +110,7 @@ export const designs: ReadonlyArray<{
 export function wallpaperUrl(settings: Settings): string {
   if (settings.background?.trim()) return settings.background;
   const selected = designs.find((design) => design.id === settings.wallpaper);
-  return selected ? `/backgrounds/${selected.id}.svg` : "";
+  return selected ? `/backgrounds/${selected.id}.webp` : "";
 }
 
 export function applyDesign(settings: Settings, id: string): Settings {

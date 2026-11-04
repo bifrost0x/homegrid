@@ -91,6 +91,17 @@ jobs:
           exit 1
       - name: Check browser sign-in
         run: node tests/auth.mjs
+      - name: Check application management and category moves
+        run: |
+          # Restart clears the disposable /data tmpfs for a fresh setup fixture.
+          docker restart homegrid-auth-check
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://localhost:8096/api/health; then break; fi
+            if [ "$attempt" -eq 30 ]; then exit 1; fi
+            sleep 1
+          done
+          node tests/browser.mjs
+          node tests/cross-category.mjs
       - name: Remove disposable test container
         if: always()
         run: docker rm --force --volumes homegrid-auth-check || true

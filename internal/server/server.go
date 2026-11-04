@@ -548,12 +548,17 @@ func (s *Server) deleteResource(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) reorder(w http.ResponseWriter, r *http.Request) {
 	var v struct {
-		IDs []int64 `json:"ids"`
+		IDs  []int64        `json:"ids"`
+		Move *store.AppMove `json:"move"`
 	}
 	if !decode(w, r, &v, 1<<20) {
 		return
 	}
-	token, e := s.cfg.Store.ReorderWithUndo(r.Context(), resourceKind(r), v.IDs)
+	var moves []store.AppMove
+	if v.Move != nil {
+		moves = append(moves, *v.Move)
+	}
+	token, e := s.cfg.Store.ReorderWithUndo(r.Context(), resourceKind(r), v.IDs, moves...)
 	if e == nil {
 		w.Header().Set("X-HomeGrid-Undo", token)
 	}

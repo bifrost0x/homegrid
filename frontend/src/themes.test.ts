@@ -22,7 +22,7 @@ describe("design catalog", () => {
       expect(design.wallpaper).toBe(design.id);
       expect(
         wallpaperUrl({ ...defaults, wallpaper: design.wallpaper } as Settings),
-      ).toBe(`/backgrounds/${design.id}.svg`);
+      ).toBe(`/backgrounds/${design.id}.webp`);
     }
   });
   it("applies a design without mutating settings or changing layout", () => {

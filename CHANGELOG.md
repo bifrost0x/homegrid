@@ -9,6 +9,10 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   verify the current password and sign out other sessions.
 - Application and category management, persistent favorites, duplication, and
   keyboard command search across names, descriptions and categories.
+- Drag cards directly between categories, including empty or collapsed groups,
+  with target-relative placement, touch/keyboard alternatives and atomic undo.
+- Twelve locally bundled photographic wallpapers with matching palettes,
+  lightweight previews and readable surfaces in both light and dark modes.
 - Forty categorized service templates with local logos and URL-only setup;
   84 searchable icons, icon colors, browser favicons and raster image uploads.
 - Optional example cards that require configuration before launch.

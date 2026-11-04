@@ -1,13 +1,80 @@
-import type { KeyboardCoordinateGetter } from "@dnd-kit/core";
-import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import {
+  closestCenter,
+  pointerWithin,
+  rectIntersection,
+  type CollisionDetection,
+  type KeyboardCoordinateGetter,
+} from "@dnd-kit/core";
+import { arrayMove, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
+import type { Application } from "./lib";
+
+export interface ApplicationOrder {
+  ids: number[];
+  move?: { id: number; category_id: number };
+}
+
+export function applicationDrop(
+  apps: Application[],
+  id: number,
+  target: string,
+  after = false,
+): ApplicationOrder | null {
+  const app = apps.find((item) => item.id === id);
+  if (!app) return null;
+  const group = /^app-category-([1-9]\d*)$/.exec(target);
+  const card = /^app-([1-9]\d*)$/.exec(target);
+  const over = card
+    ? apps.find((item) => item.id === Number(card[1]))
+    : undefined;
+  const categoryId = group ? Number(group[1]) : over?.category_id;
+  if (!categoryId || over?.id === id) return null;
+  const ids = apps.map((item) => item.id);
+  if (categoryId === app.category_id) {
+    if (!over) return null;
+    return { ids: arrayMove(ids, ids.indexOf(id), ids.indexOf(over.id)) };
+  }
+  const remaining = apps.filter((item) => item.id !== id);
+  let index = over
+    ? remaining.findIndex((item) => item.id === over.id) + Number(after)
+    : -1;
+  if (!over) {
+    for (let i = 0; i < remaining.length; i++) {
+      if (remaining[i].category_id === categoryId) index = i + 1;
+    }
+    if (index < 0) index = remaining.length;
+  }
+  const ordered = remaining.map((item) => item.id);
+  ordered.splice(index, 0, id);
+  return { ids: ordered, move: { id, category_id: categoryId } };
+}
+
+export const launcherCollisionDetection: CollisionDetection = (args) => {
+  if (String(args.active.id).startsWith("category-")) {
+    return closestCenter({
+      ...args,
+      droppableContainers: args.droppableContainers.filter((item) =>
+        String(item.id).startsWith("category-"),
+      ),
+    });
+  }
+  const containers = args.droppableContainers.filter((item) =>
+    String(item.id).startsWith("app-"),
+  );
+  const collisions = args.pointerCoordinates
+    ? pointerWithin({ ...args, droppableContainers: containers })
+    : rectIntersection({ ...args, droppableContainers: containers });
+  // A card lies inside its group drop zone. Prefer the precise card target.
+  const cards = collisions.filter((item) => /^app-\d+$/.test(String(item.id)));
+  return cards.length ? cards : collisions;
+};
 
 export const launcherKeyboardCoordinates: KeyboardCoordinateGetter = (
   event,
   args,
 ) => {
   const prefix = String(args.active).split("-")[0] + "-";
-  // Category sections contain app droppables. Keep keyboard target discovery
-  // consistent with collision detection so an arrow moves to the next peer.
+  // App targets include group drop zones, including empty/collapsed groups.
+  // Category sorting must continue to skip all nested application targets.
   const droppableRects = new Map(
     [...args.context.droppableRects].filter(([id]) =>
       String(id).startsWith(prefix),

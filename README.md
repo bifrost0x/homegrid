@@ -37,9 +37,11 @@ and optional local source builds.
   card, and find services with **Ctrl+K** or **Cmd+K**. Search includes names,
   descriptions and categories.
 - **Organize in place.** Turn on **Organize** to arrange cards and categories
-  with drag-and-drop, keyboard sorting or explicit controls. Empty categories
-  stay out of the everyday launcher.
-- **Choose your atmosphere.** Twelve designs, bundled backgrounds, light/dark/
+  with drag-and-drop, keyboard sorting or explicit controls. Move cards directly
+  between categories, including empty or collapsed groups, with persisted undo.
+  Empty categories stay out of the everyday launcher.
+- **Choose your atmosphere.** Twelve designs with bundled photographic landscapes,
+  coastlines, forests and city nights, light/dark/
   system modes, custom accents and image uploads. Adjust density, corners,
   descriptions, dashboard width, columns, and cards, tiles or lists.
 - **Preview before saving.** Appearance and layout share a live draft. **Save**
