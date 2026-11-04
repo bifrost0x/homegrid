@@ -15,7 +15,7 @@ export function DesignGallery({
     <fieldset className="design-library">
       <legend>Choose your design</legend>
       <p className="field-hint">
-        Twelve complete looks. Pick a starting point, then change any detail
+        Twelve places to make your own. Choose a scene, then tune any detail
         below.
       </p>
       <div className="design-gallery">
@@ -36,7 +36,7 @@ export function DesignGallery({
                 data-accent={design.accent}
               >
                 <img
-                  src={`/backgrounds/${design.wallpaper}.svg`}
+                  src={`/backgrounds/${design.wallpaper}-thumb.webp`}
                   alt=""
                   loading="lazy"
                 />
@@ -80,7 +80,8 @@ export function WallpaperLibrary({
     <fieldset className="wallpaper-library">
       <legend>Wallpaper library</legend>
       <p className="field-hint">
-        Mix any background with any design. Included locally, ready offline.
+        Mountains, coastlines, forests and city nights. Every image is included
+        offline.
       </p>
       <div className="wallpaper-gallery">
         <button
@@ -105,7 +106,7 @@ export function WallpaperLibrary({
             onClick={() => onSelect(design.id)}
           >
             <img
-              src={`/backgrounds/${design.wallpaper}.svg`}
+              src={`/backgrounds/${design.wallpaper}-thumb.webp`}
               alt=""
               loading="lazy"
             />

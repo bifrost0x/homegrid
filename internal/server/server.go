@@ -241,7 +241,9 @@ func (s *Server) clientIP(r *http.Request) string {
 	return peer
 }
 func (s *Server) sameOrigin(r *http.Request) bool {
-	if r.Header.Get("Sec-Fetch-Site") == "cross-site" {
+	switch r.Header.Get("Sec-Fetch-Site") {
+	case "", "same-origin", "none":
+	default:
 		return false
 	}
 	origin := r.Header.Get("Origin")
@@ -249,17 +251,12 @@ func (s *Server) sameOrigin(r *http.Request) bool {
 		return true
 	}
 	u, e := url.Parse(origin)
-	if e != nil || u.Host == "" || u.Path != "" || u.RawQuery != "" || u.Fragment != "" || u.User != nil {
+	if e != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" || origin != u.Scheme+"://"+u.Host {
 		return false
 	}
-	scheme := "http"
-	if r.TLS != nil {
-		scheme = "https"
-	}
-	if s.trusted(remoteIP(r)) && r.Header.Get("X-Forwarded-Proto") == "https" {
-		scheme = "https"
-	}
-	return u.Scheme == scheme && strings.EqualFold(u.Host, r.Host)
+	// TLS can terminate at a reverse proxy, so compare the public authority
+	// preserved in Host rather than the backend transport or forwarded headers.
+	return strings.EqualFold(u.Host, r.Host)
 }
 func validCSRF(a, b string) bool {
 	return len(a) == 64 && len(b) == 64 && subtle.ConstantTimeCompare([]byte(a), []byte(b)) == 1
@@ -274,8 +271,12 @@ func (s *Server) protected(next http.HandlerFunc) http.HandlerFunc {
 			fail(w, 401, "unauthorized", "Sign in to continue")
 			return
 		}
-		if mutation(r) && (!s.sameOrigin(r) || !validCSRF(v.CSRF, r.Header.Get("X-CSRF-Token"))) {
-			fail(w, 403, "csrf", "Invalid CSRF token or request origin")
+		if mutation(r) && !s.sameOrigin(r) {
+			fail(w, 403, "origin", "This address is not allowed. Check HomeGrid's reverse proxy configuration.")
+			return
+		}
+		if mutation(r) && !validCSRF(v.CSRF, r.Header.Get("X-CSRF-Token")) {
+			fail(w, 403, "csrf", "Refresh the page and try again")
 			return
 		}
 		next(w, r.WithContext(context.WithValue(r.Context(), identityKey{}, v)))
@@ -290,7 +291,11 @@ func (s *Server) preAuth(next http.HandlerFunc) http.HandlerFunc {
 		} else if c, e := r.Cookie(preauthCookie); e == nil {
 			expected = c.Value
 		}
-		if !s.sameOrigin(r) || !validCSRF(expected, r.Header.Get("X-CSRF-Token")) {
+		if !s.sameOrigin(r) {
+			fail(w, 403, "origin", "This address is not allowed. Check HomeGrid's reverse proxy configuration.")
+			return
+		}
+		if !validCSRF(expected, r.Header.Get("X-CSRF-Token")) {
 			fail(w, 403, "csrf", "Refresh the page and try again")
 			return
 		}
@@ -548,12 +553,17 @@ func (s *Server) deleteResource(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) reorder(w http.ResponseWriter, r *http.Request) {
 	var v struct {
-		IDs []int64 `json:"ids"`
+		IDs  []int64        `json:"ids"`
+		Move *store.AppMove `json:"move"`
 	}
 	if !decode(w, r, &v, 1<<20) {
 		return
 	}
-	token, e := s.cfg.Store.ReorderWithUndo(r.Context(), resourceKind(r), v.IDs)
+	var moves []store.AppMove
+	if v.Move != nil {
+		moves = append(moves, *v.Move)
+	}
+	token, e := s.cfg.Store.ReorderWithUndo(r.Context(), resourceKind(r), v.IDs, moves...)
 	if e == nil {
 		w.Header().Set("X-HomeGrid-Undo", token)
 	}

@@ -1,7 +1,6 @@
 # Browser integration checks
 
-`node tests/auth.mjs` requires a fresh disposable installation on local port
-8096. It creates a temporary administrator with a one-character username through
+`node tests/auth.mjs` requires a fresh disposable installation on local port 8096. It creates a temporary administrator with a one-character username through
 the API and verifies sign-in in a separate browser session. Run it as a standalone
 check: it leaves an account with a random password in that disposable data
 directory. Remove and recreate that test volume before running the other browser
@@ -24,6 +23,20 @@ Screenshots are written to test-results/. The test credentials exist only in
 the disposable verification database; they are not production defaults.
 Resume state can contain live test session cookies and undo tokens. Keep it
 private; do not upload the entire test-results directory as a public artifact.
+
+`go test ./...` includes setup, sign-in and CRUD through an actual TLS reverse
+proxy with no trusted-proxy configuration or forwarding headers. For the matching
+browser regression, recreate the disposable installation with fresh data, run
+`go run ./tests/tls-proxy` in one terminal, then `node tests/reverse-proxy.mjs` in
+another. The fixture listens only on `127.0.0.1:8443`, forwards to local port 8096,
+and generates a temporary self-signed certificate. Only this browser test ignores
+that fixture certificate. Stop the helper with Ctrl+C afterward. Container CI
+runs this scenario separately after resetting its disposable tmpfs data.
+
+After the main browser workflow, `node tests/cross-category.mjs` verifies card
+dragging between categories, target-relative insertion, empty/collapsed drops,
+direct category selection, reload persistence and undo. It restores its own
+fixtures and requires the same disposable installation.
 
 The persistence pass logs in and checks the application saved by the first pass.
 Never point this workflow at an installation containing real data.

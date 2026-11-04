@@ -27,7 +27,7 @@ writes; uploaded backgrounds remain subject to the existing path validation.
 
 GET /api/auth/session returns `{setup_required,authenticated,username,csrf_token}`. When authenticated csrf_token is supplied and mutations include X-CSRF-Token. Login/setup POST `{username,password}` returns same session object and sets cookie. Public session query returns a pre-auth CSRF token cookie and response; setup/login must send X-CSRF-Token too. All browser requests use same-origin credentials. POST logout requires token.
 
-CRUD /api/apps and /api/categories as specified. PUT /api/apps/reorder and /api/categories/reorder body `{ids:[...]}` containing ALL IDs of that resource. App category changes via PATCH. Category collapsed saved by PATCH. GET/PATCH /api/settings.
+CRUD /api/apps and /api/categories as specified. PUT /api/apps/reorder and /api/categories/reorder body `{ids:[...]}` containing ALL IDs of that resource. Application reorder also accepts optional `move:{id,category_id}` to move one application to an existing category and assign the complete order atomically with one persisted undo record. Invalid/incomplete IDs or unknown categories return 400 without changing state. Ordinary app edits can still change category via PATCH. Category collapsed saved by PATCH. GET/PATCH /api/settings.
 
 Successful application DELETE, resource reorder and settings PATCH advertise a
 persisted undo token in `X-HomeGrid-Undo` without changing their existing response

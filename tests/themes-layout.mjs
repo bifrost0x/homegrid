@@ -262,10 +262,10 @@ try {
       for (const name of designNames) {
         const id = name.toLowerCase();
         const response = await context.request.get(
-          `${base}/backgrounds/${id}.svg`,
+          `${base}/backgrounds/${id}.webp`,
         );
         assert.equal(response.status(), 200);
-        assert.match(response.headers()["content-type"], /image\/svg\+xml/);
+        assert.match(response.headers()["content-type"], /image\/webp/);
         for (const theme of ["light", "dark"]) {
           await reload({
             ...original,

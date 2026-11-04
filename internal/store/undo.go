@@ -147,9 +147,18 @@ func (s *Store) DeleteAppWithUndo(ctx context.Context, id int64) (string, error)
 	}
 	return token, tx.Commit()
 }
-func (s *Store) ReorderWithUndo(ctx context.Context, kind string, ids []int64) (string, error) {
+
+type AppMove struct {
+	ID         int64 `json:"id"`
+	CategoryID int64 `json:"category_id"`
+}
+
+func (s *Store) ReorderWithUndo(ctx context.Context, kind string, ids []int64, moves ...AppMove) (string, error) {
 	if kind != "applications" && kind != "categories" {
 		return "", ErrInvalid
+	}
+	if len(moves) > 1 || (len(moves) == 1 && (kind != "applications" || moves[0].ID <= 0 || moves[0].CategoryID <= 0)) {
+		return "", fmt.Errorf("%w: provide one application and destination group", ErrInvalid)
 	}
 	tx, e := s.DB.BeginTx(ctx, nil)
 	if e != nil {
@@ -166,6 +175,27 @@ func (s *Store) ReorderWithUndo(ctx context.Context, kind string, ids []int64) (
 	}
 	if len(ids) != len(order) {
 		return "", fmt.Errorf("%w: include every ID exactly once", ErrInvalid)
+	}
+	if len(moves) == 1 {
+		move := moves[0]
+		var n int
+		if e = tx.QueryRowContext(ctx, "SELECT count(*) FROM categories WHERE id=?", move.CategoryID).Scan(&n); e != nil {
+			return "", e
+		}
+		if n != 1 {
+			return "", fmt.Errorf("%w: unknown destination group", ErrInvalid)
+		}
+		result, e := tx.ExecContext(ctx, "UPDATE applications SET category_id=? WHERE id=?", move.CategoryID, move.ID)
+		if e != nil {
+			return "", e
+		}
+		changed, e := result.RowsAffected()
+		if e != nil {
+			return "", e
+		}
+		if changed != 1 {
+			return "", fmt.Errorf("%w: unknown application", ErrInvalid)
+		}
 	}
 	seen := map[int64]bool{}
 	for i, id := range ids {
@@ -193,6 +223,9 @@ func (s *Store) ReorderWithUndo(ctx context.Context, kind string, ids []int64) (
 		return "", tx.Commit()
 	}
 	label := "Applications reordered"
+	if len(moves) == 1 {
+		label = "Application moved"
+	}
 	if kind == "categories" {
 		label = "Groups reordered"
 	}
@@ -253,6 +286,26 @@ func validUndo(ctx context.Context, tx *sql.Tx, kind string, p undoPayload) (boo
 			return false, e
 		}
 		return n == 1, nil
+	}
+	if kind == "applications" {
+		var before []orderRow
+		if e = json.Unmarshal(p.Before, &before); e != nil {
+			return false, e
+		}
+		checked := map[int64]bool{}
+		for _, row := range before {
+			if checked[row.CategoryID] {
+				continue
+			}
+			var n int
+			if e = tx.QueryRowContext(ctx, "SELECT count(*) FROM categories WHERE id=?", row.CategoryID).Scan(&n); e != nil {
+				return false, e
+			}
+			if n != 1 {
+				return false, nil
+			}
+			checked[row.CategoryID] = true
+		}
 	}
 	return true, nil
 }
@@ -346,7 +399,12 @@ func (s *Store) Undo(ctx context.Context, token string) error {
 			return e
 		}
 		for _, v := range order {
-			if _, e = tx.ExecContext(ctx, "UPDATE "+kind+" SET sort_order=? WHERE id=?", v.Order, v.ID); e != nil {
+			if kind == "applications" {
+				_, e = tx.ExecContext(ctx, "UPDATE applications SET sort_order=?,category_id=? WHERE id=?", v.Order, v.CategoryID, v.ID)
+			} else {
+				_, e = tx.ExecContext(ctx, "UPDATE categories SET sort_order=? WHERE id=?", v.Order, v.ID)
+			}
+			if e != nil {
 				return e
 			}
 		}

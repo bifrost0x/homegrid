@@ -53,7 +53,7 @@ it("a design selection cancels an unfinished image and saves the selected wallpa
       .getByRole("region", { name: "Appearance preview" })
       .querySelector(".preview-background")
       ?.getAttribute("style"),
-  ).toContain("/backgrounds/aurora.svg");
+  ).toContain("/backgrounds/aurora.webp");
   await userEvent.click(
     screen.getByRole("button", { name: "Save appearance" }),
   );
