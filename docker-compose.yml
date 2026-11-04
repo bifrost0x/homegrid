@@ -1,0 +1,27 @@
+name: homegrid
+
+services:
+  homegrid:
+    image: ${HOMEGRID_IMAGE:-ghcr.io/bifrost0x/homegrid:latest}
+    container_name: homegrid
+    restart: unless-stopped
+    ports:
+      - "${HOMEGRID_BIND_ADDRESS:-127.0.0.1}:${HOMEGRID_PORT:-8095}:8080"
+    environment:
+      TZ: ${TZ:-UTC}
+      HOMEGRID_LISTEN: "0.0.0.0:8080"
+      HOMEGRID_DATA_DIR: "/data"
+      HOMEGRID_SECURE_COOKIE: "${HOMEGRID_SECURE_COOKIE:-false}"
+      HOMEGRID_TRUSTED_PROXIES: "${HOMEGRID_TRUSTED_PROXIES:-}"
+    volumes:
+      - homegrid_data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  homegrid_data:

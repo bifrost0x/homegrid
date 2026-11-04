@@ -1,0 +1,51 @@
+name: Publish image
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ghcr-latest
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish AMD64 and ARM64
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    env:
+      IMAGE: ghcr.io/bifrost0x/homegrid
+    steps:
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Validate frontend
+        run: |
+          docker build --target frontend --tag homegrid:frontend-check .
+          docker run --rm --network none --workdir /src/frontend \
+            --entrypoint npm homegrid:frontend-check test
+      - name: Create multi-platform builder
+        run: docker buildx create --name homegrid-publish --driver docker-container --use
+      - name: Sign in to GHCR
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: printf '%s' "$GHCR_TOKEN" | docker login ghcr.io --username "$GITHUB_REPOSITORY_OWNER" --password-stdin
+      - name: Build and publish
+        run: |
+          version="$(docker run --rm --network none --entrypoint node homegrid:frontend-check -p "require('/src/frontend/package.json').version")"
+          docker buildx build --platform linux/amd64,linux/arm64 \
+            --build-arg "VERSION=$version" --build-arg "COMMIT=$GITHUB_SHA" \
+            --tag "$IMAGE:latest" --tag "$IMAGE:sha-$GITHUB_SHA" \
+            --provenance=mode=min --push .
+      - name: Sign out of GHCR
+        if: always()
+        run: docker logout ghcr.io

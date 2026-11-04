@@ -1,0 +1,6 @@
+services:
+  homegrid:
+    build:
+      context: .
+    image: homegrid:local
+    pull_policy: build

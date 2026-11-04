@@ -1,0 +1,397 @@
+/* Shared palette scopes keep draft previews independent from the saved appearance. */
+:is(:root, .appearance-preview, .design-thumbnail)[data-theme="light"] {
+  --sage-accent: #49654c;
+  --sage-soft: #e5ecdf;
+  --sage-text: #ffffff;
+  --blue-accent: #38608e;
+  --blue-soft: #e2eaf5;
+  --blue-text: #ffffff;
+  --amber-accent: #815c23;
+  --amber-soft: #f3e9d5;
+  --amber-text: #ffffff;
+  --rose-accent: #8e4e64;
+  --rose-soft: #f4e3e8;
+  --rose-text: #ffffff;
+  --violet-accent: #765398;
+  --violet-soft: #eee4f7;
+  --violet-text: #ffffff;
+  --cyan-accent: #286a77;
+  --cyan-soft: #dfeef1;
+  --cyan-text: #ffffff;
+  --accent: var(--sage-accent);
+  --accent-soft: var(--sage-soft);
+  --accent-text: var(--sage-text);
+  --custom-ink-light: initial;
+  --custom-ink-dark: initial;
+  --accent-ink: var(--custom-ink-light, var(--accent));
+  color-scheme: light;
+}
+:is(:root, .appearance-preview, .design-thumbnail)[data-theme="dark"] {
+  --sage-accent: #bfd1ac;
+  --sage-soft: #354331;
+  --sage-text: #1e2a19;
+  --blue-accent: #a6c8f1;
+  --blue-soft: #293e54;
+  --blue-text: #172537;
+  --amber-accent: #e8c28a;
+  --amber-soft: #4a3c26;
+  --amber-text: #302310;
+  --rose-accent: #efb3c8;
+  --rose-soft: #4f303d;
+  --rose-text: #321d25;
+  --violet-accent: #d1b5ee;
+  --violet-soft: #3f314c;
+  --violet-text: #251a31;
+  --cyan-accent: #9bd0dc;
+  --cyan-soft: #263f45;
+  --cyan-text: #122d32;
+  --accent: var(--sage-accent);
+  --accent-soft: var(--sage-soft);
+  --accent-text: var(--sage-text);
+  --custom-ink-light: initial;
+  --custom-ink-dark: initial;
+  --accent-ink: var(--custom-ink-dark, var(--accent));
+  color-scheme: dark;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="homegrid"][data-theme="light"] {
+  --page: #f5f4ef;
+  --surface: #fffefa;
+  --surface-alt: #efeee8;
+  --text: #292d29;
+  --muted: #686d63;
+  --line: #dddfd5;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="homegrid"][data-theme="dark"] {
+  --page: #1b1e1b;
+  --surface: #242724;
+  --surface-alt: #2c302b;
+  --text: #eeefe8;
+  --muted: #acb2a7;
+  --line: #3b4039;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="porcelain"][data-theme="light"] {
+  --page: #f3f5f7;
+  --surface: #ffffff;
+  --surface-alt: #e9eef3;
+  --text: #253240;
+  --muted: #586779;
+  --line: #d7dfe7;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="porcelain"][data-theme="dark"] {
+  --page: #18212b;
+  --surface: #202c38;
+  --surface-alt: #2a3744;
+  --text: #eaf1f8;
+  --muted: #b0c0d0;
+  --line: #3b4c5e;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="dune"][data-theme="light"] {
+  --page: #f4eee2;
+  --surface: #fffaf0;
+  --surface-alt: #ede2cd;
+  --text: #403426;
+  --muted: #716047;
+  --line: #dfcfb2;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="dune"][data-theme="dark"] {
+  --page: #272119;
+  --surface: #332b20;
+  --surface-alt: #403526;
+  --text: #f4ecdf;
+  --muted: #c8b89f;
+  --line: #534633;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="terracotta"][data-theme="light"] {
+  --page: #f5eae3;
+  --surface: #fff8f2;
+  --surface-alt: #efdfd5;
+  --text: #482f29;
+  --muted: #79594d;
+  --line: #dec8bb;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="terracotta"][data-theme="dark"] {
+  --page: #2d201d;
+  --surface: #3a2924;
+  --surface-alt: #49322b;
+  --text: #faeae2;
+  --muted: #d3b0a0;
+  --line: #604337;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="rosewood"][data-theme="light"] {
+  --page: #f5e9ef;
+  --surface: #fff8fb;
+  --surface-alt: #efdce6;
+  --text: #472b39;
+  --muted: #785468;
+  --line: #dfc7d4;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="rosewood"][data-theme="dark"] {
+  --page: #251c25;
+  --surface: #322431;
+  --surface-alt: #412e3c;
+  --text: #f5e8f1;
+  --muted: #c9acbf;
+  --line: #573d50;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="lavender"][data-theme="light"] {
+  --page: #f1edf7;
+  --surface: #fdfaff;
+  --surface-alt: #e8e0f1;
+  --text: #382d49;
+  --muted: #6d5b7d;
+  --line: #d7cbe4;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="lavender"][data-theme="dark"] {
+  --page: #231e2d;
+  --surface: #30273d;
+  --surface-alt: #3d324b;
+  --text: #f2eafa;
+  --muted: #c2afd4;
+  --line: #514160;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="forest"][data-theme="light"] {
+  --page: #eaf0e9;
+  --surface: #f9fff7;
+  --surface-alt: #dfe9dc;
+  --text: #243c2b;
+  --muted: #506d55;
+  --line: #c6d5c4;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="forest"][data-theme="dark"] {
+  --page: #15251d;
+  --surface: #1e3227;
+  --surface-alt: #2a4031;
+  --text: #e5f1e1;
+  --muted: #a8c4a6;
+  --line: #3c5541;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="lagoon"][data-theme="light"] {
+  --page: #e8f3f0;
+  --surface: #f8fffd;
+  --surface-alt: #dbece7;
+  --text: #213f3c;
+  --muted: #4a6c67;
+  --line: #c3dad4;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="lagoon"][data-theme="dark"] {
+  --page: #162925;
+  --surface: #203a33;
+  --surface-alt: #2b4a42;
+  --text: #e2f4ec;
+  --muted: #a4cbbd;
+  --line: #3e6157;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="arctic"][data-theme="light"] {
+  --page: #edf5f9;
+  --surface: #fbfeff;
+  --surface-alt: #dfeef4;
+  --text: #233b49;
+  --muted: #516d7a;
+  --line: #c6dce5;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="arctic"][data-theme="dark"] {
+  --page: #182832;
+  --surface: #203642;
+  --surface-alt: #2b4552;
+  --text: #e5f3fa;
+  --muted: #a9c7d7;
+  --line: #3c5b6b;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="midnight"][data-theme="light"] {
+  --page: #edf0f7;
+  --surface: #fafcff;
+  --surface-alt: #e1e8f3;
+  --text: #26344f;
+  --muted: #536784;
+  --line: #cbd7e9;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="midnight"][data-theme="dark"] {
+  --page: #131e30;
+  --surface: #1d2c43;
+  --surface-alt: #283a54;
+  --text: #e7effc;
+  --muted: #adc0dc;
+  --line: #3c5270;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="aurora"][data-theme="light"] {
+  --page: #f0edf8;
+  --surface: #fdfaff;
+  --surface-alt: #e7e0f4;
+  --text: #382d50;
+  --muted: #6c5a88;
+  --line: #d5c8e9;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="aurora"][data-theme="dark"] {
+  --page: #211d32;
+  --surface: #2e2844;
+  --surface-alt: #3b3354;
+  --text: #f1eaff;
+  --muted: #c4b2df;
+  --line: #51456d;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="ember"][data-theme="light"] {
+  --page: #f4eae1;
+  --surface: #fff9f2;
+  --surface-alt: #eeddce;
+  --text: #443027;
+  --muted: #785b48;
+  --line: #dfc7b3;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-design="ember"][data-theme="dark"] {
+  --page: #29211d;
+  --surface: #382b23;
+  --surface-alt: #46362a;
+  --text: #f7ecdf;
+  --muted: #d1b59b;
+  --line: #5c4634;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-theme][data-accent="sage"] {
+  --accent: var(--sage-accent);
+  --accent-soft: var(--sage-soft);
+  --accent-text: var(--sage-text);
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-theme][data-accent="blue"] {
+  --accent: var(--blue-accent);
+  --accent-soft: var(--blue-soft);
+  --accent-text: var(--blue-text);
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-theme][data-accent="amber"] {
+  --accent: var(--amber-accent);
+  --accent-soft: var(--amber-soft);
+  --accent-text: var(--amber-text);
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-theme][data-accent="rose"] {
+  --accent: var(--rose-accent);
+  --accent-soft: var(--rose-soft);
+  --accent-text: var(--rose-text);
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-theme][data-accent="violet"] {
+  --accent: var(--violet-accent);
+  --accent-soft: var(--violet-soft);
+  --accent-text: var(--violet-text);
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail
+  )[data-theme][data-accent="cyan"] {
+  --accent: var(--cyan-accent);
+  --accent-soft: var(--cyan-soft);
+  --accent-text: var(--cyan-text);
+}
