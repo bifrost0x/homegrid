@@ -48,11 +48,20 @@ interface address if appropriate. An existing `.env` with
 
 Use an HTTPS reverse proxy for access over an untrusted network. Set
 `HOMEGRID_SECURE_COOKIE=true` when the browser accesses HomeGrid through HTTPS.
-Set `HOMEGRID_TRUSTED_PROXIES` only to the CIDRs of proxies you control; leaving
-it empty ignores forwarded headers. Preserve the original Host and Origin
-headers through the proxy. A proxy on the host can use a localhost host-port
+Normal HTTPS termination works without `HOMEGRID_TRUSTED_PROXIES`: HomeGrid
+validates the browser-facing hostname and port, independently of the proxy's
+HTTP connection to the container. Preserve the original Host and Origin headers
+through the proxy. Set `HOMEGRID_TRUSTED_PROXIES` only when you need forwarded
+client IPs for rate limiting, and only to addresses or CIDRs you control; leaving
+it empty ignores forwarded client IPs. A proxy on the host can use a localhost host-port
 binding; a proxy in another container needs an appropriate shared network or
 reachable host binding.
+
+If sign-in reports an address/origin error, check that the proxy forwards the
+public `Host` unchanged, including a non-default public port. Do not replace it
+with the upstream container name or port. `X-Forwarded-Host` and
+`X-Forwarded-Proto` are not required for origin validation and cannot override it.
+Keep the browser's `Origin` header intact; no CSRF exemption is needed.
 
 Compose reads `.env` for interpolation. `HOMEGRID_LISTEN` and
 `HOMEGRID_DATA_DIR` are set explicitly inside the container to `0.0.0.0:8080`

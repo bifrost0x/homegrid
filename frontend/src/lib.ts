@@ -106,7 +106,10 @@ export async function api<T>(
         window.dispatchEvent(
           new CustomEvent("homegrid:session-refreshed", { detail: session }),
         );
-        message = "Your session changed. Please try saving again.";
+        message =
+          path === "/auth/login"
+            ? "Your sign-in session changed. Please try signing in again."
+            : "Your session changed. Please try again.";
       }
     } catch {
       /* Use the safe fallback for non-JSON responses. */

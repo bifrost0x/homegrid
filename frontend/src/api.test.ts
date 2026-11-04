@@ -1,6 +1,44 @@
 import { afterEach, it, expect, vi } from "vitest";
 import { api, setSession } from "./lib";
 afterEach(() => vi.unstubAllGlobals());
+it("reports an origin rejection without refreshing or replaying the request", async () => {
+  const message =
+    "This address is not allowed. Check HomeGrid's reverse proxy configuration.";
+  const fetch = vi.fn(
+    async () =>
+      new Response(JSON.stringify({ error: { code: "origin", message } }), {
+        status: 403,
+      }),
+  );
+  vi.stubGlobal("fetch", fetch);
+  await expect(api("/auth/login", "POST", {})).rejects.toThrow(message);
+  expect(fetch).toHaveBeenCalledOnce();
+});
+it("describes a stale login session as a sign-in retry", async () => {
+  const fetch = vi
+    .fn()
+    .mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({ error: { code: "csrf", message: "Invalid token" } }),
+        { status: 403 },
+      ),
+    )
+    .mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          authenticated: false,
+          setup_required: false,
+          username: "",
+          csrf_token: "new-token",
+        }),
+      ),
+    );
+  vi.stubGlobal("fetch", fetch);
+  await expect(api("/auth/login", "POST", {})).rejects.toThrow(
+    "Please try signing in again.",
+  );
+  expect(fetch).toHaveBeenCalledTimes(2);
+});
 it("sends the session CSRF token and same-origin credentials", async () => {
   const fetch = vi.fn(async () => new Response("{}"));
   vi.stubGlobal("fetch", fetch);

@@ -24,6 +24,15 @@ the disposable verification database; they are not production defaults.
 Resume state can contain live test session cookies and undo tokens. Keep it
 private; do not upload the entire test-results directory as a public artifact.
 
+`go test ./...` includes setup, sign-in and CRUD through an actual TLS reverse
+proxy with no trusted-proxy configuration or forwarding headers. For the matching
+browser regression, recreate the disposable installation with fresh data, run
+`go run ./tests/tls-proxy` in one terminal, then `node tests/reverse-proxy.mjs` in
+another. The fixture listens only on `127.0.0.1:8443`, forwards to local port 8096,
+and generates a temporary self-signed certificate. Only this browser test ignores
+that fixture certificate. Stop the helper with Ctrl+C afterward. Container CI
+runs this scenario separately after resetting its disposable tmpfs data.
+
 After the main browser workflow, `node tests/cross-category.mjs` verifies card
 dragging between categories, target-relative insertion, empty/collapsed drops,
 direct category selection, reload persistence and undo. It restores its own

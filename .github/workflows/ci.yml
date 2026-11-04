@@ -102,6 +102,25 @@ jobs:
           done
           node tests/browser.mjs
           node tests/cross-category.mjs
+      - name: Set up Go for TLS proxy fixture
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Check HTTPS reverse proxy without trust configuration
+        run: |
+          docker restart homegrid-auth-check
+          go build -o "$RUNNER_TEMP/homegrid-tls-proxy" ./tests/tls-proxy
+          "$RUNNER_TEMP/homegrid-tls-proxy" &
+          proxy_pid=$!
+          trap 'kill "$proxy_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 30); do
+            # Only this loopback fixture uses a generated self-signed certificate.
+            if curl --insecure --fail --silent https://127.0.0.1:8443/api/health; then break; fi
+            if [ "$attempt" -eq 30 ]; then exit 1; fi
+            sleep 1
+          done
+          node tests/reverse-proxy.mjs
       - name: Remove disposable test container
         if: always()
         run: docker rm --force --volumes homegrid-auth-check || true
