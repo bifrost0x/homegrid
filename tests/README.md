@@ -11,9 +11,9 @@ regression separately against its newly built image with ephemeral data.
 The browser workflow operates on a separate Compose project and volume:
 
 ```sh
-docker compose -p homegrid-verify -f compose.yaml -f tests/compose.verify.yaml up --build -d
+docker compose -p homegrid-verify -f docker-compose.yml -f tests/compose.verify.yaml up --build -d
 node tests/browser.mjs
-docker compose -p homegrid-verify -f compose.yaml -f tests/compose.verify.yaml restart
+docker compose -p homegrid-verify -f docker-compose.yml -f tests/compose.verify.yaml restart
 node tests/browser.mjs --persistence
 ```
 

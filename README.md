@@ -10,7 +10,8 @@ Built with Go, React, and SQLite; packaged as one container.
 
 ## Start with Docker
 
-From a checkout or downloaded source archive, with Docker and Compose installed:
+From a checkout or downloaded source archive, with Docker and Compose installed.
+The included [docker-compose.yml](docker-compose.yml) builds and starts HomeGrid:
 
 ```sh
 docker compose up --build -d --wait

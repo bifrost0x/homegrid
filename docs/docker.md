@@ -9,7 +9,7 @@ configured service.
 
 ## First start
 
-From the directory containing `compose.yaml`:
+From the directory containing `docker-compose.yml`:
 
 ```sh
 docker compose up --build -d --wait
@@ -133,7 +133,7 @@ docker run --rm --network none --read-only \
 Restore only archives you trust. If extraction fails, leave the original
 installation in place and use a new empty restore volume for your next attempt.
 
-Create `compose.restore.yaml` alongside `compose.yaml`:
+Create `compose.restore.yaml` alongside `docker-compose.yml`:
 
 ```yaml
 volumes:
@@ -146,9 +146,9 @@ Check the merged configuration, stop the current container, then start with the
 restored volume:
 
 ```sh
-docker compose -f compose.yaml -f compose.restore.yaml config
+docker compose -f docker-compose.yml -f compose.restore.yaml config
 docker compose stop
-docker compose -f compose.yaml -f compose.restore.yaml up -d --wait
+docker compose -f docker-compose.yml -f compose.restore.yaml up -d --wait
 ```
 
 Sign in and check applications, images and settings. Keep the original volume
