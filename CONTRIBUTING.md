@@ -40,7 +40,8 @@ volume after confirming that it belongs to the disposable verification project.
 
 Review screenshots and exported test output before sharing them: internal URLs,
 service names, and settings may be private. The default CI runs unit tests, type
-checks, Go checks, a container build, and a redacted secret scan; browser workflows
-remain local checks and their artifacts are not uploaded by CI.
+checks, Go checks, a container build with a browser sign-in regression, CodeQL,
+and a redacted secret scan. Broader desktop/mobile browser workflows remain
+local checks; their private resume state and artifacts are not uploaded by CI.
 
 Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).

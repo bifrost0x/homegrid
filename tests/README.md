@@ -2,9 +2,11 @@
 
 `node tests/auth.mjs` requires a fresh disposable installation on local port
 8096. It creates a temporary administrator with a one-character username through
-the API and verifies sign-in in a separate browser session. It must run before
-other suites initialize that installation. The container CI runs this regression
-against its newly built image with ephemeral data.
+the API and verifies sign-in in a separate browser session. Run it as a standalone
+check: it leaves an account with a random password in that disposable data
+directory. Remove and recreate that test volume before running the other browser
+suites, which use their own administrator fixture. Container CI runs this
+regression separately against its newly built image with ephemeral data.
 
 The browser workflow operates on a separate Compose project and volume:
 
@@ -20,6 +22,8 @@ installation for the initial run. Install dependencies with `npm ci` in frontend
 If necessary, install Chromium with `npx playwright install chromium` there.
 Screenshots are written to test-results/. The test credentials exist only in
 the disposable verification database; they are not production defaults.
+Resume state can contain live test session cookies and undo tokens. Keep it
+private; do not upload the entire test-results directory as a public artifact.
 
 The persistence pass logs in and checks the application saved by the first pass.
 Never point this workflow at an installation containing real data.

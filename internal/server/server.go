@@ -560,7 +560,7 @@ func (s *Server) reorder(w http.ResponseWriter, r *http.Request) {
 	s.result(w, 200, map[string]bool{"ok": true}, e)
 }
 func (s *Server) settings(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "GET" {
+	if r.Method == "GET" || r.Method == "HEAD" {
 		v, e := s.cfg.Store.Settings(r.Context())
 		s.result(w, 200, v, e)
 		return

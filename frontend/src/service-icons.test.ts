@@ -72,7 +72,7 @@ describe("offline service catalog", () => {
     );
   });
 
-  it("ships valid standalone artwork without executable content or external requests", () => {
+  it("ships static standalone artwork without executable content or external requests", () => {
     for (const { src } of Object.values(serviceIcons)) {
       const svg = assets[`../public${src}`];
       expect(svg).not.toMatch(/<!DOCTYPE|<!ENTITY|<\?xml-stylesheet/i);
@@ -85,7 +85,7 @@ describe("offline service catalog", () => {
       ).toBeTruthy();
       expect(
         document.querySelector(
-          "script, foreignObject, iframe, image, audio, video, animate, set",
+          "script, foreignObject, iframe, image, audio, video, animate, animateTransform, animateMotion, set",
         ),
         src,
       ).toBeNull();

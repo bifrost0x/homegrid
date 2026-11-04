@@ -110,6 +110,10 @@ Go because `web/dist` is embedded. For hot reload, run `npm run dev` from
 `frontend` in another terminal and use the Vite URL for the entire session; it
 proxies `/api` and `/uploads` to Go.
 
+The development server also binds to localhost by default. After local setup,
+`npm run dev -- --host 0.0.0.0` deliberately enables LAN development access;
+the development proxy exposes the API on that interface too.
+
 Native execution binds to localhost by default. Complete administrator setup
 locally before deliberately exposing it to a network with `HOMEGRID_LISTEN`.
 Docker's explicit internal binding is controlled separately from its host port.

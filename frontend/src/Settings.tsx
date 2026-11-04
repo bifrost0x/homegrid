@@ -524,6 +524,9 @@ export function SettingsPanel({
                 const file = e.target.files?.[0];
                 if (file) {
                   cancelBackgroundRead();
+                  setPreview(undefined);
+                  setData(undefined);
+                  setConfirmed(false);
                   void perform(async () => {
                     if (file.size > 5 * 1024 * 1024)
                       throw new Error("Choose a JSON file smaller than 5 MB.");

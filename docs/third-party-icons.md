@@ -1,6 +1,6 @@
 # Bundled service icons
 
-The forty SVGs in `frontend/public/service-icons/` identify services in the local catalog. All are vendored unchanged from the pinned sources below. They are loaded as independent image documents; SVG IDs and styles therefore remain isolated. No icon CDN, external font, script, tracking asset or runtime download is used.
+The forty SVGs in `frontend/public/service-icons/` identify services in the local catalog. They are vendored from the pinned sources below. Navidrome's decorative rotation was removed for HomeGrid to keep the artwork static; the other 39 SVGs are unchanged. They are loaded as independent image documents; SVG IDs and styles therefore remain isolated. No icon CDN, external font, script, tracking asset or runtime download is used.
 
 Thirty-nine icons are from [Dashboard Icons by Homarr Labs and contributors](https://github.com/homarr-labs/dashboard-icons/blob/45ea6c2595231d66b855e81b3fd99d3e8904cb36), distributed under [Apache License 2.0](https://github.com/homarr-labs/dashboard-icons/blob/45ea6c2595231d66b855e81b3fd99d3e8904cb36/LICENSE). The complete license is included as `frontend/public/service-icons/LICENSE.txt`. The upstream distribution has no root NOTICE file.
 

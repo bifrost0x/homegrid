@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg"
      xml:space="preserve"
      viewBox="0 0 256 256" width="256" height="256">
+  <!-- Modified for HomeGrid: removed decorative rotation to keep artwork static. -->
 
   <style>
     .st1,.st2{fill:#000;stroke:#fff;stroke-width:9.9999;stroke-miterlimit:15.118}
@@ -25,14 +26,6 @@
 
     <circle cx="128" cy="128" r="9" fill="#fff" class="st1"/>
 
-    <!-- SPIN ANIMATION INSIDE THE GROUP -->
-    <animateTransform
-        attributeName="transform"
-        type="rotate"
-        from="0 128 128"
-        to="360 128 128"
-        dur="3s"
-        repeatCount="indefinite"/>
   </g>
 
 </svg>

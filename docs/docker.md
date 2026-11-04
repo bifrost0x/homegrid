@@ -86,8 +86,12 @@ Run them from the project directory. The helper image may need downloading.
 ```sh
 set -eu
 docker volume inspect homegrid_homegrid_data >/dev/null
+umask 077
 mkdir -p backups
+chmod 700 backups
 backup_file="homegrid-data-$(date -u +%Y%m%dT%H%M%SZ).tgz"
+# Create privately as the invoking user; refuse to overwrite an existing backup.
+( set -C; : > "backups/$backup_file" )
 docker compose stop
 docker run --rm --network none --read-only \
   --mount type=volume,source=homegrid_homegrid_data,target=/data,readonly \
@@ -95,6 +99,13 @@ docker run --rm --network none --read-only \
   alpine:3.22@sha256:2e0b81d60597f449baa56dc25d355367869d2dca4cd57e866f1e2b52af3eb55f tar -czf "/backup/$backup_file" -C /data .
 docker compose start
 ```
+
+The private directory and pre-created archive protect the initial copy, not just
+its eventual destination. The helper writes that existing file, preserving the
+invoking user's ownership and `0600` mode on POSIX hosts. Creating a file only
+inside the root helper can instead leave a root-owned or world-readable archive.
+On hosts without POSIX permission enforcement, restrict the backup directory's
+host ACL to the backup operator before copying sensitive data.
 
 If the copy fails, these commands leave HomeGrid stopped. Resolve the error,
 retry the copy, then run `docker compose start`. Copy successful backups to a
