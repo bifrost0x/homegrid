@@ -35,9 +35,9 @@ docker compose pull
 docker compose up -d --wait
 ```
 
-Open [localhost:8095](http://localhost:8095) and create the first administrator.
-No default credentials are provided. Compose binds to localhost by default;
-configure LAN access deliberately and use HTTPS over untrusted networks.
+Open `http://<docker-host-ip>:8095` and create the first administrator.
+No default credentials are provided. Compose publishes to all host interfaces;
+complete setup from a trusted network and use HTTPS over untrusted networks.
 See the [Docker guide](docker.md) for configuration, updates, backup and restore.
 
 The production container runs one Go executable as UID/GID 65532, with embedded

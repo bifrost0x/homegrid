@@ -17,9 +17,10 @@ docker compose up -d --wait
 docker compose ps
 ```
 
-Open [localhost:8095](http://localhost:8095) and create the administrator account.
-There are no default credentials. Finish setup before allowing other clients to
-reach the installation.
+Open `http://<docker-host-ip>:8095` from your network, or
+[localhost:8095](http://localhost:8095) on the Docker host, and create the
+administrator account. There are no default credentials. Complete setup from a
+trusted network before exposing the installation more broadly.
 
 Compose uses the project name `homegrid`, container `homegrid`, public image
 `ghcr.io/bifrost0x/homegrid:latest`, and volume `homegrid_homegrid_data`. The container runs as
@@ -31,29 +32,77 @@ no manual permission changes.
 
 The registry image is public and can be pulled without signing in to GitHub.
 
-The default host binding is `127.0.0.1:8095`. To allow LAN access, create or edit
-`.env` alongside `docker-compose.yml` and set:
+The default host binding is `0.0.0.0:8095`, so the Docker host's network address
+works directly. To allow access only from the Docker host, create or edit `.env`
+alongside `docker-compose.yml` and set:
 
 ```dotenv
-HOMEGRID_BIND_ADDRESS=0.0.0.0
+HOMEGRID_BIND_ADDRESS=127.0.0.1
 HOMEGRID_PORT=8095
 ```
 
-Apply changes with `docker compose up -d --wait`. Use your host's address to
-connect. Opening the binding exposes HomeGrid on every host interface, subject
-to the host firewall; choose a specific interface address if appropriate.
+Apply changes with `docker compose up -d --wait`. The default binding publishes
+HomeGrid on every host interface, subject to the host firewall; choose a specific
+interface address if appropriate. An existing `.env` with
+`HOMEGRID_BIND_ADDRESS=127.0.0.1` keeps the installation local until changed.
 
 Use an HTTPS reverse proxy for access over an untrusted network. Set
 `HOMEGRID_SECURE_COOKIE=true` when the browser accesses HomeGrid through HTTPS.
 Set `HOMEGRID_TRUSTED_PROXIES` only to the CIDRs of proxies you control; leaving
 it empty ignores forwarded headers. Preserve the original Host and Origin
-headers through the proxy. A proxy on the host can use the default localhost
+headers through the proxy. A proxy on the host can use a localhost host-port
 binding; a proxy in another container needs an appropriate shared network or
 reachable host binding.
 
 Compose reads `.env` for interpolation. `HOMEGRID_LISTEN` and
 `HOMEGRID_DATA_DIR` are set explicitly inside the container to `0.0.0.0:8080`
 and `/data`; native execution does not automatically read `.env`.
+
+## Portainer stacks
+
+Paste `docker-compose.yml` into Portainer's stack editor. The current file allows
+LAN access by default. When updating an older stack that bound to localhost, set
+these variables in the stack's **Environment variables** section and update the
+stack:
+
+```dotenv
+HOMEGRID_BIND_ADDRESS=0.0.0.0
+HOMEGRID_PORT=8095
+```
+
+Then open `http://<docker-host-ip>:8095`. Use the address of the Docker endpoint
+managed by Portainer. The Portainer server may run on a different host. Complete
+administrator setup from a trusted network before exposing the installation more
+broadly.
+
+Older Compose files defaulted to `127.0.0.1`, which publishes only to the Docker
+host's loopback interface. A healthy container and a successful image build do
+not mean the host port is reachable from the network. A `.env` file on your own
+computer is not automatically available to a stack pasted into Portainer. If an
+older stack still does not interpolate the variable, use the explicit mapping
+below or replace it with the current Compose file.
+
+Alternatively, replace the stack's `ports` entry with an explicit mapping:
+
+```yaml
+ports:
+  - "8095:8080"
+```
+
+This also publishes on all host interfaces. Keep the existing stack name and
+`homegrid_data` volume when updating; do not delete the volume to repair a port
+mapping. If the page is still unreachable, inspect the container's published
+ports and health on the Docker endpoint:
+
+```sh
+docker port homegrid 8080/tcp
+docker exec homegrid /homegrid healthcheck
+```
+
+The published port should show `0.0.0.0:8095` or the intended LAN address. If the
+container is healthy and that mapping is present, check the host firewall and
+reachability of that host from your browser. Direct port access uses HTTP unless
+you have configured an HTTPS reverse proxy.
 
 ## Everyday commands
 

@@ -18,9 +18,10 @@ docker compose pull
 docker compose up -d --wait
 ```
 
-Open [localhost:8095](http://localhost:8095) and create your administrator account.
-There are no default credentials. Complete setup before making the installation
-available to other people. The default Compose configuration binds to localhost.
+Open `http://<docker-host-ip>:8095` from your network, or
+[localhost:8095](http://localhost:8095) on the Docker host, and create your
+administrator account. There are no default credentials. Compose publishes on
+all host interfaces by default; complete setup from a trusted network.
 
 The image supports AMD64 and ARM64. Docker selects the matching architecture;
 no Go, Node.js or source checkout is needed on the server.
@@ -85,20 +86,20 @@ Create `.env` beside `docker-compose.yml` to customize Compose, or use
 Compose loads `.env` for variable interpolation; the native Go executable reads
 process environment variables and does not automatically load dotenv files.
 
-| Variable | Default | Purpose |
-| --- | --- | --- |
-| `HOMEGRID_BIND_ADDRESS` | `127.0.0.1` | Compose host binding; use `0.0.0.0` deliberately for LAN access |
-| `HOMEGRID_PORT` | `8095` | Compose host port |
-| `HOMEGRID_IMAGE` | `ghcr.io/bifrost0x/homegrid:latest` | Container image; may also be pinned to a published digest |
-| `TZ` | `UTC` | Container timezone |
-| `HOMEGRID_LISTEN` | `127.0.0.1:8080` | Native HTTP listen address; Compose explicitly uses `0.0.0.0:8080` inside the container |
-| `HOMEGRID_DATA_DIR` | `./data` | Native data directory; `/data` inside Compose |
-| `HOMEGRID_SECURE_COOKIE` | `false` | Set `true` when serving over HTTPS |
-| `HOMEGRID_TRUSTED_PROXIES` | empty | Comma-separated CIDRs for proxies you control |
+| Variable                   | Default                             | Purpose                                                                                 |
+| -------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------- |
+| `HOMEGRID_BIND_ADDRESS`    | `0.0.0.0`                           | Compose host binding; use `127.0.0.1` for access only from the Docker host              |
+| `HOMEGRID_PORT`            | `8095`                              | Compose host port                                                                       |
+| `HOMEGRID_IMAGE`           | `ghcr.io/bifrost0x/homegrid:latest` | Container image; may also be pinned to a published digest                               |
+| `TZ`                       | `UTC`                               | Container timezone                                                                      |
+| `HOMEGRID_LISTEN`          | `127.0.0.1:8080`                    | Native HTTP listen address; Compose explicitly uses `0.0.0.0:8080` inside the container |
+| `HOMEGRID_DATA_DIR`        | `./data`                            | Native data directory; `/data` inside Compose                                           |
+| `HOMEGRID_SECURE_COOKIE`   | `false`                             | Set `true` when serving over HTTPS                                                      |
+| `HOMEGRID_TRUSTED_PROXIES` | empty                               | Comma-separated CIDRs for proxies you control                                           |
 
 ## Development
 
-Requirements: Go 1.27+, Node.js 24+, and npm. Node.js is needed for frontend
+Requirements: Go 1.27+, Node.js 26+, and npm. Node.js is needed for frontend
 development and builds; it is not part of the production runtime.
 
 ```sh

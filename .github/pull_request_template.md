@@ -15,4 +15,4 @@ Describe the problem and the resulting behavior. Link a related issue if useful.
 - [ ] Relevant documentation is updated.
 - [ ] Tests use disposable data and do not affect an existing installation.
 
-Merging a pull request does not publish a versioned release or container image.
+Merging to main publishes the latest container image. Versioned releases and Git tags require a separate release step.

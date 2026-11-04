@@ -13,7 +13,7 @@ docker build --tag homegrid:check .
 ```
 
 The Dockerfile builds the frontend before testing and vetting the Go backend.
-For direct development, use Node.js 24 and the Go version declared in `go.mod`:
+For direct development, use Node.js 26 and the Go version declared in `go.mod`:
 
 ```sh
 cd frontend
