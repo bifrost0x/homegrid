@@ -1,0 +1,250 @@
+[hidden] {
+  display: none !important;
+}
+.dialog.wide:has(.settings-panel) {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.dialog:has(.settings-panel) > .dialog-heading {
+  flex-shrink: 0;
+}
+.settings-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+.settings-panel > .settings-tabs {
+  flex-shrink: 0;
+}
+.settings-panel > [role="tabpanel"] {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 5px 5px 12px;
+  scrollbar-gutter: stable;
+}
+.settings-footer {
+  flex-shrink: 0;
+  padding-top: 14px;
+}
+.settings-form-fields {
+  display: contents;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+.settings-form-fields:disabled :is(input, select, button) {
+  opacity: 0.6;
+  cursor: wait;
+}
+.settings-footer-actions {
+  margin: 0;
+  padding-top: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 8px;
+}
+.settings-footer-actions > button:last-child {
+  margin-left: auto;
+}
+.settings-draft-note {
+  margin: 0 0 8px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+}
+.settings-panel > .notice,
+.settings-panel > .error {
+  flex-shrink: 0;
+  margin: 10px 0 0;
+}
+@media (max-width: 560px) {
+  .settings-footer-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+  .settings-footer-actions > .primary {
+    grid-column: 1/-1;
+  }
+  .settings-footer-actions > button:last-child {
+    margin-left: 0;
+  }
+  .settings-footer-actions > button {
+    padding-left: 8px;
+    padding-right: 8px;
+    font-size: 11px;
+  }
+  .dialog:has(.settings-panel) > .dialog-heading {
+    margin-bottom: 16px;
+  }
+  .settings-panel > .settings-tabs {
+    margin-bottom: 16px;
+  }
+}
+.app-icon[data-service-icon="true"] {
+  border: 1px solid var(--icon-ink, var(--accent));
+  background: #fff;
+  color: #344653;
+  padding: 7px;
+}
+.app-icon[data-service-icon="true"] img {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+.service-picker-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 5px;
+  padding: 3px;
+  box-sizing: border-box;
+}
+.catalog-category {
+  margin: 12px 0;
+  font-size: 12px;
+}
+.catalog-category select {
+  margin-top: 6px;
+}
+.welcome-screen {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 38px 12px 42px;
+}
+.welcome-screen > .empty-symbol {
+  display: none;
+}
+.welcome-screen h1 {
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+  text-wrap: balance;
+}
+.welcome-screen p {
+  line-height: 1.7;
+}
+.welcome-services {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 30px;
+}
+.welcome-services > span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  padding: 10px;
+}
+.welcome-services img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.welcome-actions {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 25px;
+}
+.welcome-actions .button {
+  margin-top: 0;
+}
+.welcome-screen .welcome-note {
+  margin-top: 20px;
+  font-size: 12px;
+}
+.feedback {
+  width: max-content;
+}
+.feedback > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.feedback > svg,
+.feedback > button {
+  flex-shrink: 0;
+}
+.feedback .undo-button {
+  background: var(--surface);
+  color: var(--text);
+  min-height: 40px;
+  padding: 7px 12px;
+  font-size: 12px;
+}
+.dashboard:has(.welcome-screen) {
+  display: flex;
+  flex-direction: column;
+}
+.dashboard:has(.welcome-screen) > .topbar {
+  width: 100%;
+  flex-shrink: 0;
+}
+.dashboard:has(.welcome-screen) > .main-content {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.dashboard:has(.welcome-screen) .welcome-screen {
+  width: 100%;
+  margin: auto;
+}
+.dashboard:has(.welcome-screen) .page-footer {
+  margin-top: 36px;
+}
+.example-label {
+  color: var(--accent-ink, var(--accent));
+}
+.example-configure-hint {
+  border-radius: 8px;
+  padding: 12px;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.5;
+}
+button.app-link {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+}
+@media (max-width: 560px) {
+  .welcome-screen {
+    padding: 28px 0 20px;
+  }
+  .welcome-services {
+    gap: 8px;
+    margin-bottom: 24px;
+  }
+  .welcome-services > span {
+    width: 43px;
+    height: 43px;
+    border-radius: 12px;
+    padding: 8px;
+  }
+  .welcome-actions {
+    flex-direction: column;
+  }
+  .welcome-actions .button {
+    width: 100%;
+    min-height: 46px;
+  }
+  .feedback {
+    bottom: 14px;
+    max-width: calc(100% - 20px);
+    gap: 7px;
+    padding-left: 10px;
+  }
+}

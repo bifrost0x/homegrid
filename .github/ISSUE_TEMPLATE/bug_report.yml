@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible problem in HomeGrid.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Remove passwords, tokens, private URLs, exports and personal data. Use synthetic examples. Report security vulnerabilities through the private security channel.
+  - type: input
+    id: version
+    attributes:
+      label: HomeGrid version
+      placeholder: 0.1.0 or commit
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Deployment method, host architecture, browser and screen size. Include reverse proxy details when relevant, without private addresses.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Describe a minimal reproduction with synthetic data.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized logs or screenshots
+      description: Optional. Check screenshots and logs for private data before uploading.

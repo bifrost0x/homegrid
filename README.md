@@ -1,0 +1,130 @@
+# HomeGrid
+
+**Your services. Beautifully organized.**
+
+A self-hosted homepage for your homelab. Add your applications, arrange them into
+categories, and launch them from a dashboard that feels at home on any screen.
+Built with Go, React, and SQLite; packaged as one container.
+
+![HomeGrid desktop dashboard](docs/images/desktop.png)
+
+## Start with Docker
+
+From a checkout or downloaded source archive, with Docker and Compose installed:
+
+```sh
+docker compose up --build -d --wait
+```
+
+Open [localhost:8095](http://localhost:8095) and create your administrator account.
+There are no default credentials. Complete setup before making the installation
+available to other people. The default Compose configuration binds to localhost.
+
+This version builds from source; a public container image is not currently
+provided. The first build needs internet access to download build dependencies.
+See the [Docker guide](docs/docker.md) for LAN access, HTTPS, updates and backups.
+
+## Make it yours
+
+- **Add a service in seconds.** Choose from 40 categorized service templates with
+  bundled logos and enter its URL. Or add any HTTP/HTTPS application manually.
+  Search 84 local icons, select a color, upload an image, or use its browser favicon.
+- **Keep everyday tools close.** Favorite applications, duplicate an existing
+  card, and find services with **Ctrl+K** or **Cmd+K**. Search includes names,
+  descriptions and categories.
+- **Organize in place.** Turn on **Organize** to arrange cards and categories
+  with drag-and-drop, keyboard sorting or explicit controls. Empty categories
+  stay out of the everyday launcher.
+- **Choose your atmosphere.** Twelve designs, bundled backgrounds, light/dark/
+  system modes, custom accents and image uploads. Adjust density, corners,
+  descriptions, dashboard width, columns, and cards, tiles or lists.
+- **Preview before saving.** Appearance and layout share a live draft. **Save**
+  applies it; **Cancel changes** restores the saved settings. Supported deletions,
+  ordering and appearance changes can be undone for 30 minutes, even after a
+  restart. Undo refuses changes that conflict with later edits.
+- **Keep your configuration portable.** Export and import applications,
+  categories and appearance as JSON, with an import preview and merge or replace
+  choices. Use a full data-volume backup to preserve uploaded files and accounts.
+
+Optional example cards are explicitly unconfigured: supply your own service URL
+before launching them. Screenshots show an example configuration.
+
+<details>
+<summary>Mobile and appearance previews</summary>
+
+<img src="docs/images/mobile.png" alt="HomeGrid mobile dashboard" width="320">
+
+![HomeGrid appearance settings](docs/images/themes.png)
+
+</details>
+
+## Small by design
+
+One Go executable serves the embedded frontend and stores data in SQLite. The
+container runs as UID/GID 65532, uses a read-only root filesystem, drops Linux
+capabilities, and does not need the Docker socket. The named data volume holds
+the database and uploads.
+
+Bundled icons and backgrounds work offline. Optional browser favicon discovery
+requests `/favicon.ico` directly from the service origin; browser access or
+certificate restrictions can cause a fallback icon. HomeGrid does not monitor
+services or fetch their URLs from the backend.
+
+HomeGrid has one local administrator. Use an HTTPS reverse proxy when accessing
+it over an untrusted network and enable secure cookies. There is no multi-user
+management, external identity provider, recovery email or plugin system in 0.1.0.
+See [security guidance](SECURITY.md) and [third-party icon credits](docs/third-party-icons.md).
+
+## Configuration
+
+Copy [.env.example](.env.example) to `.env` if you want to customize Compose.
+Compose loads `.env` for variable interpolation; the native Go executable reads
+process environment variables and does not automatically load dotenv files.
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `HOMEGRID_BIND_ADDRESS` | `127.0.0.1` | Compose host binding; use `0.0.0.0` deliberately for LAN access |
+| `HOMEGRID_PORT` | `8095` | Compose host port |
+| `HOMEGRID_IMAGE` | `homegrid:0.1.0` | Local image name used by Compose |
+| `TZ` | `UTC` | Container timezone |
+| `HOMEGRID_LISTEN` | `0.0.0.0:8080` | Native HTTP listen address; fixed inside Compose |
+| `HOMEGRID_DATA_DIR` | `./data` | Native data directory; `/data` inside Compose |
+| `HOMEGRID_SECURE_COOKIE` | `false` | Set `true` when serving over HTTPS |
+| `HOMEGRID_TRUSTED_PROXIES` | empty | Comma-separated CIDRs for proxies you control |
+
+## Development
+
+Requirements: Go 1.27+, Node.js 24+, and npm. Node.js is needed for frontend
+development and builds; it is not part of the production runtime.
+
+```sh
+cd frontend
+npm ci
+npm run build
+cd ..
+go run ./cmd/homegrid
+```
+
+Open [localhost:8080](http://localhost:8080). Build the frontend before compiling
+Go because `web/dist` is embedded. For hot reload, run `npm run dev` from
+`frontend` in another terminal and use the Vite URL for the entire session; it
+proxies `/api` and `/uploads` to Go.
+
+```sh
+go test ./...
+go test -race ./...
+go vet ./...
+cd frontend
+npm run typecheck
+npm test
+npm run build
+```
+
+Read the [changelog](CHANGELOG.md) and [0.1.0 release notes](docs/release-notes-0.1.0.md)
+for the prepared first release.
+
+## License
+
+HomeGrid is licensed under the [Apache License 2.0](LICENSE).
+Bundled third-party icons retain their respective licenses; see the
+[icon credits](docs/third-party-icons.md).

@@ -1,0 +1,137 @@
+package server
+
+import (
+	"bytes"
+	"crypto/sha256"
+	"encoding/hex"
+	"github.com/bifrost0x/homegrid/internal/store"
+	_ "golang.org/x/image/webp"
+	"image"
+	"image/jpeg"
+	"image/png"
+	"io"
+	"net/http"
+	"os"
+	"path/filepath"
+	"strings"
+)
+
+func (s *Server) upload(w http.ResponseWriter, r *http.Request) {
+	select {
+	case s.imageSlots <- struct{}{}:
+		defer func() { <-s.imageSlots }()
+	default:
+		fail(w, 429, "rate_limit", "Please try the image upload again shortly")
+		return
+	}
+	r.Body = http.MaxBytesReader(w, r.Body, 6<<20)
+	reader, e := r.MultipartReader()
+	if e != nil {
+		fail(w, 400, "validation", "Choose a PNG, JPEG or WebP image")
+		return
+	}
+	part, e := reader.NextPart()
+	if e != nil || part.FormName() != "file" {
+		fail(w, 400, "validation", "Upload an image in the file field")
+		return
+	}
+	raw, e := io.ReadAll(io.LimitReader(part, (5<<20)+1))
+	part.Close()
+	if e != nil {
+		fail(w, 400, "validation", "Unable to read image")
+		return
+	}
+	if len(raw) > 5<<20 {
+		fail(w, 413, "too_large", "Images must be at most 5 MB")
+		return
+	}
+	if _, e = reader.NextPart(); e != io.EOF {
+		fail(w, 400, "validation", "Upload exactly one image")
+		return
+	}
+	cfg, format, e := image.DecodeConfig(bytes.NewReader(raw))
+	if e != nil || (format != "png" && format != "jpeg" && format != "webp") || cfg.Width < 1 || cfg.Height < 1 || int64(cfg.Width)*int64(cfg.Height) > 16000000 {
+		fail(w, 400, "validation", "Use a valid PNG, JPEG or WebP with at most 16 million pixels")
+		return
+	}
+	img, _, e := image.Decode(bytes.NewReader(raw))
+	if e != nil {
+		fail(w, 400, "validation", "Image could not be decoded")
+		return
+	}
+	var out bytes.Buffer
+	ext := "png"
+	if format == "jpeg" {
+		ext = "jpg"
+		e = jpeg.Encode(&out, img, &jpeg.Options{Quality: 90})
+	} else {
+		e = png.Encode(&out, img)
+	}
+	if e != nil {
+		fail(w, 400, "validation", "Unable to process image")
+		return
+	}
+	sum := sha256.Sum256(out.Bytes())
+	name := hex.EncodeToString(sum[:]) + "." + ext
+	dir := filepath.Join(s.cfg.DataDir, "uploads")
+	if e = os.MkdirAll(dir, 0700); e != nil {
+		s.result(w, 0, nil, e)
+		return
+	}
+	info, e := os.Stat(dir)
+	if e != nil {
+		s.result(w, 0, nil, e)
+		return
+	}
+	if e = os.Chmod(dir, info.Mode().Perm()&0700); e != nil {
+		s.result(w, 0, nil, e)
+		return
+	}
+	f, e := os.OpenFile(filepath.Join(dir, name), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+	if os.IsExist(e) {
+		write(w, 201, map[string]string{"url": "/uploads/" + name})
+		return
+	}
+	if e != nil {
+		s.result(w, 0, nil, e)
+		return
+	}
+	_, e = f.Write(out.Bytes())
+	closeErr := f.Close()
+	if e != nil || closeErr != nil {
+		os.Remove(filepath.Join(dir, name))
+		if e == nil {
+			e = closeErr
+		}
+		s.result(w, 0, nil, e)
+		return
+	}
+	write(w, 201, map[string]string{"url": "/uploads/" + name})
+}
+func (s *Server) serveUpload(w http.ResponseWriter, r *http.Request) {
+	name := r.PathValue("name")
+	if !store.ValidUpload("/uploads/" + name) {
+		fail(w, 404, "not_found", "Image not found")
+		return
+	}
+	f, e := os.Open(filepath.Join(s.cfg.DataDir, "uploads", name))
+	if e != nil {
+		fail(w, 404, "not_found", "Image not found")
+		return
+	}
+	defer f.Close()
+	info, e := f.Stat()
+	if e != nil || !info.Mode().IsRegular() {
+		fail(w, 404, "not_found", "Image not found")
+		return
+	}
+	contentType := "image/png"
+	if strings.HasSuffix(name, ".jpg") {
+		contentType = "image/jpeg"
+	} else if strings.HasSuffix(name, ".webp") {
+		contentType = "image/webp"
+	}
+	w.Header().Set("Content-Type", contentType)
+	w.Header().Set("Content-Disposition", "inline")
+	http.ServeContent(w, r, name, info.ModTime(), f)
+}

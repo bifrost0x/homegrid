@@ -1,0 +1,16 @@
+Service icons
+
+39 unchanged SVGs: Dashboard Icons, Homarr Labs and contributors.
+Source: https://github.com/homarr-labs/dashboard-icons/blob/45ea6c2595231d66b855e81b3fd99d3e8904cb36
+License: Apache-2.0; see LICENSE.txt.
+
+Linkwarden SVG: selfh.st Icons, selfh.st and contributors.
+Source: https://github.com/selfhst/icons/blob/b2378abb1a0c64149bb7621815b849d89602de23/svg/linkwarden.svg
+License: Creative Commons Attribution 4.0 International; see LICENSE-selfhst.txt.
+The Linkwarden artwork is unchanged.
+
+Product names, logos and trademarks belong to their respective owners. Used for
+service identification only; no endorsement is implied. Collection licenses
+do not grant trademark rights.
+
+Full per-file source inventory: docs/third-party-icons.md in the source distribution.
