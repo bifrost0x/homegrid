@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   DndContext,
@@ -64,6 +64,7 @@ import { SettingsPanel } from "./Settings";
 import { appearanceStyle, wallpaperUrl } from "./themes";
 import {
   applicationDrop,
+  applicationDropAfter,
   launcherCollisionDetection,
   launcherKeyboardCoordinates,
   type ApplicationOrder,
@@ -223,6 +224,7 @@ type DialogState =
   | null;
 function Dashboard({ session }: { session: Session }) {
   const client = useQueryClient();
+  const dragPointer = useRef<{ x: number; y: number } | null>(null);
   const appsQ = useQuery({
     queryKey: ["apps"],
     queryFn: () => api<Application[]>("/apps"),
@@ -406,6 +408,8 @@ function Dashboard({ session }: { session: Session }) {
       );
   }
   function dragEnd(event: DragEndEvent) {
+    const pointer = dragPointer.current;
+    dragPointer.current = null;
     setDraggedApp(null);
     if (busy || !organizing) return;
     if (!event.over || event.active.id === event.over.id) return;
@@ -413,17 +417,19 @@ function Dashboard({ session }: { session: Session }) {
     if (kind === "app") {
       const activeRect = event.active.rect.current.translated;
       const targetRect = event.over.rect;
-      // In a grid, horizontal position distinguishes the two card halves.
-      const sameRow =
-        activeRect &&
-        Math.abs(activeRect.top - targetRect.top) < targetRect.height / 2;
-      const after = activeRect
-        ? sameRow
-          ? activeRect.left + activeRect.width / 2 >
-            targetRect.left + targetRect.width / 2
-          : activeRect.top + activeRect.height / 2 >
-            targetRect.top + targetRect.height / 2
-        : false;
+      const grid = document
+        .getElementById(String(event.over.id))
+        ?.closest(".app-grid");
+      // Computed tracks reflect list mode and responsive single-column layouts.
+      const tracks = grid
+        ? getComputedStyle(grid).gridTemplateColumns.trim().split(/\s+/)
+        : [];
+      const after = applicationDropAfter(
+        targetRect,
+        activeRect,
+        pointer,
+        tracks.length === 1,
+      );
       applyApplicationDrop(
         applicationDrop(apps, Number(id), String(event.over.id), after),
       );
@@ -639,13 +645,22 @@ function Dashboard({ session }: { session: Session }) {
         ) : apps.length ? (
           <DndContext
             sensors={sensors}
-            collisionDetection={launcherCollisionDetection}
-            onDragStart={({ active }) =>
+            collisionDetection={(args) => {
+              // Collision coordinates and droppable rects share the current viewport,
+              // including while auto-scrolling. The source grab offset is irrelevant.
+              dragPointer.current = args.pointerCoordinates;
+              return launcherCollisionDetection(args);
+            }}
+            onDragStart={({ active }) => {
+              dragPointer.current = null;
               setDraggedApp(
                 apps.find((app) => "app-" + app.id === active.id) ?? null,
-              )
-            }
-            onDragCancel={() => setDraggedApp(null)}
+              );
+            }}
+            onDragCancel={() => {
+              dragPointer.current = null;
+              setDraggedApp(null);
+            }}
             onDragEnd={dragEnd}
           >
             <SortableContext
@@ -1106,6 +1121,7 @@ function AppCard({
   const LaunchElement = example ? "button" : "a";
   return (
     <article
+      id={"app-" + app.id}
       data-testid="application-card"
       className={
         "app-card " +

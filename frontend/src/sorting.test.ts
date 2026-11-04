@@ -3,6 +3,7 @@ import type { KeyboardCoordinateGetter } from "@dnd-kit/core";
 import {
   launcherKeyboardCoordinates,
   applicationDrop,
+  applicationDropAfter,
   launcherCollisionDetection,
 } from "./sorting";
 import type { Application } from "./lib";
@@ -13,6 +14,42 @@ const apps = [
   { id: 3, category_id: 1 },
   { id: 4, category_id: 2 },
 ] as Application[];
+
+it("uses the pointer side of a narrow target regardless of source handle offset", () => {
+  const target = { left: 400, top: 200, width: 190, height: 180 };
+  const translated = { left: 420, top: 200, width: 190, height: 180 };
+  expect(
+    applicationDropAfter(target, translated, { x: 485.5, y: 290 }, false),
+  ).toBe(false);
+  expect(
+    applicationDropAfter(
+      target,
+      { ...translated, left: 390 },
+      { x: 504.5, y: 290 },
+      false,
+    ),
+  ).toBe(true);
+});
+it("uses vertical pointer halves for single-column layouts and current viewport coordinates after scrolling", () => {
+  const target = { left: 20, top: -50, width: 300, height: 180 };
+  const translated = { ...target, top: 0 };
+  expect(
+    applicationDropAfter(target, translated, { x: 290, y: 31 }, true),
+  ).toBe(false);
+  expect(applicationDropAfter(target, translated, { x: 30, y: 49 }, true)).toBe(
+    true,
+  );
+});
+it("preserves the translated-center decision for keyboard drags without a pointer", () => {
+  const target = { left: 400, top: 200, width: 190, height: 180 };
+  expect(
+    applicationDropAfter(target, { ...target, left: 420 }, null, false),
+  ).toBe(true);
+  expect(
+    applicationDropAfter(target, { ...target, top: 150 }, null, true),
+  ).toBe(false);
+  expect(applicationDropAfter(target, null, null, false)).toBe(false);
+});
 
 it("moves across categories before or after the hovered card with one full ordering", () => {
   expect(applicationDrop(apps, 1, "app-4", false)).toEqual({

@@ -49,7 +49,7 @@ async function reload() {
   await expect(page.locator(".dashboard")).toBeVisible();
   await organize();
 }
-async function drag(app, target, fraction = 0.5) {
+async function drag(app, target, fraction = 0.5, verticalFraction = 0.5) {
   const handle = page.getByRole("button", {
     name: "Drag " + app.name,
     exact: true,
@@ -65,9 +65,13 @@ async function drag(app, target, fraction = 0.5) {
     from.y + from.height / 2,
     { steps: 4 },
   );
-  await page.mouse.move(to.x + to.width * fraction, to.y + to.height / 2, {
-    steps: 25,
-  });
+  await page.mouse.move(
+    to.x + to.width * fraction,
+    to.y + to.height * verticalFraction,
+    {
+      steps: 25,
+    },
+  );
   await page.mouse.up();
 }
 async function expectCategory(id, categoryId) {
@@ -161,6 +165,59 @@ try {
   await undo();
   await expectCategory(atlas.id, groups[0].id);
   console.log("PASS pointer drop after a card and atomic undo");
+  const wideSettings = await api("/settings");
+  await page.setViewportSize({ width: 1320, height: 1100 });
+  await api("/settings", "PATCH", {
+    ...wideSettings,
+    columns: "3",
+    card_style: "cards",
+  });
+  await reload();
+  const narrowTarget = await card(beacon.name).boundingBox();
+  assert.ok(
+    narrowTarget && narrowTarget.width >= 190 && narrowTarget.width <= 210,
+    "Exercise narrow cards near the minimum grid track size",
+  );
+  for (const [fraction, expected] of [
+    [0.45, [atlas.name, beacon.name, cedar.name]],
+    [0.55, [beacon.name, atlas.name, cedar.name]],
+  ]) {
+    await drag(atlas, card(beacon.name), fraction);
+    await expectCategory(atlas.id, groups[1].id);
+    assert.deepEqual(
+      (await api("/apps"))
+        .filter((app) => app.category_id === groups[1].id)
+        .map((app) => app.name),
+      expected,
+    );
+    await undo();
+    await expectCategory(atlas.id, groups[0].id);
+  }
+  console.log(
+    "PASS narrow-card drops at 45% and 55% follow the pointer midpoint and undo",
+  );
+  await api("/settings", "PATCH", { ...wideSettings, card_style: "list" });
+  await reload();
+  for (const [x, y, expected] of [
+    [0.95, 0.45, [atlas.name, beacon.name, cedar.name]],
+    [0.05, 0.55, [beacon.name, atlas.name, cedar.name]],
+  ]) {
+    await drag(atlas, card(beacon.name), x, y);
+    await expectCategory(atlas.id, groups[1].id);
+    assert.deepEqual(
+      (await api("/apps"))
+        .filter((app) => app.category_id === groups[1].id)
+        .map((app) => app.name),
+      expected,
+    );
+    await undo();
+  }
+  console.log(
+    "PASS single-column list drops follow the vertical pointer midpoint and undo",
+  );
+  await api("/settings", "PATCH", wideSettings);
+  await page.setViewportSize({ width: 1600, height: 1100 });
+  await reload();
   await drag(atlas, region(groups[2].name).locator(".category-heading"));
   await expectCategory(atlas.id, groups[2].id);
   await undo();

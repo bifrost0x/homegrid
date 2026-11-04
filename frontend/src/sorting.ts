@@ -13,6 +13,27 @@ export interface ApplicationOrder {
   move?: { id: number; category_id: number };
 }
 
+type DropRect = { left: number; top: number; width: number; height: number };
+export function applicationDropAfter(
+  target: DropRect,
+  translated: DropRect | null,
+  pointer: { x: number; y: number } | null,
+  vertical: boolean,
+): boolean {
+  if (pointer) {
+    return vertical
+      ? pointer.y > target.top + target.height / 2
+      : pointer.x > target.left + target.width / 2;
+  }
+  const sameRow =
+    translated && Math.abs(translated.top - target.top) < target.height / 2;
+  return translated
+    ? sameRow
+      ? translated.left + translated.width / 2 > target.left + target.width / 2
+      : translated.top + translated.height / 2 > target.top + target.height / 2
+    : false;
+}
+
 export function applicationDrop(
   apps: Application[],
   id: number,
