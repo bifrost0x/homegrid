@@ -7,8 +7,13 @@ func TestLoadDefaultsAndValidation(t *testing.T) {
 		t.Setenv(k, "")
 	}
 	c, e := Load()
-	if e != nil || c.Listen != "0.0.0.0:8080" || c.SecureCookie || len(c.TrustedProxies) != 0 {
+	if e != nil || c.Listen != "127.0.0.1:8080" || c.SecureCookie || len(c.TrustedProxies) != 0 {
 		t.Fatal(c, e)
+	}
+	t.Setenv("HOMEGRID_LISTEN", "0.0.0.0:8080")
+	c, e = Load()
+	if e != nil || c.Listen != "0.0.0.0:8080" {
+		t.Fatal("explicit network binding must remain available", c, e)
 	}
 	t.Setenv("HOMEGRID_SECURE_COOKIE", "true")
 	t.Setenv("HOMEGRID_TRUSTED_PROXIES", "127.0.0.1,10.0.0.0/8,::1")

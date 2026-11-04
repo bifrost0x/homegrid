@@ -16,7 +16,7 @@ type Config struct {
 }
 
 func Load() (Config, error) {
-	c := Config{Listen: "0.0.0.0:8080", DataDir: "./data"}
+	c := Config{Listen: "127.0.0.1:8080", DataDir: "./data"}
 	if v := os.Getenv("HOMEGRID_LISTEN"); v != "" {
 		c.Listen = v
 	}

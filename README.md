@@ -87,7 +87,7 @@ process environment variables and does not automatically load dotenv files.
 | `HOMEGRID_PORT` | `8095` | Compose host port |
 | `HOMEGRID_IMAGE` | `homegrid:0.1.0` | Local image name used by Compose |
 | `TZ` | `UTC` | Container timezone |
-| `HOMEGRID_LISTEN` | `0.0.0.0:8080` | Native HTTP listen address; fixed inside Compose |
+| `HOMEGRID_LISTEN` | `127.0.0.1:8080` | Native HTTP listen address; Compose explicitly uses `0.0.0.0:8080` inside the container |
 | `HOMEGRID_DATA_DIR` | `./data` | Native data directory; `/data` inside Compose |
 | `HOMEGRID_SECURE_COOKIE` | `false` | Set `true` when serving over HTTPS |
 | `HOMEGRID_TRUSTED_PROXIES` | empty | Comma-separated CIDRs for proxies you control |
@@ -109,6 +109,10 @@ Open [localhost:8080](http://localhost:8080). Build the frontend before compilin
 Go because `web/dist` is embedded. For hot reload, run `npm run dev` from
 `frontend` in another terminal and use the Vite URL for the entire session; it
 proxies `/api` and `/uploads` to Go.
+
+Native execution binds to localhost by default. Complete administrator setup
+locally before deliberately exposing it to a network with `HOMEGRID_LISTEN`.
+Docker's explicit internal binding is controlled separately from its host port.
 
 ```sh
 go test ./...
