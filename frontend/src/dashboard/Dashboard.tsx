@@ -16,6 +16,7 @@ import {
   Search,
   Settings2,
   SlidersHorizontal,
+  Sparkles,
 } from "lucide-react";
 import { api, moveApplication, type Application, type Session } from "../lib";
 import { on } from "../events";
@@ -30,6 +31,13 @@ import { DashboardContext, type DashboardState } from "./context";
 import { DashboardDialogs, type DialogState } from "./DashboardDialogs";
 import { Favorites } from "./Favorites";
 import { Feedback } from "./Feedback";
+import { LogoSuggestionBanner, LogoSuggestionDialog } from "./LogoSuggestions";
+import {
+  readDismissed,
+  suggestionKey,
+  useLogoSuggestions,
+  writeDismissed,
+} from "./useLogoSuggestions";
 import { useAppearance } from "./useAppearance";
 import { useCommandShortcut } from "./useCommandShortcut";
 import { useDashboardData } from "./useDashboardData";
@@ -61,7 +69,9 @@ export function Dashboard({ session }: { session: Session }) {
     [dismissedUndo, setDismissedUndo] = useState(""),
     [palette, setPalette] = useState(false),
     [error, setError] = useState<unknown>(),
-    [busy, setBusy] = useState(false);
+    [busy, setBusy] = useState(false),
+    [reviewLogos, setReviewLogos] = useState(false),
+    [dismissedLogos, setDismissedLogos] = useState(readDismissed);
   useAppearance(settings);
   useCommandShortcut(useCallback(() => setPalette((open) => !open), []));
   useEffect(() => {
@@ -85,6 +95,12 @@ export function Dashboard({ session }: { session: Session }) {
     setMoveFocus(null);
   }, [moveFocus, busy]);
 
+  const logoSuggestions = useLogoSuggestions(apps);
+  const logoKey = suggestionKey(logoSuggestions);
+  const showLogoBanner =
+    !organizing &&
+    logoSuggestions.some((s) => s.recommended) &&
+    logoKey !== dismissedLogos;
   const availableUndo =
     data.latestUndo &&
     data.latestUndo.token !== dismissedUndo &&
@@ -243,7 +259,10 @@ export function Dashboard({ session }: { session: Session }) {
         </nav>
       </header>
       <main className="main-content">
-        <div className="page-heading" hidden={empty}>
+        <div
+          className={"page-heading" + (organizing ? " organizing" : "")}
+          hidden={empty}
+        >
           <div>
             <h1>{settings.title}</h1>
             {!loading && <p>{summary(apps)}</p>}
@@ -259,8 +278,19 @@ export function Dashboard({ session }: { session: Session }) {
               ) : (
                 <SlidersHorizontal size={17} />
               )}{" "}
-              {organizing ? "Done organizing" : "Organize"}
+              <span className="button-label">
+                {organizing ? "Done organizing" : "Organize"}
+              </span>
             </button>
+            {organizing && logoSuggestions.length > 0 && (
+              <button
+                className="button secondary"
+                onClick={() => setReviewLogos(true)}
+              >
+                <Sparkles size={17} />
+                Find logos
+              </button>
+            )}
             {organizing && (
               <button
                 className="button secondary category-create"
@@ -283,7 +313,7 @@ export function Dashboard({ session }: { session: Session }) {
             onClick={() => setDialog({ kind: "app" })}
           >
             <Plus size={19} />
-            Add application
+            <span className="button-label">Add application</span>
           </button>
         </div>
         <ErrorMessage error={error ?? queryError} />
@@ -302,6 +332,16 @@ export function Dashboard({ session }: { session: Session }) {
             if (availableUndo) setDismissedUndo(availableUndo.token);
           }}
         />
+        {showLogoBanner && (
+          <LogoSuggestionBanner
+            count={logoSuggestions.filter((s) => s.recommended).length}
+            onReview={() => setReviewLogos(true)}
+            onDismiss={() => {
+              writeDismissed(logoKey);
+              setDismissedLogos(logoKey);
+            }}
+          />
+        )}
         {queryError && (
           <button className="button secondary" onClick={() => void refresh()}>
             Retry loading
@@ -371,6 +411,21 @@ export function Dashboard({ session }: { session: Session }) {
           apps={apps}
           categories={categories}
           onClose={() => setPalette(false)}
+        />
+      )}
+      {reviewLogos && logoSuggestions.length > 0 && (
+        <LogoSuggestionDialog
+          suggestions={logoSuggestions}
+          onClose={() => setReviewLogos(false)}
+          onApplied={async (count) => {
+            await refresh();
+            if (count)
+              setNotice(
+                count === 1
+                  ? "Logo updated for 1 application."
+                  : `Logos updated for ${count} applications.`,
+              );
+          }}
         />
       )}
       <DashboardDialogs

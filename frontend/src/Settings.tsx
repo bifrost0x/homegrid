@@ -44,6 +44,7 @@ export function SettingsPanel({
       apps: number;
       categories: number;
       duplicates: number;
+      recognized: number;
     }>(),
     [mode, setMode] = useState("merge"),
     [confirmed, setConfirmed] = useState(false),
@@ -326,8 +327,21 @@ export function SettingsPanel({
                   void perform(async () => {
                     if (file.size > 5 * 1024 * 1024)
                       throw new Error("Choose a JSON file smaller than 5 MB.");
-                    const parsed: unknown = JSON.parse(await file.text());
-                    setPreview(await api("/import/preview", "POST", parsed));
+                    const [{ detectService }, { recognizeImportedLogos }] =
+                      await Promise.all([
+                        import("./serviceDetection"),
+                        import("./importLogos"),
+                      ]);
+                    const { data: parsed, recognized } = recognizeImportedLogos(
+                      JSON.parse(await file.text()) as unknown,
+                      detectService,
+                    );
+                    const result = await api<{
+                      apps: number;
+                      categories: number;
+                      duplicates: number;
+                    }>("/import/preview", "POST", parsed);
+                    setPreview({ ...result, recognized });
                     setData(parsed);
                     setConfirmed(false);
                   });
@@ -342,6 +356,8 @@ export function SettingsPanel({
             <p>
               {preview.apps} applications · {preview.categories} categories ·{" "}
               {preview.duplicates} duplicate URLs
+              {preview.recognized > 0 &&
+                ` · ${preview.recognized} logos recognized`}
             </p>
             <label>
               Import mode

@@ -1935,3 +1935,49 @@ legend {
     padding: 14px 0 0;
   }
 }
+@media (max-width: 560px) {
+  /* Compact header: title with an icon-only Organize button, then search and
+     an icon-only Add button on one row. Labels stay available to assistive
+     technology. Organize mode keeps its labelled actions on their own row. */
+  .page-heading:not(.organizing) {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+  .page-heading:not(.organizing) .heading-actions {
+    width: auto;
+    margin-top: 2px;
+  }
+  .page-heading:not(.organizing) .heading-actions .button,
+  .toolbar > .button {
+    width: 46px;
+    min-height: 46px;
+    padding: 0;
+    flex-shrink: 0;
+  }
+  .page-heading.organizing .heading-actions {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  .page-heading:not(.organizing) .button-label,
+  .toolbar > .button .button-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .toolbar {
+    flex-wrap: nowrap;
+  }
+  .dashboard-search {
+    flex-basis: auto;
+    min-width: 0;
+  }
+  .dashboard-search kbd {
+    display: none;
+  }
+  .toolbar > .button {
+    margin-left: 0;
+  }
+}

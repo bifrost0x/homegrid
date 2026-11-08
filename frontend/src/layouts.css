@@ -696,3 +696,105 @@
     display: none;
   }
 }
+
+/* Recognized logos for existing applications. */
+.logo-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: -20px 0 28px;
+  padding: 10px 52px 10px 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--accent-soft) 70%, var(--surface));
+  font-size: 13px;
+}
+.logo-banner > svg {
+  color: var(--accent-ink, var(--accent));
+  flex-shrink: 0;
+}
+.logo-banner > span {
+  flex: 1;
+  min-width: 12ch;
+}
+.logo-banner > .icon-button {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+}
+@media (max-width: 560px) {
+  .logo-banner {
+    margin-top: -12px;
+  }
+  .logo-banner > .icon-button {
+    top: 6px;
+    transform: none;
+  }
+}
+.logo-suggestions {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  max-height: min(52vh, 460px);
+  overflow: auto;
+}
+.logo-suggestions label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: left;
+  gap: 12px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: pointer;
+}
+.logo-suggestions label:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.logo-suggestions input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+.logo-suggestion-icons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+}
+.logo-suggestion-icons .app-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+}
+.logo-suggestion-icons .app-icon img {
+  width: 22px;
+  height: 22px;
+}
+.logo-suggestion-text {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.logo-suggestion-text strong {
+  font-size: 13px;
+}
+.logo-suggestion-text small {
+  color: var(--muted);
+  font-size: 11px;
+}
+.dialog-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  padding: 24px 0;
+}

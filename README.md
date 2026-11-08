@@ -33,8 +33,10 @@ and optional local source builds.
 - **Add a service in seconds.** Choose from 341 categorized service templates with
   bundled logos and enter its URL. Or add any HTTP/HTTPS application manually:
   HomeGrid recognizes well-known services from the name, hostname or default
-  port and selects their logo, which you can keep or undo. Search 385 local
-  icons, select a color, upload an image, or use its browser favicon.
+  port and selects their logo, which you can keep or undo. Existing
+  applications and imports get the same recognition: HomeGrid offers the
+  logos it finds for review, and never replaces an uploaded image. Search 385
+  local icons, select a color, upload an image, or use its browser favicon.
 - **Keep everyday tools close.** Favorite applications, duplicate an existing
   card, and find services with **Ctrl+K** or **Cmd+K**. Search includes names,
   descriptions and categories.
