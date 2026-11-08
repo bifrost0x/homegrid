@@ -35,6 +35,11 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   with a fixed action bar, an About section with version and project links,
   and an account menu in the top bar for every section and signing out.
   On a background, the top bar, heading and categories use frosted glass.
+- When a service's logo is not bundled, HomeGrid asks the service for the icon
+  it advertises (page links, web manifest, apple-touch-icon, favicon.ico) and
+  stores a re-encoded copy, automatically while adding an application or on
+  request with "From service". Lookups are administrator-only, refuse loopback,
+  link-local and multicast addresses at connect time and never fetch SVG.
 - Calm application cards: edit, duplicate and delete live in a keyboard-accessible
   card menu; the favorite toggle appears on hover or focus and stays visible
   once set. The dashboard heading summarizes applications and categories.

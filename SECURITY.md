@@ -34,3 +34,15 @@ files, database files, or private screenshots in issues or pull requests.
 
 See the deployment and security notes in [README.md](README.md) for configuration
 and the current security boundaries.
+
+## Outbound requests
+
+HomeGrid sends no telemetry and has no cloud dependency. The only outbound
+requests from the server are icon lookups at a service URL the administrator
+enters (`POST /api/icons/discover`). They are authenticated and CSRF-protected,
+limited to HTTP(S) without credentials, refuse loopback, link-local, multicast,
+broadcast and unspecified addresses after DNS resolution (so DNS rebinding cannot
+redirect them), follow at most three redirects, ignore proxy environment
+variables, verify TLS certificates, and stop after 12 seconds. Only PNG, JPEG,
+GIF, WebP and ICO icons are decoded; SVG is never fetched. The result is
+re-encoded as PNG before it is stored.

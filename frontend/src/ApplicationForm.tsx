@@ -6,8 +6,10 @@ import {
   Check,
   ChevronDown,
   Layers,
+  CloudDownload,
 } from "lucide-react";
 import {
+  api,
   upload,
   duplicateName,
   suggestAppName,
@@ -110,6 +112,70 @@ export function ApplicationForm({
   }
   function keepPreviousIcon() {
     if (recognized) chooseIcon(recognized.previousIcon);
+    else if (fetched.status === "found" && fetched.automatic)
+      chooseIcon(fetched.previousIcon);
+    setFetched({ status: "idle" });
+  }
+  // Asking the service itself is the fallback when the catalog has no logo.
+  // The server fetches the icon (it can reach LAN services the browser may
+  // not trust) and stores a re-encoded copy like an upload.
+  const [fetched, setFetched] = useState<
+    | { status: "idle" }
+    | { status: "fetching"; host: string }
+    | {
+        status: "found";
+        host: string;
+        previousIcon: string;
+        automatic: boolean;
+      }
+    | { status: "failed"; host: string; message: string }
+  >({ status: "idle" });
+  const fetchGeneration = useRef(0);
+  function forgetFetchedIcon() {
+    fetchGeneration.current++;
+    if (fetched.status === "found" && fetched.automatic)
+      setIcon(fetched.previousIcon);
+    if (fetched.status !== "idle") setFetched({ status: "idle" });
+  }
+  /**
+   * @param suggestedName the name HomeGrid filled in itself; the page title
+   * replaces it only while the user has not typed a different name.
+   */
+  async function fetchServiceLogo(
+    target: string,
+    automatic: boolean,
+    suggestedName?: string,
+  ) {
+    const origin = faviconPreviewUrl(target);
+    if (!origin) return;
+    const host = new URL(origin).host;
+    const generation = ++fetchGeneration.current;
+    const previousIcon = icon;
+    setFetched({ status: "fetching", host });
+    try {
+      const result = await api<{ url: string; title?: string }>(
+        "/icons/discover",
+        "POST",
+        { url: target },
+      );
+      if (generation !== fetchGeneration.current) return;
+      const title = result.title?.trim();
+      if (title && suggestedName !== undefined)
+        setName((current) => (current === suggestedName ? title : current));
+      if (automatic) {
+        setIcon(result.url);
+      } else {
+        chooseIcon(result.url);
+      }
+      setFetched({ status: "found", host, previousIcon, automatic });
+    } catch (e) {
+      if (generation !== fetchGeneration.current) return;
+      setFetched({
+        status: "failed",
+        host,
+        message: e instanceof Error ? e.message : String(e),
+      });
+    }
   }
   const matches = findTemplates(templateSearch).filter(
     (template) => !templateCategory || template.category === templateCategory,
@@ -274,19 +340,33 @@ export function ApplicationForm({
               ref={urlInput}
               onChange={(e) => {
                 setUrl(e.target.value);
+                forgetFetchedIcon();
                 recognize(name, e.target.value);
               }}
               placeholder="https://media.home"
               inputMode="url"
               onBlur={() => {
                 setPreviewUrl(faviconPreviewUrl(url));
+                let currentName = name;
                 if (!app && !name.trim()) {
-                  const nextName =
+                  currentName =
                     (recognizes && detectService("", url)?.name) ||
                     suggestAppName(url);
-                  setName(nextName);
-                  recognize(nextName, url);
+                  setName(currentName);
+                  recognize(currentName, url);
                 }
+                if (
+                  recognizes &&
+                  !iconChosen &&
+                  (icon === "favicon" || icon === "") &&
+                  fetched.status === "idle" &&
+                  !detectService(currentName, url)
+                )
+                  void fetchServiceLogo(
+                    url,
+                    true,
+                    !app && !name.trim() ? currentName : undefined,
+                  );
               }}
             />
           </label>
@@ -384,6 +464,18 @@ export function ApplicationForm({
               <Globe size={16} />
               Automatic
             </button>
+            <button
+              type="button"
+              className="button secondary"
+              disabled={
+                busy || fetched.status === "fetching" || !faviconPreviewUrl(url)
+              }
+              title="Ask the service for its icon"
+              onClick={() => void fetchServiceLogo(url, false)}
+            >
+              <CloudDownload size={16} />
+              From service
+            </button>
             <label className="button secondary upload">
               <Upload size={16} />
               Upload image
@@ -407,6 +499,35 @@ export function ApplicationForm({
               />
             </label>
           </div>
+          {fetched.status !== "idle" && (
+            <div className="service-fetch" role="status">
+              {fetched.status === "fetching" && (
+                <span>Asking {fetched.host} for its logo…</span>
+              )}
+              {fetched.status === "found" && (
+                <>
+                  <span>
+                    Using the logo from <strong>{fetched.host}</strong>.
+                  </span>
+                  {fetched.automatic && (
+                    <button
+                      type="button"
+                      className="text-button"
+                      onClick={keepPreviousIcon}
+                    >
+                      Keep previous icon
+                    </button>
+                  )}
+                </>
+              )}
+              {fetched.status === "failed" && (
+                <span>
+                  No logo from {fetched.host}: {fetched.message}. Pick one below
+                  or upload your own.
+                </span>
+              )}
+            </div>
+          )}
           <input
             aria-label="Search icons"
             placeholder="Search bundled icons…"

@@ -48,6 +48,7 @@ preserved. `example.homegrid.invalid` URLs identify configuration-only examples;
 the UI does not navigate to them. `service:<id>` icons accept only the forty local
 catalog IDs, including `service:jellyfin` and `service:nextcloud`.
 
+POST /api/icons/discover `{url}` asks the service at that HTTP(S) URL for its advertised icon (page links, web manifest, `/apple-touch-icon.png`, `/favicon.ico`), stores a re-encoded PNG and returns `{url, title}` (201); `url` works like an upload path and `title` is the page title (may be empty). Errors: 400 invalid URL, 404 `not_found` when no usable icon exists, 502 `unreachable` when the service cannot be contacted or its address is refused.
 POST /api/uploads multipart form field file returns `{url}`. PNG/JPEG/WebP <=5MB, max 16 million pixels, authenticated serving /uploads/. Icons: `builtin:server`, `builtin:cloud`, `builtin:database`, `builtin:film`, `builtin:music`, `builtin:home`, `builtin:shield`, `builtin:code`, `builtin:globe`, `builtin:folder`, `builtin:network`, `builtin:hard-drive`; `favicon` for browser-only URL-origin favicon; or upload URL. No arbitrary icon URL.
 
 GET /api/export returns `{version:1,apps:[...],categories:[...],settings:{...}}`. POST /api/import/preview body is raw backup JSON or Homarr-derived `{apps:[{name,url,category,icon}]}`; returns `{apps:number,categories:number,duplicates:number}`. POST /api/import/apply body `{data:<same parsed JSON>,mode:"merge"|"replace",confirm:true}`; returns `{imported:number}`. Replace preserves admin and sessions. Merge skips duplicate normalized URLs.

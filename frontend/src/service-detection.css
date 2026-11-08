@@ -57,3 +57,20 @@
   font-size: 12px;
   line-height: 1.4;
 }
+
+.service-fetch {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  margin: 2px 0 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.service-fetch strong {
+  color: var(--text);
+}
+.service-fetch .text-button {
+  min-height: 0;
+  padding: 0;
+}

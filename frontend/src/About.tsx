@@ -94,8 +94,8 @@ export function About() {
       </div>
       <p className="about-lead">
         A self-hosted homepage for your homelab. HomeGrid sends no telemetry and
-        does not contact any service on its own; the links below simply open in
-        a new tab.
+        contacts your services only to fetch a logo you ask for; the links below
+        open in a new tab.
       </p>
       <ul className="about-links">
         {links.map(({ label, hint, href, Icon }) => (
