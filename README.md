@@ -6,7 +6,11 @@ A self-hosted homepage for your homelab. Add your applications, arrange them int
 categories, and launch them from a dashboard that feels at home on any screen.
 Built with Go, React, and SQLite; packaged as one container.
 
-![HomeGrid desktop dashboard](docs/images/desktop.png)
+[Website](https://bifrost0x.github.io/homegrid/) ·
+[Releases](https://github.com/bifrost0x/homegrid/releases) ·
+[Roadmap](ROADMAP.md) · [Security](SECURITY.md)
+
+![HomeGrid desktop dashboard](site/assets/dashboard-desktop.webp)
 
 ## Start with Docker
 
@@ -64,9 +68,9 @@ before launching them. Screenshots show an example configuration.
 <details>
 <summary>Mobile and appearance previews</summary>
 
-<img src="docs/images/mobile.png" alt="HomeGrid mobile dashboard" width="320">
+<img src="site/assets/dashboard-mobile.webp" alt="HomeGrid mobile dashboard" width="320">
 
-![HomeGrid appearance settings](docs/images/themes.png)
+![HomeGrid appearance settings](site/assets/appearance.webp)
 
 </details>
 
@@ -142,7 +146,8 @@ npm run build
 ```
 
 Read the [changelog](CHANGELOG.md) and [0.1.0 release notes](docs/release-notes-0.1.0.md)
-for the prepared first release.
+for the prepared first release. Versioned images and GitHub releases are created
+from tags; see [releasing](docs/releasing.md).
 
 ## License
 

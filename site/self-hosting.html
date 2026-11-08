@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Install HomeGrid with Docker Compose: configuration variables, LAN and HTTPS reverse proxy access, pinned updates, backups and uninstalling.">
+  <meta name="theme-color" content="#f5f4ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1b1e1b" media="(prefers-color-scheme: dark)">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; font-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="canonical" href="https://bifrost0x.github.io/homegrid/self-hosting.html">
+  <link rel="icon" href="assets/homegrid-logo.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/dm-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+  <title>Self-hosting HomeGrid - Docker Compose, HTTPS and backups</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="./" aria-label="HomeGrid home"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-4 16 16)"><rect x="3" y="3" width="12" height="12" rx="3"/><rect x="17" y="3" width="12" height="12" rx="3"/><rect x="3" y="17" width="12" height="12" rx="3"/><rect x="17" y="17" width="12" height="12" rx="3"/></g></svg>HomeGrid</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="sr-only">Toggle navigation</span></button>
+      <nav class="site-nav" id="site-navigation" aria-label="Main navigation" data-navigation><a href="./#features">Features</a><a href="self-hosting.html" aria-current="page">Self-hosting</a><a href="security.html">Security</a><a href="./#quick-start">Quick start</a><a class="nav-source" href="https://github.com/bifrost0x/homegrid"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>GitHub</a></nav>
+    </div>
+  </header>
+  <main class="shell guide-page" id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><span aria-current="page">Self-hosting</span></nav>
+    <div class="guide-heading">
+      <p class="eyebrow">Self-hosting HomeGrid</p>
+      <h1>One container. Your hardware.</h1>
+      <p class="lead">HomeGrid runs as a single container with a named volume for its SQLite database and uploads. You need Docker with the Compose plugin on an AMD64 or ARM64 host; no Go, Node.js or source checkout.</p>
+    </div>
+    <nav class="page-toc" aria-label="On this page"><a href="#install">Install</a><a href="#configuration">Configuration</a><a href="#https">LAN and HTTPS</a><a href="#updates">Updates</a><a href="#backups">Backups</a><a href="#uninstall">Uninstall</a></nav>
+
+    <section class="guide-section" id="install">
+      <h2>Install with Docker Compose</h2>
+      <p>Save <a href="https://github.com/bifrost0x/homegrid/blob/main/docker-compose.yml"><code>docker-compose.yml</code></a> in a directory on your Docker host, then run from that directory:</p>
+      <div class="code-card">
+        <div class="code-card-header"><span>Shell</span><button class="copy-button" type="button" data-copy="Install commands"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
+        <pre tabindex="0" aria-label="Install commands"><code>docker compose pull
+docker compose up -d --wait
+docker compose ps</code></pre>
+      </div>
+      <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+      <p>Open <code>http://&lt;docker-host-ip&gt;:8095</code> from your network, or <code>http://localhost:8095</code> on the Docker host, and create the administrator account. There are no default credentials. Complete setup from a trusted network before exposing the installation more broadly.</p>
+      <p>The Compose file pulls the public image <code>ghcr.io/bifrost0x/homegrid</code>. It runs the container as UID/GID 65532 with a read-only root filesystem, a temporary <code>/tmp</code>, dropped capabilities and <code>no-new-privileges</code>. Only <code>/data</code> is writable. The Docker socket is not mounted, and a fresh named volume needs no permission changes.</p>
+      <p>Running Portainer? Paste the Compose file into a stack. The <a href="https://github.com/bifrost0x/homegrid/blob/main/docs/docker.md#portainer-stacks">Docker guide</a> covers stack variables and troubleshooting.</p>
+    </section>
+
+    <section class="guide-section" id="configuration">
+      <h2>Configuration</h2>
+      <p>Create a <code>.env</code> file beside <code>docker-compose.yml</code>. Compose reads it for variable interpolation; apply changes with <code>docker compose up -d --wait</code>. A plain <code>restart</code> does not pick up changed settings.</p>
+      <div class="table-wrap">
+        <table class="stack-table">
+          <caption class="sr-only">HomeGrid environment variables</caption>
+          <thead><tr><th scope="col">Variable</th><th scope="col">Default</th><th scope="col">Purpose</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Variable"><code>HOMEGRID_BIND_ADDRESS</code></td><td data-label="Default"><code>0.0.0.0</code></td><td data-label="Purpose">Compose host binding. Use <code>127.0.0.1</code> for access only from the Docker host.</td></tr>
+            <tr><td data-label="Variable"><code>HOMEGRID_PORT</code></td><td data-label="Default"><code>8095</code></td><td data-label="Purpose">Compose host port.</td></tr>
+            <tr><td data-label="Variable"><code>HOMEGRID_IMAGE</code></td><td data-label="Default"><code>ghcr.io/bifrost0x/homegrid:latest</code></td><td data-label="Purpose">Container image. Pin a release tag or digest for repeatable deployments.</td></tr>
+            <tr><td data-label="Variable"><code>TZ</code></td><td data-label="Default"><code>UTC</code></td><td data-label="Purpose">Container timezone.</td></tr>
+            <tr><td data-label="Variable"><code>HOMEGRID_SECURE_COOKIE</code></td><td data-label="Default"><code>false</code></td><td data-label="Purpose">Set to <code>true</code> when the browser reaches HomeGrid over HTTPS.</td></tr>
+            <tr><td data-label="Variable"><code>HOMEGRID_TRUSTED_PROXIES</code></td><td data-label="Default">empty</td><td data-label="Purpose">Comma-separated CIDRs of proxies you control, used only for forwarded client IPs.</td></tr>
+            <tr><td data-label="Variable"><code>HOMEGRID_LISTEN</code></td><td data-label="Default"><code>127.0.0.1:8080</code></td><td data-label="Purpose">Native listen address. Compose sets <code>0.0.0.0:8080</code> inside the container.</td></tr>
+            <tr><td data-label="Variable"><code>HOMEGRID_DATA_DIR</code></td><td data-label="Default"><code>./data</code></td><td data-label="Purpose">Native data directory. Compose uses <code>/data</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The native executable reads process environment variables and does not load <code>.env</code> files on its own.</p>
+    </section>
+
+    <section class="guide-section" id="https">
+      <h2>LAN access and HTTPS</h2>
+      <p>By default Compose publishes HomeGrid on every host interface at port 8095, subject to the host firewall. To keep it local to the Docker host, set:</p>
+      <div class="code-card">
+        <div class="code-card-header"><span>.env</span><button class="copy-button" type="button" data-copy="Local binding"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
+        <pre tabindex="0" aria-label="Local binding settings"><code>HOMEGRID_BIND_ADDRESS=127.0.0.1
+HOMEGRID_PORT=8095</code></pre>
+      </div>
+      <p>Direct port access uses plain HTTP. For access over an untrusted network, put HomeGrid behind an HTTPS reverse proxy and enable secure cookies:</p>
+      <div class="code-card">
+        <div class="code-card-header"><span>.env</span><button class="copy-button" type="button" data-copy="HTTPS settings"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
+        <pre tabindex="0" aria-label="HTTPS settings"><code>HOMEGRID_BIND_ADDRESS=127.0.0.1
+HOMEGRID_SECURE_COOKIE=true</code></pre>
+      </div>
+      <ul>
+        <li><strong>Preserve <code>Host</code> and <code>Origin</code>.</strong> HomeGrid validates the browser-facing hostname and port. Forward the public <code>Host</code> unchanged, including a non-default port, and keep the browser's <code>Origin</code> header intact. <code>X-Forwarded-Host</code> and <code>X-Forwarded-Proto</code> are not needed and cannot override this check.</li>
+        <li><strong>Trusted proxies are optional.</strong> Plain HTTPS termination works without <code>HOMEGRID_TRUSTED_PROXIES</code>. Set it only when you want forwarded client IPs for rate limiting, and only to addresses you control. Left empty, forwarded client IPs are ignored.</li>
+        <li><strong>Pick a reachable binding.</strong> A proxy on the same host can use the loopback binding above. A proxy in another container needs a shared Docker network or a reachable host binding.</li>
+      </ul>
+      <p>If sign-in reports an address or origin error, check that the proxy does not replace <code>Host</code> with the upstream container name or port.</p>
+    </section>
+
+    <section class="guide-section" id="updates">
+      <h2>Updates and version pinning</h2>
+      <p><code>latest</code> is a moving tag that follows the main branch. For repeatable deployments, pin a release tag or an image digest in <code>.env</code>:</p>
+      <div class="code-card">
+        <div class="code-card-header"><span>.env</span><button class="copy-button" type="button" data-copy="Pinned image"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
+        <pre tabindex="0" aria-label="Pinned image setting"><code>HOMEGRID_IMAGE=ghcr.io/bifrost0x/homegrid:0.1.0
+# or: HOMEGRID_IMAGE=ghcr.io/bifrost0x/homegrid@sha256:&lt;digest&gt;</code></pre>
+      </div>
+      <p>Available versions and their digests are listed on the <a href="https://github.com/bifrost0x/homegrid/releases">releases page</a>. To update:</p>
+      <ol>
+        <li>Make a full backup of the stopped data volume (see below).</li>
+        <li>Change the pinned version, if you use one, and run <code>docker compose pull</code>.</li>
+        <li>Run <code>docker compose up -d --wait</code> and check <code>docker compose logs</code>.</li>
+      </ol>
+      <p>Database migrations run at startup. Schema downgrades are not supported: to roll back, start the previous image with a restored pre-upgrade volume.</p>
+    </section>
+
+    <section class="guide-section" id="backups">
+      <h2>Backups</h2>
+      <h3>Portable JSON export</h3>
+      <p><strong>Settings → Backup</strong> exports applications, categories and appearance as JSON. The export excludes passwords and sessions and references uploaded images by path without embedding them. Imports show a preview and offer merge or replace. Exports can reveal internal service names and addresses, so treat them as sensitive.</p>
+      <h3>Full data-volume backup</h3>
+      <p>The named volume holds the database, uploaded files and the administrator account. Stop HomeGrid for the entire copy: copying only <code>homegrid.db</code> from a running SQLite database is not a complete backup. The <a href="https://github.com/bifrost0x/homegrid/blob/main/docs/docker.md#back-up">Docker guide</a> provides tested commands that create a private archive and restore it into a new volume, leaving the original untouched until you have verified the result.</p>
+      <div class="callout"><p>A volume backup contains the password hash and everything on your dashboard. Store it in a protected location and test a restore before you rely on it.</p></div>
+    </section>
+
+    <section class="guide-section" id="uninstall">
+      <h2>Uninstall</h2>
+      <p>From the Compose directory, <code>docker compose down</code> removes the container and network and keeps your data volume. You can start again later with <code>docker compose up -d --wait</code>.</p>
+      <div class="callout"><p><strong><code>docker compose down -v</code> permanently deletes the data volume</strong>, including the administrator account, applications and uploaded files. Run it only after you have a backup you no longer need, or when you intend to discard everything.</p></div>
+      <p>Afterwards, remove the image with <code>docker image rm ghcr.io/bifrost0x/homegrid:latest</code> (or the tag you pinned).</p>
+    </section>
+
+    <div class="closing guide-next">
+      <div><h2>Know the boundaries.</h2><p>What HomeGrid protects, what it leaves to you and how to report a problem.</p></div>
+      <div class="closing-actions"><a class="button button-primary" href="security.html">Read the security model</a></div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-main">
+      <a class="brand" href="./" aria-label="HomeGrid home"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-4 16 16)"><rect x="3" y="3" width="12" height="12" rx="3"/><rect x="17" y="3" width="12" height="12" rx="3"/><rect x="3" y="17" width="12" height="12" rx="3"/><rect x="17" y="17" width="12" height="12" rx="3"/></g></svg>HomeGrid</a>
+      <nav class="footer-links" aria-label="Project links"><a href="https://github.com/bifrost0x/homegrid">GitHub</a><a href="https://github.com/bifrost0x/homegrid/releases">Releases</a><a href="https://github.com/bifrost0x/homegrid/blob/main/CHANGELOG.md">Changelog</a><a href="self-hosting.html">Self-hosting</a><a href="security.html">Security</a></nav>
+    </div>
+    <div class="shell footer-legal">
+      <span>Open source under the <a href="https://github.com/bifrost0x/homegrid/blob/main/LICENSE">Apache License 2.0</a>.</span>
+      <nav aria-label="Legal information"><a href="https://getwebssh.com/impressum.html">Legal notice</a><a href="https://getwebssh.com/privacy.html">Privacy notice</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

@@ -44,6 +44,9 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   compatibility with a simple Homarr-derived application list.
 - A single non-root container with a read-only root filesystem, persistent data
   volume, built-in health check and no Docker socket requirement.
+- Tag-driven releases: versioned AMD64/ARM64 images with SBOM, build provenance
+  and a vulnerability scan gate, GitHub releases with a pinned Compose file, a
+  weekly rescan of the published image, and a project website on GitHub Pages.
 - Cached gzip delivery for embedded JavaScript and CSS; authenticated APIs,
   backups and uploaded files remain uncompressed.
 
