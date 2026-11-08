@@ -87,26 +87,40 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request) {
 		s.result(w, 0, nil, e)
 		return
 	}
-	f, e := os.OpenFile(filepath.Join(dir, name), os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
-	if os.IsExist(e) {
-		write(w, 201, map[string]string{"url": "/uploads/" + name})
-		return
-	}
-	if e != nil {
-		s.result(w, 0, nil, e)
-		return
-	}
-	_, e = f.Write(out.Bytes())
-	closeErr := f.Close()
-	if e != nil || closeErr != nil {
-		os.Remove(filepath.Join(dir, name))
-		if e == nil {
-			e = closeErr
-		}
+	if e = writeFileAtomic(dir, name, out.Bytes()); e != nil {
 		s.result(w, 0, nil, e)
 		return
 	}
 	write(w, 201, map[string]string{"url": "/uploads/" + name})
+}
+
+// writeFileAtomic stores data under dir/name so that readers only ever observe a
+// complete file. Upload names are content hashes, so replacing an existing file
+// is safe and also repairs a file truncated by an earlier interrupted write.
+// The temporary name starts with a dot and never matches a servable upload path.
+func writeFileAtomic(dir, name string, data []byte) (err error) {
+	f, err := os.CreateTemp(dir, ".upload-*")
+	if err != nil {
+		return err
+	}
+	tmp := f.Name()
+	defer func() {
+		if err != nil {
+			os.Remove(tmp)
+		}
+	}()
+	if _, err = f.Write(data); err != nil {
+		f.Close()
+		return err
+	}
+	if err = f.Sync(); err != nil {
+		f.Close()
+		return err
+	}
+	if err = f.Close(); err != nil {
+		return err
+	}
+	return os.Rename(tmp, filepath.Join(dir, name))
 }
 func (s *Server) serveUpload(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")

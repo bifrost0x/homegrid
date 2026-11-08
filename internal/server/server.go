@@ -1,11 +1,13 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"crypto/subtle"
 	"database/sql"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/bifrost0x/homegrid/internal/auth"
 	"github.com/bifrost0x/homegrid/internal/store"
 	"github.com/bifrost0x/homegrid/web"
@@ -17,6 +19,7 @@ import (
 	"net/netip"
 	"net/url"
 	"path"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"sync"
@@ -82,7 +85,11 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	defer func() {
 		if v := recover(); v != nil {
-			s.cfg.Logger.Error("request panic", "method", r.Method, "path", r.URL.Path)
+			// ErrAbortHandler deliberately aborts the response; net/http handles it silently.
+			if v == http.ErrAbortHandler {
+				panic(v)
+			}
+			s.cfg.Logger.Error("request panic", "method", r.Method, "path", r.URL.Path, "panic", fmt.Sprint(v), "stack", string(debug.Stack()))
 			fail(w, 500, "internal", "An internal error occurred")
 		}
 	}()
@@ -654,12 +661,12 @@ func (s *Server) frontend(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Build the frontend with npm ci and npm run build in frontend/ before starting HomeGrid.", 503)
 		return
 	}
-	if path.Ext(p) == ".html" || e == nil && path.Ext(p) == "" {
+	if path.Ext(p) == ".html" || path.Ext(p) == "" {
 		w.Header().Set("Cache-Control", "no-cache")
 	} else {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 	}
-	http.ServeContent(w, r, p, time.Time{}, strings.NewReader(string(b)))
+	http.ServeContent(w, r, p, time.Time{}, bytes.NewReader(b))
 }
 
 type attempts struct {
