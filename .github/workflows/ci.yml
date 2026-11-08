@@ -30,6 +30,8 @@ jobs:
       - name: Install frontend dependencies
         working-directory: frontend
         run: npm ci
+      - name: Check generated service icon files
+        run: node scripts/sync-service-icons.mjs --check
       - name: Test frontend
         working-directory: frontend
         run: npm test

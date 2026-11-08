@@ -4,6 +4,7 @@ import userEvent from "@testing-library/user-event";
 import { ApplicationForm } from "./components";
 import { duplicateName, type Application } from "./lib";
 import { serviceTemplates, findIcons } from "./catalog";
+import { serviceIcons } from "./serviceIcons";
 import { defaults } from "./lib";
 import { App } from "./App";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -176,7 +177,7 @@ it("offers one icon toolbar tab stop and keyboard navigation plus selection", as
   expect(music).toHaveAttribute("aria-pressed", "true");
   await userEvent.keyboard("{End}");
   const bookmark = within(toolbar).getByRole("button", {
-    name: "Use Authelia service icon",
+    name: "Use " + Object.values(serviceIcons).at(-1)!.name + " service icon",
   });
   expect(bookmark).toHaveFocus();
   await userEvent.keyboard("{Enter}");

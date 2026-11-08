@@ -2,12 +2,16 @@ import { expect, it, vi } from "vitest";
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { IconPicker } from "./IconPicker";
+import { findIcons } from "./catalog";
+import { serviceIcons } from "./serviceIcons";
 
-it("offers 84 icons and preserves a selected service with one tab stop", async () => {
+it("offers every bundled icon and preserves a selected service with one tab stop", async () => {
   const onChange = vi.fn();
   render(<IconPicker value="service:jellyfin" query="" onChange={onChange} />);
   const buttons = screen.getAllByRole("button");
-  expect(buttons).toHaveLength(84);
+  expect(buttons).toHaveLength(
+    findIcons("").length + Object.keys(serviceIcons).length,
+  );
   const jellyfin = screen.getByRole("button", {
     name: "Use Jellyfin service icon",
   });
@@ -78,4 +82,11 @@ it("moves across generic and service entries using rendered grid columns", async
   await userEvent.keyboard("{ArrowUp}{ArrowRight}");
   expect(buttons[1]).toHaveFocus();
   expect(buttons.filter((button) => button.tabIndex === 0)).toHaveLength(1);
+});
+
+it("finds service logos by curated alias", () => {
+  render(<IconPicker value="favicon" query="pve" onChange={() => {}} />);
+  expect(screen.getAllByRole("button")[0]).toHaveAccessibleName(
+    "Use Proxmox service icon",
+  );
 });

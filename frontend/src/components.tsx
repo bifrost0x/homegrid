@@ -43,7 +43,8 @@ import {
   serviceTemplates,
   type ServiceTemplate,
 } from "./catalog";
-import { serviceIconUrl } from "./serviceIcons";
+import { serviceIconUrl, serviceIcons } from "./serviceIcons";
+import { detectService, type DetectedService } from "./serviceDetection";
 import { IconPicker } from "./IconPicker";
 export function Icon({
   app,
@@ -169,13 +170,43 @@ export function ApplicationForm({
   const templatesId = useId();
   const urlInput = useRef<HTMLInputElement>(null);
   const [suggestedCategory, setSuggestedCategory] = useState("");
+  // Automatic recognition only runs for new applications and stops for good
+  // once the user picks an icon or a template themselves.
+  const recognizes = !app && !duplicate;
+  const [iconChosen, setIconChosen] = useState(false);
+  const [recognized, setRecognized] = useState<{
+    service: DetectedService;
+    previousIcon: string;
+  }>();
+  function chooseIcon(next: string) {
+    setIconChosen(true);
+    setRecognized(undefined);
+    setIcon(next);
+  }
+  function recognize(nextName: string, nextUrl: string) {
+    if (!recognizes || iconChosen) return;
+    const service = detectService(nextName, nextUrl);
+    if (service) {
+      if (service.id !== recognized?.service.id) setIcon(service.icon);
+      setRecognized({
+        service,
+        previousIcon: recognized?.previousIcon ?? icon,
+      });
+    } else if (recognized) {
+      setIcon(recognized.previousIcon);
+      setRecognized(undefined);
+    }
+  }
+  function keepPreviousIcon() {
+    if (recognized) chooseIcon(recognized.previousIcon);
+  }
   const matches = findTemplates(templateSearch).filter(
     (template) => !templateCategory || template.category === templateCategory,
   );
   function selectTemplate(template: ServiceTemplate) {
     setName(template.name);
     setDescription(template.description);
-    setIcon(template.icon);
+    chooseIcon(template.icon);
     setIconColor(template.icon_color);
     const matchingCategory = categories.find(
       (category) =>
@@ -317,7 +348,10 @@ export function ApplicationForm({
             <input
               autoFocus
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => {
+                setName(e.target.value);
+                recognize(e.target.value, url);
+              }}
               placeholder="e.g. Jellyfin"
               maxLength={100}
             />
@@ -327,16 +361,63 @@ export function ApplicationForm({
             <input
               value={url}
               ref={urlInput}
-              onChange={(e) => setUrl(e.target.value)}
+              onChange={(e) => {
+                setUrl(e.target.value);
+                recognize(name, e.target.value);
+              }}
               placeholder="https://media.home"
               inputMode="url"
               onBlur={() => {
                 setPreviewUrl(faviconPreviewUrl(url));
-                if (!app && !name.trim()) setName(suggestAppName(url));
+                if (!app && !name.trim()) {
+                  const nextName =
+                    (recognizes && detectService("", url)?.name) ||
+                    suggestAppName(url);
+                  setName(nextName);
+                  recognize(nextName, url);
+                }
               }}
             />
           </label>
         </div>
+        {recognizes && (
+          <div
+            className={
+              "service-detection" +
+              (recognized ? " service-detection-active" : "")
+            }
+          >
+            <p role="status" className="service-detection-message">
+              {recognized && (
+                <>
+                  <img
+                    className="service-detection-logo"
+                    src={serviceIconUrl(recognized.service.icon)}
+                    alt=""
+                  />
+                  <span>
+                    Recognized <strong>{recognized.service.name}</strong>
+                    {recognized.service.signal === "port"
+                      ? " from its default port"
+                      : recognized.service.signal === "name"
+                        ? ""
+                        : " from the address"}
+                    . Its logo is selected.
+                  </span>
+                </>
+              )}
+            </p>
+            {recognized && (
+              <button
+                type="button"
+                className="button secondary service-detection-undo"
+                onClick={keepPreviousIcon}
+              >
+                Keep previous icon
+              </button>
+            )}
+          </div>
+        )}
         <label>
           Description <span className="optional">optional</span>
           <input
@@ -374,7 +455,9 @@ export function ApplicationForm({
                   ? "Automatic favicon"
                   : icon.startsWith("/uploads/")
                     ? "Custom image"
-                    : icon.replace("builtin:", "")}
+                    : serviceIconUrl(icon)
+                      ? serviceIcons[icon.slice("service:".length)].name
+                      : icon.replace("builtin:", "")}
               </strong>
               <p>Choose an icon or upload your own.</p>
             </div>
@@ -385,7 +468,7 @@ export function ApplicationForm({
               className={
                 "button secondary " + (icon === "favicon" ? "selected" : "")
               }
-              onClick={() => setIcon("favicon")}
+              onClick={() => chooseIcon("favicon")}
             >
               <Globe size={16} />
               Automatic
@@ -402,7 +485,7 @@ export function ApplicationForm({
                   if (!file) return;
                   setBusy(true);
                   try {
-                    setIcon(await upload(file));
+                    chooseIcon(await upload(file));
                     setError(undefined);
                   } catch (e) {
                     setError(e);
@@ -419,7 +502,7 @@ export function ApplicationForm({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          <IconPicker value={icon} query={search} onChange={setIcon} />
+          <IconPicker value={icon} query={search} onChange={chooseIcon} />
           <p className="field-hint icon-navigation-hint">
             Arrow keys to explore. Enter or Space to choose.
           </p>

@@ -158,6 +158,16 @@ func (s *Store) migrate() error {
 var uploadPath = regexp.MustCompile(`^/uploads/[a-f0-9]{64}\.(png|jpg|webp)$`)
 
 func ValidUpload(v string) bool { return uploadPath.MatchString(v) }
+
+// serviceIconSet indexes the generated list of bundled service logos.
+var serviceIconSet = func() map[string]struct{} {
+	set := make(map[string]struct{}, len(serviceIconIDs))
+	for _, id := range serviceIconIDs {
+		set[id] = struct{}{}
+	}
+	return set
+}()
+
 func ValidIcon(v string) bool {
 	if v == "" || v == "favicon" || ValidUpload(v) {
 		return true
@@ -167,10 +177,9 @@ func ValidIcon(v string) bool {
 			return true
 		}
 	}
-	for _, id := range []string{"jellyfin", "plex", "emby", "sonarr", "radarr", "lidarr", "audiobookshelf", "navidrome", "immich", "photoprism", "nextcloud", "syncthing", "paperlessngx", "vaultwarden", "homeassistant", "adguardhome", "pihole", "uptimekuma", "grafana", "prometheus", "portainer", "dockge", "proxmox", "truenas", "gitea", "forgejo", "gitlab", "mealie", "freshrss", "miniflux", "qbittorrent", "transmission", "sabnzbd", "kavita", "calibreweb", "linkwarden", "nginxproxymanager", "traefik", "authentik", "authelia"} {
-		if v == "service:"+id {
-			return true
-		}
+	if id, ok := strings.CutPrefix(v, "service:"); ok {
+		_, known := serviceIconSet[id]
+		return known
 	}
 	return false
 }

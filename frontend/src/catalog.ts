@@ -46,6 +46,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import type { IconColor } from "./lib";
+import { serviceCatalog } from "./serviceCatalog";
 
 const catalog: Record<string, [LucideIcon, string]> = {
   server: [Server, "host machine rack computing"],
@@ -109,23 +110,8 @@ export interface ServiceTemplate {
   icon_color: IconColor;
   keywords: string;
   category: string;
-}
-function template(
-  name: string,
-  description: string,
-  icon: string,
-  icon_color: IconColor,
-  keywords: string,
-  category: string,
-): ServiceTemplate {
-  return {
-    name,
-    description,
-    icon: "service:" + icon,
-    icon_color,
-    keywords,
-    category,
-  };
+  /** Curated alternative names, normalized to lowercase letters and digits. */
+  aliases?: readonly string[];
 }
 export const serviceCategories = [
   "Media",
@@ -138,337 +124,47 @@ export const serviceCategories = [
   "Infrastructure",
   "Development",
   "Downloads",
+  "Communication",
+  "AI",
+  "Games",
 ] as const;
 
-export const serviceTemplates: ServiceTemplate[] = [
-  template(
-    "Jellyfin",
-    "Your films, series, and home videos.",
-    "jellyfin",
-    "violet",
-    "media movies television",
-    "Media",
-  ),
-  template(
-    "Plex",
-    "A place for your personal media collection.",
-    "plex",
-    "amber",
-    "movies television",
-    "Media",
-  ),
-  template(
-    "Emby",
-    "Your video library, ready to watch.",
-    "emby",
-    "sage",
-    "media movies",
-    "Media",
-  ),
-  template(
-    "Sonarr",
-    "Organize your series collection.",
-    "sonarr",
-    "blue",
-    "television media",
-    "Media",
-  ),
-  template(
-    "Radarr",
-    "Keep your film collection in order.",
-    "radarr",
-    "amber",
-    "movies media",
-    "Media",
-  ),
-  template(
-    "Lidarr",
-    "A well-organized home for your music.",
-    "lidarr",
-    "rose",
-    "songs audio",
-    "Media",
-  ),
-  template(
-    "Audiobookshelf",
-    "Your audiobooks and podcasts, together.",
-    "audiobookshelf",
-    "amber",
-    "books listening audio",
-    "Media",
-  ),
-  template(
-    "Navidrome",
-    "Your music library, wherever you listen.",
-    "navidrome",
-    "cyan",
-    "songs audio",
-    "Media",
-  ),
-  template(
-    "Immich",
-    "A home for your photos and memories.",
-    "immich",
-    "rose",
-    "pictures gallery",
-    "Media",
-  ),
-  template(
-    "PhotoPrism",
-    "Explore and organize your photo library.",
-    "photoprism",
-    "violet",
-    "pictures gallery",
-    "Media",
-  ),
-  template(
-    "Nextcloud",
-    "Your files, calendars, and everyday collaboration.",
-    "nextcloud",
-    "blue",
-    "storage documents",
-    "Storage",
-  ),
-  template(
-    "Syncthing",
-    "Keep your files in step across devices.",
-    "syncthing",
-    "cyan",
-    "sync backup",
-    "Storage",
-  ),
-  template(
-    "Paperless-ngx",
-    "Find a little order in your paperwork.",
-    "paperlessngx",
-    "sage",
-    "documents pdf archive",
-    "Tools",
-  ),
-  template(
-    "Vaultwarden",
-    "A private place for your passwords.",
-    "vaultwarden",
-    "violet",
-    "secrets credentials security",
-    "Security",
-  ),
-  template(
-    "Home Assistant",
-    "Your home, working together.",
-    "homeassistant",
-    "blue",
-    "smart automation lights",
-    "Automation",
-  ),
-  template(
-    "AdGuard Home",
-    "Manage your home network’s DNS filtering.",
-    "adguardhome",
-    "sage",
-    "network privacy dns",
-    "Network",
-  ),
-  template(
-    "Pi-hole",
-    "Your network’s DNS filtering in one place.",
-    "pihole",
-    "rose",
-    "network privacy adblocking",
-    "Network",
-  ),
-  template(
-    "Uptime Kuma",
-    "A place to check on your services.",
-    "uptimekuma",
-    "sage",
-    "status availability",
-    "Monitoring",
-  ),
-  template(
-    "Grafana",
-    "Explore your own charts and dashboards.",
-    "grafana",
-    "amber",
-    "graphs analytics",
-    "Monitoring",
-  ),
-  template(
-    "Prometheus",
-    "Your metrics and queries, close at hand.",
-    "prometheus",
-    "rose",
-    "monitoring data",
-    "Monitoring",
-  ),
-  template(
-    "Portainer",
-    "Your container management workspace.",
-    "portainer",
-    "blue",
-    "docker",
-    "Infrastructure",
-  ),
-  template(
-    "Dockge",
-    "Organize your container stacks.",
-    "dockge",
-    "cyan",
-    "docker compose",
-    "Infrastructure",
-  ),
-  template(
-    "Proxmox",
-    "Your virtual machines and containers.",
-    "proxmox",
-    "amber",
-    "virtualization computing",
-    "Infrastructure",
-  ),
-  template(
-    "TrueNAS",
-    "Your storage and shared files.",
-    "truenas",
-    "blue",
-    "nas disks backup",
-    "Storage",
-  ),
-  template(
-    "Gitea",
-    "Your repositories and development projects.",
-    "gitea",
-    "sage",
-    "git source code",
-    "Development",
-  ),
-  template(
-    "Forgejo",
-    "A place to build and share your projects.",
-    "forgejo",
-    "amber",
-    "git source code",
-    "Development",
-  ),
-  template(
-    "GitLab",
-    "Your code, issues, and project workflows.",
-    "gitlab",
-    "rose",
-    "git development",
-    "Development",
-  ),
-  template(
-    "Mealie",
-    "Your recipes and weekly meal ideas.",
-    "mealie",
-    "sage",
-    "cooking food",
-    "Tools",
-  ),
-  template(
-    "FreshRSS",
-    "Your favorite feeds, ready to read.",
-    "freshrss",
-    "amber",
-    "news reading",
-    "Tools",
-  ),
-  template(
-    "Miniflux",
-    "A quiet place to catch up on your feeds.",
-    "miniflux",
-    "cyan",
-    "news reading",
-    "Tools",
-  ),
-  template(
-    "qBittorrent",
-    "Your downloads and transfers.",
-    "qbittorrent",
-    "blue",
-    "torrent files",
-    "Downloads",
-  ),
-  template(
-    "Transmission",
-    "Manage your downloads in one place.",
-    "transmission",
-    "rose",
-    "torrent files",
-    "Downloads",
-  ),
-  template(
-    "SABnzbd",
-    "Your download queue, organized.",
-    "sabnzbd",
-    "amber",
-    "usenet files",
-    "Downloads",
-  ),
-  template(
-    "Kavita",
-    "Your ebooks, comics, and reading collection.",
-    "kavita",
-    "violet",
-    "library manga",
-    "Media",
-  ),
-  template(
-    "Calibre-Web",
-    "Browse your personal ebook library.",
-    "calibreweb",
-    "blue",
-    "reading books",
-    "Media",
-  ),
-  template(
-    "Linkwarden",
-    "Keep useful links within reach.",
-    "linkwarden",
-    "violet",
-    "bookmarks saved reading",
-    "Tools",
-  ),
-  template(
-    "Nginx Proxy Manager",
-    "Your hosts and proxy settings.",
-    "nginxproxymanager",
-    "sage",
-    "reverse proxy network",
-    "Network",
-  ),
-  template(
-    "Traefik",
-    "Your routing and service entry points.",
-    "traefik",
-    "blue",
-    "reverse proxy network",
-    "Network",
-  ),
-  template(
-    "Authentik",
-    "Your sign-in and identity settings.",
-    "authentik",
-    "cyan",
-    "authentication sso",
-    "Security",
-  ),
-  template(
-    "Authelia",
-    "Your authentication gateway settings.",
-    "authelia",
-    "sage",
-    "security sso",
-    "Security",
-  ),
-];
+// Templates are derived from the curated service catalog in catalog order,
+// which keeps the long-standing services first.
+export const serviceTemplates: ServiceTemplate[] = serviceCatalog.map(
+  (service) => ({
+    name: service.name,
+    description: service.description,
+    icon: "service:" + service.id,
+    icon_color: service.color,
+    keywords: service.keywords,
+    category: service.category,
+    aliases: service.aliases ?? [],
+  }),
+);
+// Filters templates by every query word, then lists services whose name or
+// alias equals or starts with the query before other matches.
 export function findTemplates(query: string) {
   const words = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
-  return serviceTemplates.filter((t) =>
-    words.every((word) =>
-      (t.name + " " + t.description + " " + t.keywords + " " + t.category)
-        .toLocaleLowerCase()
-        .includes(word),
-    ),
-  );
+  const compact = words.join("").replace(/[^\p{L}\p{N}]/gu, "");
+  const rank = (t: ServiceTemplate) => {
+    if (!compact) return 0;
+    const names = [t.name, ...(t.aliases ?? [])].map((name) =>
+      name.toLocaleLowerCase().replace(/[^\p{L}\p{N}]/gu, ""),
+    );
+    if (names.includes(compact)) return 0;
+    return names.some((name) => name.startsWith(compact)) ? 1 : 2;
+  };
+  return serviceTemplates
+    .filter((t) =>
+      words.every((word) =>
+        [t.name, t.description, t.keywords, t.category, ...(t.aliases ?? [])]
+          .join(" ")
+          .toLocaleLowerCase()
+          .includes(word),
+      ),
+    )
+    .map((t, index) => ({ t, index, rank: rank(t) }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map(({ t }) => t);
 }

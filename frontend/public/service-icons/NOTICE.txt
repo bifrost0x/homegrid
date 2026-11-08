@@ -1,10 +1,11 @@
 Service icons
 
-39 SVGs: Dashboard Icons, Homarr Labs and contributors.
-Source: https://github.com/homarr-labs/dashboard-icons/blob/45ea6c2595231d66b855e81b3fd99d3e8904cb36
+340 SVGs: Dashboard Icons, Homarr Labs and contributors.
+Source: https://github.com/homarr-labs/dashboard-icons/blob/59f1e9a4108f4f510f41e9588f078631de1e1405
+Navidrome source: https://github.com/homarr-labs/dashboard-icons/blob/45ea6c2595231d66b855e81b3fd99d3e8904cb36/svg/navidrome.svg
 License: Apache-2.0; see LICENSE.txt.
-Navidrome artwork modified for HomeGrid: decorative rotation removed to keep it
-static. The other 38 SVGs from this collection are unchanged.
+Navidrome artwork modified for HomeGrid: decorative rotation removed to keep the artwork static.
+The other 339 SVGs from this collection are unchanged.
 
 Linkwarden SVG: selfh.st Icons, selfh.st and contributors.
 Source: https://github.com/selfhst/icons/blob/b2378abb1a0c64149bb7621815b849d89602de23/svg/linkwarden.svg
