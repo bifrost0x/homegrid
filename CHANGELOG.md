@@ -15,8 +15,13 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   lightweight previews and readable surfaces in both light and dark modes.
 - Reverse-proxy-compatible origin checks for HTTPS-to-HTTP deployments, with
   distinct address and expired-session errors and unchanged CSRF token checks.
-- Forty categorized service templates with local logos and URL-only setup;
-  84 searchable icons, icon colors, browser favicons and raster image uploads.
+- 341 categorized service templates with local logos and URL-only setup;
+  385 searchable icons, icon colors, browser favicons and raster image uploads.
+  New applications recognize well-known services from their name, hostname,
+  URL path or a distinctive default port and preselect the matching logo, with
+  a clear hint and a one-click way to keep the previous icon. Bundled logos are
+  synchronized from a pinned upstream commit by `scripts/sync-service-icons.mjs`,
+  which also generates the backend allowlist and the icon credits.
   Uploads are written atomically, so an interrupted write never leaves a
   truncated image behind.
 - Calm application cards: edit, duplicate and delete live in a keyboard-accessible
@@ -25,8 +30,10 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
 - Optional example cards that require configuration before launch.
 - In-dashboard Organize mode with drag-and-drop, keyboard and explicit sorting
   controls; empty categories are hidden during normal use.
-- Twelve designs with local backgrounds, light/dark/system modes, custom accents,
-  background uploads and adjustable appearance.
+- Appearance settings in clear layers: twenty presets, light/dark/system mode,
+  eighteen surface palettes, named, extra and custom accents, and backgrounds
+  from twelve generated gradients, twelve bundled photographs or your own
+  image. A live preview lists what the current look is made of.
 - Responsive dashboard widths, group and application columns, and card, tile or
   list layouts, with shared live preview, save and cancel controls.
 - Persistent, atomic undo for application deletion, ordering and saved

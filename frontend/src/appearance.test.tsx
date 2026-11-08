@@ -12,6 +12,7 @@ it("previews a chosen background locally and never uploads a cancelled draft", a
     <SettingsPanel settings={defaults} onSave={save} onClose={() => {}} />,
   );
   const file = new File(["image"], "background.png", { type: "image/png" });
+  await userEvent.click(screen.getByRole("radio", { name: "Your image" }));
   await userEvent.upload(screen.getByLabelText("Choose image"), file);
   const preview = screen.getByRole("region", { name: "Appearance preview" });
   await waitFor(() =>
@@ -57,15 +58,9 @@ it("previews draft appearance and real application content without writing until
     screen.getByLabelText("Dashboard title"),
     "My quiet corner",
   );
-  await userEvent.selectOptions(screen.getByLabelText("Theme"), "dark");
-  await userEvent.selectOptions(
-    screen.getByLabelText("Card layout"),
-    "compact",
-  );
-  await userEvent.selectOptions(
-    screen.getByLabelText("Card corners"),
-    "square",
-  );
+  await userEvent.click(screen.getByRole("radio", { name: "Dark" }));
+  await userEvent.click(screen.getByRole("radio", { name: "Compact" }));
+  await userEvent.click(screen.getByRole("radio", { name: "Square" }));
   await userEvent.click(
     screen.getByRole("button", { name: "Use blue accent" }),
   );

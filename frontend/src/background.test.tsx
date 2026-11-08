@@ -26,9 +26,14 @@ function mount(background = "") {
   );
   return { ...view, save };
 }
-const choose = (name: string) =>
+async function imageInput() {
+  if (!screen.queryByLabelText("Choose image"))
+    await userEvent.click(screen.getByRole("radio", { name: "Your image" }));
+  return screen.getByLabelText("Choose image");
+}
+const choose = async (name: string) =>
   userEvent.upload(
-    screen.getByLabelText("Choose image"),
+    await imageInput(),
     new File([name], name + ".png", { type: "image/png" }),
   );
 async function complete(index: number, name: string) {
@@ -42,7 +47,7 @@ it("a design selection cancels an unfinished image and saves the selected wallpa
   const { save } = mount("/uploads/old.png");
   await choose("unfinished");
   await userEvent.click(
-    screen.getByRole("button", { name: "Use Aurora design" }),
+    screen.getByRole("button", { name: "Apply Aurora preset" }),
   );
   await complete(0, "unfinished");
   expect(

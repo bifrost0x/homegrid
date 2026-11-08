@@ -474,6 +474,7 @@ try {
           }),
           "base64",
         );
+        await d.getByRole("radio", { name: "Your image", exact: true }).check();
         await d.locator("input[type=file]").first().setInputFiles({
           name: "background.png",
           mimeType: "image/png",
@@ -494,10 +495,10 @@ try {
           page.getByText("Files and backups", { exact: true }),
         ).toHaveCount(0);
         const reset = await settings();
+        await reset.getByLabel("Subtle background blur").uncheck();
         await reset
           .getByRole("button", { name: "Remove", exact: true })
           .click();
-        await reset.getByLabel("Subtle background blur").uncheck();
         await reset.getByLabel("Show application descriptions").check();
         await reset.getByRole("button", { name: "Save appearance" }).click();
         await expect(reset.getByRole("status")).toContainText("saved");
@@ -507,18 +508,12 @@ try {
     await check("appearance persists after reload", async () => {
       const d = await settings();
       await d.getByLabel("Dashboard title").fill("The test homelab");
-      await d
-        .getByRole("combobox", { name: "Theme", exact: true })
-        .selectOption("dark");
+      await d.getByRole("radio", { name: "Dark", exact: true }).check();
       await d
         .getByRole("button", { name: "Use blue accent", exact: true })
         .click();
-      await d
-        .getByRole("combobox", { name: "Card layout", exact: true })
-        .selectOption("compact");
-      await d
-        .getByRole("combobox", { name: "Card corners", exact: true })
-        .selectOption("square");
+      await d.getByRole("radio", { name: "Compact", exact: true }).check();
+      await d.getByRole("radio", { name: "Square", exact: true }).check();
       await d.getByRole("button", { name: "Save appearance" }).click();
       await expect(d.getByRole("status")).toContainText("saved");
       await d.getByRole("button", { name: "Done", exact: true }).click();

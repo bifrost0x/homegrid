@@ -1,5 +1,10 @@
 /* Shared palette scopes keep draft previews independent from the saved appearance. */
-:is(:root, .appearance-preview, .design-thumbnail)[data-theme="light"] {
+:is(
+  :root,
+  .appearance-preview,
+  .design-thumbnail,
+  .palette-chip
+)[data-theme="light"] {
   --sage-accent: #49654c;
   --sage-soft: #e5ecdf;
   --sage-text: #ffffff;
@@ -26,7 +31,12 @@
   --accent-ink: var(--custom-ink-light, var(--accent));
   color-scheme: light;
 }
-:is(:root, .appearance-preview, .design-thumbnail)[data-theme="dark"] {
+:is(
+  :root,
+  .appearance-preview,
+  .design-thumbnail,
+  .palette-chip
+)[data-theme="dark"] {
   --sage-accent: #bfd1ac;
   --sage-soft: #354331;
   --sage-text: #1e2a19;
@@ -56,7 +66,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="homegrid"][data-theme="light"] {
   --page: #f5f4ef;
   --surface: #fffefa;
@@ -68,7 +79,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="homegrid"][data-theme="dark"] {
   --page: #1b1e1b;
   --surface: #242724;
@@ -80,7 +92,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="porcelain"][data-theme="light"] {
   --page: #f3f5f7;
   --surface: #ffffff;
@@ -92,7 +105,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="porcelain"][data-theme="dark"] {
   --page: #18212b;
   --surface: #202c38;
@@ -104,7 +118,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="dune"][data-theme="light"] {
   --page: #f4eee2;
   --surface: #fffaf0;
@@ -116,7 +131,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="dune"][data-theme="dark"] {
   --page: #272119;
   --surface: #332b20;
@@ -128,7 +144,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="terracotta"][data-theme="light"] {
   --page: #f5eae3;
   --surface: #fff8f2;
@@ -140,7 +157,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="terracotta"][data-theme="dark"] {
   --page: #2d201d;
   --surface: #3a2924;
@@ -152,7 +170,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="rosewood"][data-theme="light"] {
   --page: #f5e9ef;
   --surface: #fff8fb;
@@ -164,7 +183,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="rosewood"][data-theme="dark"] {
   --page: #251c25;
   --surface: #322431;
@@ -176,7 +196,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="lavender"][data-theme="light"] {
   --page: #f1edf7;
   --surface: #fdfaff;
@@ -188,7 +209,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="lavender"][data-theme="dark"] {
   --page: #231e2d;
   --surface: #30273d;
@@ -200,7 +222,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="forest"][data-theme="light"] {
   --page: #eaf0e9;
   --surface: #f9fff7;
@@ -212,7 +235,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="forest"][data-theme="dark"] {
   --page: #15251d;
   --surface: #1e3227;
@@ -224,7 +248,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="lagoon"][data-theme="light"] {
   --page: #e8f3f0;
   --surface: #f8fffd;
@@ -236,7 +261,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="lagoon"][data-theme="dark"] {
   --page: #162925;
   --surface: #203a33;
@@ -248,7 +274,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="arctic"][data-theme="light"] {
   --page: #edf5f9;
   --surface: #fbfeff;
@@ -260,7 +287,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="arctic"][data-theme="dark"] {
   --page: #182832;
   --surface: #203642;
@@ -272,7 +300,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="midnight"][data-theme="light"] {
   --page: #edf0f7;
   --surface: #fafcff;
@@ -284,7 +313,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="midnight"][data-theme="dark"] {
   --page: #131e30;
   --surface: #1d2c43;
@@ -296,7 +326,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="aurora"][data-theme="light"] {
   --page: #f0edf8;
   --surface: #fdfaff;
@@ -308,7 +339,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="aurora"][data-theme="dark"] {
   --page: #211d32;
   --surface: #2e2844;
@@ -320,7 +352,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="ember"][data-theme="light"] {
   --page: #f4eae1;
   --surface: #fff9f2;
@@ -332,7 +365,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-design="ember"][data-theme="dark"] {
   --page: #29211d;
   --surface: #382b23;
@@ -344,7 +378,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-theme][data-accent="sage"] {
   --accent: var(--sage-accent);
   --accent-soft: var(--sage-soft);
@@ -353,7 +388,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-theme][data-accent="blue"] {
   --accent: var(--blue-accent);
   --accent-soft: var(--blue-soft);
@@ -362,7 +398,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-theme][data-accent="amber"] {
   --accent: var(--amber-accent);
   --accent-soft: var(--amber-soft);
@@ -371,7 +408,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-theme][data-accent="rose"] {
   --accent: var(--rose-accent);
   --accent-soft: var(--rose-soft);
@@ -380,7 +418,8 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-theme][data-accent="violet"] {
   --accent: var(--violet-accent);
   --accent-soft: var(--violet-soft);
@@ -389,9 +428,166 @@
 :is(
     :root,
     .appearance-preview,
-    .design-thumbnail
+    .design-thumbnail,
+    .palette-chip
   )[data-theme][data-accent="cyan"] {
   --accent: var(--cyan-accent);
   --accent-soft: var(--cyan-soft);
   --accent-text: var(--cyan-text);
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="graphite"][data-theme="light"] {
+  --page: #f4f4f5;
+  --surface: #ffffff;
+  --surface-alt: #e9e9ec;
+  --text: #202124;
+  --muted: #5f6368;
+  --line: #dadce0;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="graphite"][data-theme="dark"] {
+  --page: #141517;
+  --surface: #1d1f22;
+  --surface-alt: #26292d;
+  --text: #ececee;
+  --muted: #a6a9ae;
+  --line: #33363b;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="paper"][data-theme="light"] {
+  --page: #fafafa;
+  --surface: #ffffff;
+  --surface-alt: #f0f0f0;
+  --text: #111111;
+  --muted: #555555;
+  --line: #d9d9d9;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="paper"][data-theme="dark"] {
+  --page: #0b0b0b;
+  --surface: #151515;
+  --surface-alt: #1e1e1e;
+  --text: #f5f5f5;
+  --muted: #a8a8a8;
+  --line: #2e2e2e;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="nord"][data-theme="light"] {
+  --page: #eceff4;
+  --surface: #f8f9fb;
+  --surface-alt: #e5e9f0;
+  --text: #2e3440;
+  --muted: #4c566a;
+  --line: #d8dee9;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="nord"][data-theme="dark"] {
+  --page: #242933;
+  --surface: #2e3440;
+  --surface-alt: #3b4252;
+  --text: #eceff4;
+  --muted: #b3bccd;
+  --line: #434c5e;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="mocha"][data-theme="light"] {
+  --page: #f6efe7;
+  --surface: #fffaf4;
+  --surface-alt: #ede2d4;
+  --text: #3b2a1f;
+  --muted: #7a6250;
+  --line: #e2d3c1;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="mocha"][data-theme="dark"] {
+  --page: #1e1713;
+  --surface: #2a201a;
+  --surface-alt: #352a22;
+  --text: #f3e8dc;
+  --muted: #c4ad98;
+  --line: #45372c;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="slate"][data-theme="light"] {
+  --page: #eef2f6;
+  --surface: #fbfcfe;
+  --surface-alt: #e3e9f0;
+  --text: #1e293b;
+  --muted: #526077;
+  --line: #d3dce7;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="slate"][data-theme="dark"] {
+  --page: #0f1520;
+  --surface: #172030;
+  --surface-alt: #1f2a3d;
+  --text: #e8edf5;
+  --muted: #9eacc2;
+  --line: #2b374b;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="sakura"][data-theme="light"] {
+  --page: #fbf0f3;
+  --surface: #fffafc;
+  --surface-alt: #f5e3e9;
+  --text: #3d2530;
+  --muted: #82596a;
+  --line: #ecd2dc;
+}
+:is(
+    :root,
+    .appearance-preview,
+    .design-thumbnail,
+    .palette-chip
+  )[data-design="sakura"][data-theme="dark"] {
+  --page: #211519;
+  --surface: #2d1d23;
+  --surface-alt: #39252d;
+  --text: #f7e6ec;
+  --muted: #d2a9b8;
+  --line: #4a3039;
 }

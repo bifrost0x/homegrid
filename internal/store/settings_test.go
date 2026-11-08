@@ -162,7 +162,7 @@ func TestExpandedSettingsValidationRejectsInvalidBeforeWrites(t *testing.T) {
 		t.Fatal(e)
 	}
 	for field, values := range map[string][]string{
-		"design": {"unknown", "../aurora"}, "wallpaper": {"unknown", "https://example.com/x.svg"}, "accent": {"custom"},
+		"design": {"unknown", "../aurora", "gradient-dawn"}, "wallpaper": {"unknown", "https://example.com/x.svg", "graphite", "gradient-unknown"}, "accent": {"custom"},
 		"custom_accent":       {"red", "#fff", "#12345678", "#12345g", "#123456;background:red", " #123456"},
 		"background_strength": {"maximum"}, "content_width": {"huge"}, "columns": {"1", "7", "2.5"}, "group_columns": {"0", "4"}, "card_style": {"table"},
 		"background": {"/uploads/../bad.png", "https://example.com/x.png"},
@@ -214,9 +214,12 @@ func TestEmptyExpandedSettingsNormalizeOnSave(t *testing.T) {
 
 func TestAllDesignsAndLayoutOptionsAccepted(t *testing.T) {
 	for field, values := range map[string][]string{
-		"design":    {"homegrid", "porcelain", "dune", "terracotta", "rosewood", "lavender", "forest", "lagoon", "arctic", "midnight", "aurora", "ember"},
-		"wallpaper": {"none", "homegrid", "porcelain", "dune", "terracotta", "rosewood", "lavender", "forest", "lagoon", "arctic", "midnight", "aurora", "ember"},
-		"accent":    {"sage", "blue", "amber", "rose", "violet", "cyan"}, "custom_accent": {"", "#000000", "#FFFFFF"},
+		"design": {"homegrid", "porcelain", "dune", "terracotta", "rosewood", "lavender", "forest", "lagoon", "arctic", "midnight", "aurora", "ember",
+			"graphite", "paper", "nord", "mocha", "slate", "sakura"},
+		"wallpaper": {"none", "homegrid", "porcelain", "dune", "terracotta", "rosewood", "lavender", "forest", "lagoon", "arctic", "midnight", "aurora", "ember",
+			"gradient-dawn", "gradient-meadow", "gradient-tide", "gradient-sand", "gradient-blossom", "gradient-mist",
+			"gradient-dusk", "gradient-nebula", "gradient-boreal", "gradient-ember", "gradient-deepsea", "gradient-carbon"},
+		"accent": {"sage", "blue", "amber", "rose", "violet", "cyan"}, "custom_accent": {"", "#000000", "#FFFFFF"},
 		"background_strength": {"subtle", "balanced", "vivid"}, "content_width": {"focused", "standard", "wide", "full"}, "columns": {"auto", "2", "3", "4", "5", "6"}, "group_columns": {"1", "2", "3"}, "card_style": {"cards", "tiles", "list"},
 	} {
 		for _, value := range values {

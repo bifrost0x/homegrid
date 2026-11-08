@@ -20,7 +20,7 @@ import {
 import { api, moveApplication, type Application, type Session } from "../lib";
 import { on } from "../events";
 import { CommandPalette, ErrorMessage } from "../components";
-import { wallpaperUrl } from "../themes";
+import { backgroundImage } from "../themes";
 import { applicationDrop, type ApplicationOrder } from "../sorting";
 import { FirstRun } from "../FirstRun";
 import { Brand } from "../Brand";
@@ -193,7 +193,7 @@ export function Dashboard({ session }: { session: Session }) {
     (category) =>
       organizing || apps.some((app) => app.category_id === category.id),
   );
-  const wallpaper = wallpaperUrl(settings);
+  const wallpaper = backgroundImage(settings);
   return (
     <div
       className={
@@ -213,7 +213,7 @@ export function Dashboard({ session }: { session: Session }) {
       {wallpaper && (
         <div
           className="custom-background"
-          style={{ backgroundImage: `url(${JSON.stringify(wallpaper)})` }}
+          style={{ backgroundImage: wallpaper }}
         />
       )}
       <header className="topbar">

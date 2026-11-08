@@ -20,7 +20,7 @@ it("places settings actions outside the scrolling form and names unsaved closing
     screen.getByRole("group", { name: "Settings actions" }),
   ).toContainElement(screen.getByRole("button", { name: "Save appearance" }));
   await userEvent.click(
-    screen.getByRole("button", { name: "Use Forest design" }),
+    screen.getByRole("button", { name: "Apply Forest preset" }),
   );
   expect(screen.getByText("Unsaved changes")).toBeVisible();
   await userEvent.click(

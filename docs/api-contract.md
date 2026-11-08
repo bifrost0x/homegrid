@@ -13,8 +13,11 @@ Settings: `{title,theme,accent,density,radius,background,blur,show_descriptions,
 Theme is system/light/dark; accent sage/blue/amber/rose/violet/cyan; density
 comfortable/compact; radius rounded/square; background empty or a validated
 `/uploads/id.ext` image path; blur and show_descriptions are booleans.
-Design is homegrid/porcelain/dune/terracotta/rosewood/lavender/forest/lagoon/arctic/
-midnight/aurora/ember; wallpaper accepts those IDs plus none. Custom_accent is
+Design is the surface palette: homegrid/porcelain/dune/terracotta/rosewood/lavender/
+forest/lagoon/arctic/midnight/aurora/ember/graphite/paper/nord/mocha/slate/sakura.
+Wallpaper is none, one of the twelve photo IDs (the first twelve palette IDs), or a
+gradient: gradient-dawn/meadow/tide/sand/blossom/mist/dusk/nebula/boreal/ember/
+deepsea/carbon. Custom_accent is
 empty or `#RRGGBB` (case-insensitive hex). Background_strength is
 subtle/balanced/vivid; content_width focused/standard/wide/full; columns
 auto/2/3/4/5/6; group_columns 1/2/3; card_style cards/tiles/list. All eight new

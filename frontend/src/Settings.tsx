@@ -2,12 +2,9 @@ import { useState, useId, useRef, useEffect } from "react";
 import {
   Download,
   Upload,
-  Image,
-  Trash2,
   Paintbrush,
   Archive,
   UserRound,
-  Check,
   LayoutGrid,
 } from "lucide-react";
 import {
@@ -20,12 +17,9 @@ import {
 import { ErrorMessage } from "./components";
 import { PasswordForm } from "./Account";
 import { AppearancePreview } from "./AppearancePreview";
-import { designs, applyDesign } from "./themes";
-import {
-  DesignGallery,
-  WallpaperLibrary,
-  LayoutControls,
-} from "./ThemeControls";
+import { applyPreset } from "./themes";
+import { LayoutControls } from "./ThemeControls";
+import { AppearanceEditor } from "./AppearanceEditor";
 export function SettingsPanel({
   settings,
   onSave,
@@ -109,8 +103,34 @@ export function SettingsPanel({
   function selectDesign(id: string) {
     cancelBackgroundRead();
     setBackgroundFile(undefined);
-    setDraft((current) => applyDesign(current, id));
+    setDraft((current) => applyPreset(current, id));
     setNotice("");
+  }
+  async function chooseBackground(file: File) {
+    const generation = ++backgroundGeneration.current;
+    setReadingBackground(true);
+    setError(undefined);
+    try {
+      validateImageFile(file);
+      const dataUrl = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () =>
+          reject(
+            new Error("This image could not be opened. Try another image."),
+          );
+        reader.readAsDataURL(file);
+      });
+      if (generation !== backgroundGeneration.current) return;
+      setBackgroundFile(file);
+      update("background", dataUrl);
+      setError(undefined);
+    } catch (e) {
+      if (generation === backgroundGeneration.current) setError(e);
+    } finally {
+      if (generation === backgroundGeneration.current)
+        setReadingBackground(false);
+    }
   }
   async function saveDraft() {
     if (readingBackground || busy) return;
@@ -196,128 +216,11 @@ export function SettingsPanel({
             }}
           >
             <fieldset className="settings-form-fields" disabled={busy}>
-              <DesignGallery settings={draft} onSelect={selectDesign} />
-              <div className="design-customize-heading">
-                <h3>Make it yours</h3>
-                <button
-                  type="button"
-                  className="text-button"
-                  onClick={() => selectDesign(draft.design)}
-                >
-                  Restore{" "}
-                  {designs.find((design) => design.id === draft.design)?.name ??
-                    "HomeGrid"}{" "}
-                  design
-                </button>
-              </div>
-              <label>
-                Dashboard title
-                <input
-                  value={draft.title}
-                  maxLength={100}
-                  onChange={(e) => update("title", e.target.value)}
-                  required
-                />
-              </label>
-              <div className="form-grid">
-                <label>
-                  Theme
-                  <select
-                    value={draft.theme}
-                    onChange={(e) =>
-                      update("theme", e.target.value as Settings["theme"])
-                    }
-                  >
-                    <option value="system">Follow system</option>
-                    <option value="light">Light</option>
-                    <option value="dark">Dark</option>
-                  </select>
-                </label>
-                <label>
-                  Card layout
-                  <select
-                    value={draft.density}
-                    onChange={(e) =>
-                      update("density", e.target.value as Settings["density"])
-                    }
-                  >
-                    <option value="comfortable">Comfortable</option>
-                    <option value="compact">Compact</option>
-                  </select>
-                </label>
-                <label>
-                  Card corners
-                  <select
-                    value={draft.radius}
-                    onChange={(e) =>
-                      update("radius", e.target.value as Settings["radius"])
-                    }
-                  >
-                    <option value="rounded">Rounded</option>
-                    <option value="square">Square</option>
-                  </select>
-                </label>
-              </div>
-              <div
-                className="accent-swatches"
-                role="group"
-                aria-label="Accent color"
-              >
-                <span className="accent-label">Accent color</span>
-                {(
-                  ["sage", "blue", "amber", "rose", "violet", "cyan"] as const
-                ).map((accent) => (
-                  <button
-                    type="button"
-                    key={accent}
-                    className="accent-swatch"
-                    data-accent={accent}
-                    aria-label={"Use " + accent + " accent"}
-                    aria-pressed={
-                      !draft.custom_accent && draft.accent === accent
-                    }
-                    onClick={() =>
-                      setDraft((current) => ({
-                        ...current,
-                        accent,
-                        custom_accent: "",
-                      }))
-                    }
-                  >
-                    <span className="swatch-color">
-                      {!draft.custom_accent && draft.accent === accent && (
-                        <Check size={15} />
-                      )}
-                    </span>
-                    <span>{accent}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="custom-color-row">
-                <label>
-                  Custom accent color
-                  <input
-                    type="color"
-                    value={draft.custom_accent || "#49654c"}
-                    onChange={(e) => update("custom_accent", e.target.value)}
-                  />
-                </label>
-                {draft.custom_accent && (
-                  <button
-                    type="button"
-                    className="text-button"
-                    onClick={() => update("custom_accent", "")}
-                  >
-                    Use named accent
-                  </button>
-                )}
-                <span className="field-hint">
-                  Button text adjusts for contrast.
-                </span>
-              </div>
-              <WallpaperLibrary
-                settings={draft}
-                onSelect={(wallpaper) => {
+              <AppearanceEditor
+                draft={draft}
+                update={setDraft}
+                onPreset={selectDesign}
+                onWallpaper={(wallpaper) => {
                   cancelBackgroundRead();
                   setBackgroundFile(undefined);
                   setDraft((current) => ({
@@ -326,122 +229,15 @@ export function SettingsPanel({
                     background: "",
                   }));
                 }}
+                onChooseImage={(file) => void chooseBackground(file)}
+                onRemoveImage={() => {
+                  cancelBackgroundRead();
+                  update("background", "");
+                  setBackgroundFile(undefined);
+                }}
+                readingImage={readingBackground}
+                busy={busy}
               />
-              <fieldset>
-                <legend>Your own background</legend>
-                {draft.background && (
-                  <img
-                    className="background-preview"
-                    src={draft.background}
-                    alt="Current dashboard background"
-                  />
-                )}
-                <div className="icon-tools">
-                  <label className="button secondary upload">
-                    <Image size={16} />
-                    Choose image
-                    <input
-                      type="file"
-                      accept="image/png,image/jpeg,image/webp"
-                      disabled={busy}
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          const generation = ++backgroundGeneration.current;
-                          setReadingBackground(true);
-                          setError(undefined);
-                          try {
-                            validateImageFile(file);
-                            const dataUrl = await new Promise<string>(
-                              (resolve, reject) => {
-                                const reader = new FileReader();
-                                reader.onload = () =>
-                                  resolve(String(reader.result));
-                                reader.onerror = () =>
-                                  reject(
-                                    new Error(
-                                      "This image could not be opened. Try another image.",
-                                    ),
-                                  );
-                                reader.readAsDataURL(file);
-                              },
-                            );
-                            if (generation !== backgroundGeneration.current)
-                              return;
-                            setBackgroundFile(file);
-                            update("background", dataUrl);
-                            setError(undefined);
-                          } catch (e) {
-                            if (generation === backgroundGeneration.current)
-                              setError(e);
-                          } finally {
-                            if (generation === backgroundGeneration.current)
-                              setReadingBackground(false);
-                          }
-                        }
-                      }}
-                    />
-                  </label>
-                  {(draft.background || readingBackground) && (
-                    <button
-                      className="button secondary"
-                      type="button"
-                      onClick={() => {
-                        cancelBackgroundRead();
-                        update("background", "");
-                        setBackgroundFile(undefined);
-                      }}
-                    >
-                      <Trash2 size={15} />
-                      Remove
-                    </button>
-                  )}
-                </div>
-                <p className="field-hint">
-                  PNG, JPEG, or WebP. Up to 5 MB. Your image replaces the
-                  library wallpaper; removing it reveals your selected
-                  wallpaper.
-                </p>
-                {readingBackground && (
-                  <p className="field-hint" role="status">
-                    Preparing your image…
-                  </p>
-                )}
-              </fieldset>
-              <label>
-                Background strength
-                <select
-                  value={draft.background_strength}
-                  onChange={(e) =>
-                    update(
-                      "background_strength",
-                      e.target.value as Settings["background_strength"],
-                    )
-                  }
-                >
-                  <option value="subtle">Subtle</option>
-                  <option value="balanced">Balanced</option>
-                  <option value="vivid">Vivid</option>
-                </select>
-              </label>
-              <label className="check-row">
-                <input
-                  type="checkbox"
-                  checked={draft.blur}
-                  onChange={(e) => update("blur", e.target.checked)}
-                />
-                Subtle background blur
-              </label>
-              <label className="check-row">
-                <input
-                  type="checkbox"
-                  checked={draft.show_descriptions}
-                  onChange={(e) =>
-                    update("show_descriptions", e.target.checked)
-                  }
-                />
-                Show application descriptions
-              </label>
             </fieldset>
           </form>
           <AppearancePreview settings={draft} app={previewApp} />

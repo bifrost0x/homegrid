@@ -30,9 +30,11 @@ and optional local source builds.
 
 ## Make it yours
 
-- **Add a service in seconds.** Choose from 40 categorized service templates with
-  bundled logos and enter its URL. Or add any HTTP/HTTPS application manually.
-  Search 84 local icons, select a color, upload an image, or use its browser favicon.
+- **Add a service in seconds.** Choose from 341 categorized service templates with
+  bundled logos and enter its URL. Or add any HTTP/HTTPS application manually:
+  HomeGrid recognizes well-known services from the name, hostname or default
+  port and selects their logo, which you can keep or undo. Search 385 local
+  icons, select a color, upload an image, or use its browser favicon.
 - **Keep everyday tools close.** Favorite applications, duplicate an existing
   card, and find services with **Ctrl+K** or **Cmd+K**. Search includes names,
   descriptions and categories.
@@ -40,10 +42,12 @@ and optional local source builds.
   with drag-and-drop, keyboard sorting or explicit controls. Move cards directly
   between categories, including empty or collapsed groups, with persisted undo.
   Empty categories stay out of the everyday launcher.
-- **Choose your atmosphere.** Twelve designs with bundled photographic landscapes,
-  coastlines, forests and city nights, light/dark/
-  system modes, custom accents and image uploads. Adjust density, corners,
-  descriptions, dashboard width, columns, and cards, tiles or lists.
+- **Choose your atmosphere.** Start from one of twenty presets, then adjust each
+  layer on its own: light, dark or system mode; eighteen surface palettes; named,
+  extra or custom accent colors; and a background that is none, one of twelve
+  generated gradients, one of twelve bundled photographs or your own image.
+  Adjust density, corners, descriptions, dashboard width, columns, and cards,
+  tiles or lists.
 - **Preview before saving.** Appearance and layout share a live draft. **Save**
   applies it; **Cancel changes** restores the saved settings. Supported deletions,
   ordering and appearance changes can be undone for 30 minutes, even after a

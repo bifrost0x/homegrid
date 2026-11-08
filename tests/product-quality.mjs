@@ -262,14 +262,14 @@ try {
         await page.getByRole("button", { name: "Open settings" }).click();
         const dialog = page.getByRole("dialog");
         await dialog
-          .getByRole("button", { name: "Use Forest design", exact: true })
+          .getByRole("button", { name: "Apply Forest preset", exact: true })
           .click();
         await dialog
           .getByRole("button", { name: "Save appearance", exact: true })
           .click();
         await expect(dialog.getByRole("status")).toContainText("saved");
         await dialog
-          .getByRole("button", { name: "Use Dune design", exact: true })
+          .getByRole("button", { name: "Apply Dune preset", exact: true })
           .click();
         await dialog
           .getByRole("button", { name: "Cancel changes", exact: true })

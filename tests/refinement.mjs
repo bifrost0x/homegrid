@@ -193,8 +193,11 @@ try {
       await expect(preview).toBeVisible();
       await dialog.getByLabel("Dashboard title").fill("A local preview");
       await dialog
-        .getByRole("combobox", { name: "Theme", exact: true })
-        .selectOption(saved.theme === "dark" ? "light" : "dark");
+        .getByRole("radio", {
+          name: saved.theme === "dark" ? "Light" : "Dark",
+          exact: true,
+        })
+        .check();
       await dialog
         .getByRole("button", { name: "Use blue accent", exact: true })
         .click();
