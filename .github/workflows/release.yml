@@ -93,24 +93,13 @@ jobs:
             VERSION=${{ env.VERSION }}
             COMMIT=${{ github.sha }}
       - name: Scan candidate for known vulnerabilities
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          version: v0.76.1
-          image-ref: homegrid:candidate
-          exit-code: "1"
-          ignore-unfixed: true
-          vuln-type: os,library
-          severity: CRITICAL,HIGH
-          scanners: vuln
+        run: >-
+          scripts/scan-image.sh homegrid:candidate --scanners vuln
+          --ignore-unfixed --severity CRITICAL,HIGH --exit-code 1
       - name: Generate SPDX SBOM
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          version: v0.76.1
-          image-ref: homegrid:candidate
-          format: spdx-json
-          output: homegrid-${{ env.VERSION }}.spdx.json
-          scanners: vuln
-          skip-setup-trivy: true
+        run: >-
+          scripts/scan-image.sh homegrid:candidate --format spdx-json
+          --output "homegrid-$VERSION.spdx.json"
       - name: Log in to GHCR
         uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
         with:

@@ -66,15 +66,9 @@ jobs:
       - name: Validate container build
         run: docker build --tag homegrid:ci .
       - name: Scan container for known vulnerabilities
-        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
-        with:
-          version: v0.76.1
-          image-ref: homegrid:ci
-          exit-code: "1"
-          ignore-unfixed: true
-          vuln-type: os,library
-          severity: CRITICAL,HIGH
-          scanners: vuln
+        run: >-
+          scripts/scan-image.sh homegrid:ci --scanners vuln --ignore-unfixed
+          --severity CRITICAL,HIGH --exit-code 1
       - name: Validate Compose configurations
         run: |
           docker compose --env-file .env.example config --quiet
