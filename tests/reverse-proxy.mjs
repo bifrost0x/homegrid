@@ -14,8 +14,22 @@ const page = await context.newPage();
 const errors = [];
 page.on("pageerror", (error) => errors.push(error.message));
 const password = randomBytes(24).toString("hex");
+// Restarting the container right before this test can change the runner's
+// network interfaces; Chromium then aborts the first navigation with
+// ERR_NETWORK_CHANGED. Retry only that transient error, a few times.
+async function open(url) {
+  for (let attempt = 1; ; attempt++) {
+    try {
+      return await page.goto(url);
+    } catch (error) {
+      if (attempt >= 4 || !String(error).includes("ERR_NETWORK_CHANGED"))
+        throw error;
+      await new Promise((resolve) => setTimeout(resolve, 1000 * attempt));
+    }
+  }
+}
 try {
-  await page.goto(base);
+  await open(base);
   await expect(
     page.getByRole("heading", { name: "A home for your homelab." }),
   ).toBeVisible();
