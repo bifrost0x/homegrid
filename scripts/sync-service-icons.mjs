@@ -43,6 +43,11 @@ const EXTENDED_ID = /^[a-z0-9][a-z0-9-]{0,63}$/;
 const SHA1 = /^[0-9a-f]{40}$/;
 const SHA256 = /^[0-9a-f]{64}$/;
 
+/** Escapes text for a Markdown table cell: backslashes first, then pipes. */
+function markdownCell(text) {
+  return text.replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
+}
+
 function fail(message) {
   console.error(`sync-service-icons: ${message}`);
   process.exit(1);
@@ -805,7 +810,7 @@ function renderInventory(manifest, lock) {
     return `| \`${icon.id}.svg\` | ${icon.source} | ${tier} | \`${icon.blob}\` |`;
   });
   const skippedRows = lock.skipped.map(
-    (entry) => `| ${entry.id} | ${entry.reason.replace(/\|/g, "\\|")} |`,
+    (entry) => `| ${entry.id} | ${markdownCell(entry.reason)} |`,
   );
   const foreignText = s.foreign
     .map((service) => {

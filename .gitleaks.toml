@@ -1,0 +1,18 @@
+title = "HomeGrid secret scan"
+
+[extend]
+useDefault = true
+
+# The generated icon inventories record upstream git blob SHA-1 digests, which
+# are 40 hex characters like Sourcegraph tokens. Exempt only that pattern in
+# those two generated files; every rule stays active everywhere else.
+[[rules]]
+id = "sourcegraph-access-token"
+
+[[rules.allowlists]]
+condition = "AND"
+paths = [
+  '''^frontend/src/service-catalog\.lock\.json$''',
+  '''^docs/third-party-icons\.md$''',
+]
+regexes = ['''^[0-9a-f]{40}$''']

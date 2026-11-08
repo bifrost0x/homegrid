@@ -72,7 +72,8 @@ describe("minifySvg", () => {
     const pathData = (svg) => svg.match(/\sd="([^"]*)"/)?.[1];
     expect(pathData(once)).toBe(pathData(inkscape));
     const text = once.match(/<text\b[^>]*>([\s\S]*?)<\/text>/)?.[1] ?? "";
-    expect(text.replace(/<[^>]+>/g, "")).toBe("Home Grid");
+    // Text content: everything between tags, concatenated.
+    expect(text.split(/<[^>]*>/).join("")).toBe("Home Grid");
   });
 
   it("keeps whitespace under xml:space and data attributes a stylesheet uses", () => {

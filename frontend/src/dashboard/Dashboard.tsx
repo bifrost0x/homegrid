@@ -267,8 +267,12 @@ export function Dashboard({ session }: { session: Session }) {
                 <span className="account-avatar" aria-hidden="true">
                   {session.username.slice(0, 1).toUpperCase()}
                 </span>
-                <span className="visually-hidden">Account menu for </span>
-                <span className="account-name">{session.username}</span>
+                <span className="visually-hidden">
+                  {"Account menu for " + session.username}
+                </span>
+                <span className="account-name" aria-hidden="true">
+                  {session.username}
+                </span>
                 <ChevronDown size={15} aria-hidden="true" />
               </>
             }
