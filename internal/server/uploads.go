@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
+	"github.com/bifrost0x/homegrid/internal/icondiscovery"
 	"github.com/bifrost0x/homegrid/internal/store"
 	_ "golang.org/x/image/webp"
 	"image"
@@ -72,27 +74,34 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "validation", "Unable to process image")
 		return
 	}
-	sum := sha256.Sum256(out.Bytes())
-	name := hex.EncodeToString(sum[:]) + "." + ext
-	dir := filepath.Join(s.cfg.DataDir, "uploads")
-	if e = os.MkdirAll(dir, 0700); e != nil {
-		s.result(w, 0, nil, e)
-		return
-	}
-	info, e := os.Stat(dir)
+	url, e := s.storeImage(out.Bytes(), ext)
 	if e != nil {
 		s.result(w, 0, nil, e)
 		return
 	}
+	write(w, 201, map[string]string{"url": url})
+}
+
+// storeImage saves already re-encoded image bytes under their content hash and
+// returns the public /uploads path.
+func (s *Server) storeImage(data []byte, ext string) (string, error) {
+	sum := sha256.Sum256(data)
+	name := hex.EncodeToString(sum[:]) + "." + ext
+	dir := filepath.Join(s.cfg.DataDir, "uploads")
+	if e := os.MkdirAll(dir, 0700); e != nil {
+		return "", e
+	}
+	info, e := os.Stat(dir)
+	if e != nil {
+		return "", e
+	}
 	if e = os.Chmod(dir, info.Mode().Perm()&0700); e != nil {
-		s.result(w, 0, nil, e)
-		return
+		return "", e
 	}
-	if e = writeFileAtomic(dir, name, out.Bytes()); e != nil {
-		s.result(w, 0, nil, e)
-		return
+	if e = writeFileAtomic(dir, name, data); e != nil {
+		return "", e
 	}
-	write(w, 201, map[string]string{"url": "/uploads/" + name})
+	return "/uploads/" + name, nil
 }
 
 // writeFileAtomic stores data under dir/name so that readers only ever observe a
@@ -149,6 +158,52 @@ func (s *Server) removeStaleUploadTemps(cutoff time.Time) {
 			s.cfg.Logger.Warn("unable to remove stale upload", "file", entry.Name(), "error", e)
 		}
 	}
+}
+
+// discoverIcon asks the service at the given URL for its icon and stores the
+// re-encoded result like an upload. Only an authenticated administrator can
+// trigger it, for one URL per request, bounded by the image work slots.
+func (s *Server) discoverIcon(w http.ResponseWriter, r *http.Request) {
+	var body struct {
+		URL string `json:"url"`
+	}
+	if !decode(w, r, &body, 4096) {
+		return
+	}
+	if e := store.ValidateApp(&store.App{Name: "icon", URL: body.URL}); e != nil {
+		fail(w, 400, "validation", "Enter an HTTP or HTTPS URL without credentials")
+		return
+	}
+	select {
+	case s.imageSlots <- struct{}{}:
+		defer func() { <-s.imageSlots }()
+	default:
+		fail(w, 429, "rate_limit", "Please try again shortly")
+		return
+	}
+	found, e := s.icons.Discover(r.Context(), body.URL)
+	switch {
+	case errors.Is(e, icondiscovery.ErrInvalidURL):
+		fail(w, 400, "validation", "Enter an HTTP or HTTPS URL without credentials")
+		return
+	case errors.Is(e, icondiscovery.ErrUnreachable):
+		fail(w, 502, "unreachable", "HomeGrid could not reach this service")
+		return
+	case e != nil:
+		fail(w, 404, "not_found", "This service does not offer an icon HomeGrid can use")
+		return
+	}
+	var out bytes.Buffer
+	if e = png.Encode(&out, found.Icon); e != nil {
+		s.result(w, 0, nil, e)
+		return
+	}
+	url, e := s.storeImage(out.Bytes(), "png")
+	if e != nil {
+		s.result(w, 0, nil, e)
+		return
+	}
+	write(w, 201, map[string]string{"url": url, "title": found.Title})
 }
 func (s *Server) serveUpload(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")
