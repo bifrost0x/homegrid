@@ -1,0 +1,198 @@
+name: Release
+
+# A version tag (v1.2.3 or v1.2.3-rc.1) on a commit from main publishes the
+# tested image as 1.2.3 and 1.2 (stable releases only), with SBOM and
+# provenance, and creates the GitHub release from docs/release-notes-1.2.3.md.
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  IMAGE: ghcr.io/bifrost0x/homegrid
+
+jobs:
+  verify:
+    name: Verify release metadata
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      prerelease: ${{ steps.version.outputs.prerelease }}
+    steps:
+      - name: Check out tagged revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Require a commit from main
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git merge-base --is-ancestor "$GITHUB_SHA" origin/main
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "26"
+      - name: Check versions, changelog and release notes
+        id: version
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          node scripts/release.mjs check "$TAG"
+          version="${TAG#v}"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          case "$version" in
+            *-*) echo "prerelease=true" >> "$GITHUB_OUTPUT" ;;
+            *) echo "prerelease=false" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+  test:
+    name: Tests
+    needs: verify
+    uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+
+  image:
+    name: Scan and publish image
+    needs: [verify, test]
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    outputs:
+      digest: ${{ steps.publish.outputs.digest }}
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
+      PRERELEASE: ${{ needs.verify.outputs.prerelease }}
+    steps:
+      - name: Check out tagged revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4
+      - name: Build AMD64 candidate for scanning
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          pull: true
+          tags: homegrid:candidate
+          build-args: |
+            VERSION=${{ env.VERSION }}
+            COMMIT=${{ github.sha }}
+      - name: Scan candidate for known vulnerabilities
+        run: >-
+          scripts/scan-image.sh homegrid:candidate --scanners vuln
+          --ignore-unfixed --severity CRITICAL,HIGH --exit-code 1
+      - name: Generate SPDX SBOM
+        run: >-
+          scripts/scan-image.sh homegrid:candidate --format spdx-json
+          --output "homegrid-$VERSION.spdx.json"
+      - name: Log in to GHCR
+        uses: docker/login-action@81c6f93d4bc991e510b342a00b419b3bb4efc5c6 # v4.7.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Choose image tags
+        id: tags
+        run: |
+          {
+            echo "list<<EOF"
+            echo "$IMAGE:$VERSION"
+            if [ "$PRERELEASE" = "false" ]; then
+              echo "$IMAGE:${VERSION%.*}"
+            fi
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+      - name: Build and push AMD64 and ARM64
+        id: publish
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          pull: true
+          tags: ${{ steps.tags.outputs.list }}
+          build-args: |
+            VERSION=${{ env.VERSION }}
+            COMMIT=${{ github.sha }}
+          sbom: true
+          provenance: mode=max
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.publish.outputs.digest }}
+          push-to-registry: true
+      - name: Keep SBOM for the release
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sbom
+          path: homegrid-${{ env.VERSION }}.spdx.json
+          if-no-files-found: error
+          retention-days: 7
+
+  release:
+    name: Create GitHub release
+    needs: [verify, image]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.verify.outputs.version }}
+      DIGEST: ${{ needs.image.outputs.digest }}
+      TAG: ${{ github.ref_name }}
+    steps:
+      - name: Check out tagged revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "26"
+      - name: Download SBOM
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: sbom
+      - name: Prepare notes and Compose file
+        run: |
+          node scripts/release.mjs notes "$TAG" > notes.md
+          cat >> notes.md <<EOF
+
+          ## Image
+
+          \`\`\`sh
+          docker pull $IMAGE:$VERSION
+          \`\`\`
+
+          Digest: \`$DIGEST\` (AMD64 and ARM64, with SBOM and build provenance).
+          Verify with \`gh attestation verify oci://$IMAGE:$VERSION --repo $GITHUB_REPOSITORY\`.
+          EOF
+          sed "s#ghcr.io/bifrost0x/homegrid:latest#$IMAGE:$VERSION#" docker-compose.yml > docker-compose.yml.release
+          grep -q "$IMAGE:$VERSION" docker-compose.yml.release
+          mv docker-compose.yml.release "docker-compose-$VERSION.yml"
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PRERELEASE: ${{ needs.verify.outputs.prerelease }}
+        run: |
+          flags=()
+          if [ "$PRERELEASE" = "true" ]; then flags+=(--prerelease); else flags+=(--latest); fi
+          gh release create "$TAG" --verify-tag --title "HomeGrid $VERSION" \
+            --notes-file notes.md "${flags[@]}" \
+            "docker-compose-$VERSION.yml" "homegrid-$VERSION.spdx.json"

@@ -1,0 +1,32 @@
+name: Image security
+
+# New vulnerabilities are published after an image is built. Rescan the
+# public images weekly so a fixable issue is noticed without a code change.
+on:
+  schedule:
+    - cron: "23 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    name: Scan ${{ matrix.tag }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        tag: [latest]
+    steps:
+      - name: Check out scan script
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Pull published image
+        run: docker pull "ghcr.io/bifrost0x/homegrid:${{ matrix.tag }}"
+      - name: Scan published image
+        run: >-
+          scripts/scan-image.sh "ghcr.io/bifrost0x/homegrid:${{ matrix.tag }}"
+          --scanners vuln --ignore-unfixed --severity CRITICAL,HIGH --exit-code 1

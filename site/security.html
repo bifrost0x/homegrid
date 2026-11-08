@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The HomeGrid security model: a single hardened container, one local administrator, no telemetry, how to report vulnerabilities and how releases are built.">
+  <meta name="theme-color" content="#f5f4ef" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1b1e1b" media="(prefers-color-scheme: dark)">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src 'self'; font-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <link rel="canonical" href="https://bifrost0x.github.io/homegrid/security.html">
+  <link rel="icon" href="assets/homegrid-logo.svg" type="image/svg+xml">
+  <link rel="preload" href="assets/fonts/dm-sans-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+  <title>HomeGrid security - Model, reporting and supply chain</title>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href="./" aria-label="HomeGrid home"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-4 16 16)"><rect x="3" y="3" width="12" height="12" rx="3"/><rect x="17" y="3" width="12" height="12" rx="3"/><rect x="3" y="17" width="12" height="12" rx="3"/><rect x="17" y="17" width="12" height="12" rx="3"/></g></svg>HomeGrid</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="sr-only">Toggle navigation</span></button>
+      <nav class="site-nav" id="site-navigation" aria-label="Main navigation" data-navigation><a href="./#features">Features</a><a href="self-hosting.html">Self-hosting</a><a href="security.html" aria-current="page">Security</a><a href="./#quick-start">Quick start</a><a class="nav-source" href="https://github.com/bifrost0x/homegrid"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>GitHub</a></nav>
+    </div>
+  </header>
+  <main class="shell guide-page" id="main-content">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="./">Home</a><span aria-hidden="true">/</span><span aria-current="page">Security</span></nav>
+    <div class="guide-heading">
+      <p class="eyebrow">Security</p>
+      <h1>Small enough to understand.</h1>
+      <p class="lead">HomeGrid does one job: it shows your links. Keeping the feature set small keeps the attack surface small, and what remains is locked down by default.</p>
+    </div>
+    <nav class="page-toc" aria-label="On this page"><a href="#model">Security model</a><a href="#boundaries">Boundaries</a><a href="#reporting">Reporting</a><a href="#supply-chain">Supply chain</a></nav>
+
+    <section class="guide-section" id="model">
+      <h2>Security model</h2>
+      <h3>A single, restricted container</h3>
+      <p>One Go executable serves the embedded frontend and stores data in SQLite. The container runs as UID/GID 65532 with a read-only root filesystem, dropped Linux capabilities and <code>no-new-privileges</code>. It does not need the Docker socket. Only the named data volume, which holds the database and uploads, is writable.</p>
+      <h3>One local administrator</h3>
+      <p>The first visit creates the administrator account; there are no default credentials. Passwords are hashed with argon2id. Sessions use HTTP-only, same-site strict cookies, marked <code>Secure</code> when <code>HOMEGRID_SECURE_COOKIE</code> is enabled. Every state-changing request needs a CSRF token and a matching origin, and sign-in and password changes are rate limited. Changing the password requires the current one and signs out all other sessions.</p>
+      <h3>Restrictive browser policy</h3>
+      <p>Responses carry a Content Security Policy that only allows scripts and styles from HomeGrid itself, deny framing and send no referrer. Uploads are limited to validated PNG, JPEG and WebP images, and icons are limited to bundled IDs, uploads or the service's own favicon; arbitrary icon URLs are rejected.</p>
+      <h3>Nothing leaves your network</h3>
+      <p>HomeGrid has no telemetry, analytics or cloud dependency. Bundled logos, icons and backgrounds work offline. The backend never monitors your services or fetches their URLs. The optional browser favicon is requested by your browser directly from the service origin.</p>
+    </section>
+
+    <section class="guide-section" id="boundaries">
+      <h2>What remains your responsibility</h2>
+      <ul>
+        <li><strong>Transport.</strong> Direct port access is plain HTTP. Use an HTTPS reverse proxy for any untrusted network and set <code>HOMEGRID_SECURE_COOKIE=true</code>. See <a href="self-hosting.html#https">LAN access and HTTPS</a>.</li>
+        <li><strong>Setup.</strong> Complete administrator setup from a trusted network before exposing the installation.</li>
+        <li><strong>Data.</strong> Protect access to the dashboard, the data volume, backups and JSON exports. Exports contain no secrets but can reveal internal service names and addresses.</li>
+        <li><strong>Updates.</strong> Keep the container image current. Security fixes target the latest <code>0.1.x</code> release.</li>
+      </ul>
+      <p>HomeGrid deliberately has no multi-user management, external identity provider, recovery email or plugin system.</p>
+    </section>
+
+    <section class="guide-section" id="reporting">
+      <h2>Report a vulnerability privately</h2>
+      <p>Use <a href="https://github.com/bifrost0x/homegrid/security/advisories/new">GitHub private vulnerability reporting</a>. Please do not open a public issue containing vulnerability details.</p>
+      <p>Include the affected version, deployment method, expected and observed behavior, and a minimal reproduction using synthetic data. Remove passwords, session cookies, tokens, private service URLs, database files and personal data. The full process is described in the <a href="https://github.com/bifrost0x/homegrid/blob/main/SECURITY.md">security policy</a>.</p>
+      <p>Reports are assessed and fixes coordinated as capacity allows; there is no guaranteed response deadline or formal security certification.</p>
+    </section>
+
+    <section class="guide-section" id="supply-chain">
+      <h2>Supply chain</h2>
+      <ul>
+        <li><strong>Pinned build inputs.</strong> GitHub Actions are pinned to full commit SHAs, and frontend dependencies install from a lockfile.</li>
+        <li><strong>Scanned before publishing.</strong> Each release candidate image is scanned with Trivy; known critical or high vulnerabilities with an available fix stop the release.</li>
+        <li><strong>SBOM and provenance.</strong> Release images for AMD64 and ARM64 are published to <code>ghcr.io/bifrost0x/homegrid</code> with an SPDX software bill of materials and build provenance attestations.</li>
+        <li><strong>Verifiable releases.</strong> Each <a href="https://github.com/bifrost0x/homegrid/releases">release</a> lists its image digest, so you can pin exactly the image you reviewed.</li>
+      </ul>
+      <p>Third-party service logos are synchronized from a pinned upstream commit and keep their licenses. See the <a href="https://github.com/bifrost0x/homegrid/blob/main/docs/third-party-icons.md">icon credits</a>.</p>
+    </section>
+
+    <div class="closing guide-next">
+      <div><h2>Ready to install?</h2><p>Set up HomeGrid with Docker Compose in a few minutes.</p></div>
+      <div class="closing-actions"><a class="button button-primary" href="self-hosting.html">Self-hosting guide</a></div>
+    </div>
+  </main>
+  <footer class="site-footer">
+    <div class="shell footer-main">
+      <a class="brand" href="./" aria-label="HomeGrid home"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-4 16 16)"><rect x="3" y="3" width="12" height="12" rx="3"/><rect x="17" y="3" width="12" height="12" rx="3"/><rect x="3" y="17" width="12" height="12" rx="3"/><rect x="17" y="17" width="12" height="12" rx="3"/></g></svg>HomeGrid</a>
+      <nav class="footer-links" aria-label="Project links"><a href="https://github.com/bifrost0x/homegrid">GitHub</a><a href="https://github.com/bifrost0x/homegrid/releases">Releases</a><a href="https://github.com/bifrost0x/homegrid/blob/main/CHANGELOG.md">Changelog</a><a href="self-hosting.html">Self-hosting</a><a href="security.html">Security</a></nav>
+    </div>
+    <div class="shell footer-legal">
+      <span>Open source under the <a href="https://github.com/bifrost0x/homegrid/blob/main/LICENSE">Apache License 2.0</a>.</span>
+      <nav aria-label="Legal information"><a href="https://getwebssh.com/impressum.html">Legal notice</a><a href="https://getwebssh.com/privacy.html">Privacy notice</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

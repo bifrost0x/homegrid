@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bifrost0x.github.io/homegrid/sitemap.xml
