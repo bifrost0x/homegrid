@@ -180,6 +180,9 @@ describe("offline service catalog", () => {
       expect(svg, src).not.toMatch(
         /<!DOCTYPE|<!ENTITY|<\?xml-stylesheet|<script\b|javascript:|<foreignObject\b|<(iframe|embed|object)\b/i,
       );
+      expect(svg, src).not.toMatch(
+        /(?:-webkit-)?image-set\s*\(|cross-fade\s*\(/i,
+      );
       const document = new DOMParser().parseFromString(svg, "image/svg+xml");
       expect(document.querySelector("parsererror"), src).toBeNull();
       expect(document.documentElement.localName).toBe("svg");
@@ -205,6 +208,8 @@ describe("offline service catalog", () => {
               );
             else expect(attribute.value, src).toMatch(/^#[\w.-]+$/);
           }
+          if (attribute.localName === "style")
+            expect(attribute.value, src).not.toMatch(/https?:|\/\//i);
           for (const match of attribute.value.matchAll(
             /url\(\s*["']?([^\s)"']+)/gi,
           )) {

@@ -48,6 +48,9 @@ export const AMBIGUOUS_KEYS: ReadonlySet<string> = new Set([
 // match a complete name or hostname label, never a word inside a longer name.
 const MIN_PARTIAL_KEY = 4;
 const MAX_NAME_WORDS = 4;
+// Mirrors the server's application limits (100 bytes name, 2048 bytes URL).
+const MAX_NAME_LENGTH = 100;
+const MAX_URL_LENGTH = 2048;
 
 export function serviceKey(value: string): string {
   return value
@@ -87,11 +90,23 @@ function lookup(key: string, partial: boolean): ServiceEntry | undefined {
   return keyIndex.get(key);
 }
 
+// A linear scan: /\d+$/ backtracks quadratically on long digit runs.
+function withoutTrailingDigits(key: string) {
+  let end = key.length;
+  while (
+    end > 0 &&
+    key.charCodeAt(end - 1) >= 48 &&
+    key.charCodeAt(end - 1) <= 57
+  )
+    end--;
+  return key.slice(0, end);
+}
+
 // Accepts "jellyfin2" or "pve-01" by retrying without a trailing number.
 function lookupWithSuffix(key: string, partial: boolean) {
   const exact = lookup(key, partial);
   if (exact) return { service: exact, length: key.length };
-  const trimmed = key.replace(/\d+$/, "");
+  const trimmed = withoutTrailingDigits(key);
   if (trimmed && trimmed !== key) {
     const service = lookup(trimmed, partial);
     if (service) return { service, length: trimmed.length };
@@ -185,6 +200,10 @@ export function detectService(
   name: string,
   url: string,
 ): DetectedService | undefined {
+  // Detection also runs on imported files before the server validates them;
+  // anything beyond the server's limits can never be saved anyway.
+  if (name.length > MAX_NAME_LENGTH || url.length > MAX_URL_LENGTH)
+    return undefined;
   const parsed = parseServiceUrl(url);
   const candidates: [DetectionSignal, () => ServiceEntry | undefined][] = [
     ["name", () => matchWords(words(name))],

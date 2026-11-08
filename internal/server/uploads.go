@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 func (s *Server) upload(w http.ResponseWriter, r *http.Request) {
@@ -121,6 +122,33 @@ func writeFileAtomic(dir, name string, data []byte) (err error) {
 		return err
 	}
 	return os.Rename(tmp, filepath.Join(dir, name))
+}
+
+// removeStaleUploadTemps deletes temporary upload files left behind when the
+// process stopped between creating and renaming them. Only files older than
+// cutoff are touched, so a concurrent upload in progress is never affected.
+// Failures are logged; they never prevent startup.
+func (s *Server) removeStaleUploadTemps(cutoff time.Time) {
+	dir := filepath.Join(s.cfg.DataDir, "uploads")
+	entries, e := os.ReadDir(dir)
+	if e != nil {
+		if !os.IsNotExist(e) {
+			s.cfg.Logger.Warn("unable to inspect uploads", "error", e)
+		}
+		return
+	}
+	for _, entry := range entries {
+		if !entry.Type().IsRegular() || !strings.HasPrefix(entry.Name(), ".upload-") {
+			continue
+		}
+		info, e := entry.Info()
+		if e != nil || !info.ModTime().Before(cutoff) {
+			continue
+		}
+		if e = os.Remove(filepath.Join(dir, entry.Name())); e != nil && !os.IsNotExist(e) {
+			s.cfg.Logger.Warn("unable to remove stale upload", "file", entry.Name(), "error", e)
+		}
+	}
 }
 func (s *Server) serveUpload(w http.ResponseWriter, r *http.Request) {
 	name := r.PathValue("name")

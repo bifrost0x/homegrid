@@ -124,3 +124,16 @@ describe("detectService", () => {
       expect(detectService(label, `https://${label}.lan`)).toBeUndefined();
   });
 });
+
+describe("hostile input", () => {
+  it("stays fast on long digit runs and ignores oversized values", () => {
+    const digits = "1".repeat(80_000) + "a";
+    const started = performance.now();
+    expect(detectService(digits, "https://" + digits + ".lan")).toBeUndefined();
+    expect(detectService("Jellyfin" + "1".repeat(200), "")).toBeUndefined();
+    expect(detectService("jellyfin" + "1".repeat(80), "")).toMatchObject({
+      id: "jellyfin",
+    });
+    expect(performance.now() - started).toBeLessThan(200);
+  });
+});

@@ -64,13 +64,18 @@ export function svgProblems(svg, bytes = Buffer.byteLength(svg)) {
     [/javascript:/i, "contains a javascript: URL"],
     [/\son[a-z]+\s*=/i, "contains an event handler attribute"],
     [/@import|expression\s*\(/i, "contains CSS imports or expressions"],
+    [
+      /(?:-webkit-)?image-set\s*\(|cross-fade\s*\(/i,
+      "contains a CSS image function",
+    ],
   ];
   for (const [pattern, reason] of rules)
     if (pattern.test(svg)) problems.push(reason);
   for (const tag of svg.matchAll(/<([a-zA-Z][\w:.-]*)\b([^>]*)>/g)) {
     const element = tag[1].toLowerCase();
     for (const match of tag[2].matchAll(
-      /\s(?:xlink:)?href\s*=\s*(?:"([^"]*)"|'([^']*)')/gi,
+      // Any namespace prefix can be bound to XLink, so match every *:href.
+      /\s(?:[\w.-]+:)?href\s*=\s*(?:"([^"]*)"|'([^']*)')/gi,
     )) {
       const value = match[1] ?? match[2];
       if (/^#[\w.-]+$/.test(value)) continue;
@@ -87,6 +92,9 @@ export function svgProblems(svg, bytes = Buffer.byteLength(svg)) {
       problems.push(`external url() ${match[1].slice(0, 40)}`);
   for (const match of svg.matchAll(/<style\b[^>]*>([\s\S]*?)<\/style>/gi))
     if (/https?:|\/\//i.test(match[1])) problems.push("style references a URL");
+  for (const match of svg.matchAll(/\sstyle\s*=\s*(?:"([^"]*)"|'([^']*)')/gi))
+    if (/https?:|\/\//i.test(match[1] ?? match[2]))
+      problems.push("style attribute references a URL");
   const open = svg.match(/<svg\b[^>]*>/i);
   if (!open) problems.push("has no <svg> root");
   else if (!/\s(viewBox|width)\s*=/i.test(open[0]))
