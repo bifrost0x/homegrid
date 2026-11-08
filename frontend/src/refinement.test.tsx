@@ -69,7 +69,10 @@ it("clears cached private launcher data after signing out", async () => {
   );
   await screen.findByRole("button", { name: "Remove Atlas from favorites" });
   expect(client.getQueryData(["apps"])).toEqual([app]);
-  await userEvent.click(screen.getByRole("button", { name: "Sign out" }));
+  await userEvent.click(
+    screen.getByRole("button", { name: /^Account menu for / }),
+  );
+  await userEvent.click(screen.getByRole("menuitem", { name: "Sign out" }));
   await screen.findByLabelText("Username");
   await waitFor(() => {
     for (const key of ["apps", "categories", "settings"])
@@ -273,6 +276,11 @@ it("switches settings tabs with keyboard navigation", async () => {
     screen.getByRole("button", { name: "Export configuration" }),
   ).toBeVisible();
   await userEvent.keyboard("{End}");
+  expect(screen.getByRole("tab", { name: "About" })).toHaveAttribute(
+    "aria-selected",
+    "true",
+  );
+  await userEvent.keyboard("{ArrowUp}");
   expect(screen.getByRole("tab", { name: "Account" })).toHaveAttribute(
     "aria-selected",
     "true",

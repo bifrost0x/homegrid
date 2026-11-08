@@ -2,6 +2,7 @@ import { lazy, Suspense, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import { api, type Application, type Category, type Settings } from "../lib";
 import { CategoryForm, ErrorMessage, Modal, saveApp } from "../components";
+import type { SettingsTab } from "../Settings";
 
 // The form carries the service catalog and recognition; load it on first use.
 const ApplicationForm = lazy(() =>
@@ -26,7 +27,7 @@ export type DialogState =
       categoryId?: number;
     }
   | { kind: "category"; category?: Category }
-  | { kind: "settings" }
+  | { kind: "settings"; tab?: SettingsTab }
   | { kind: "delete-app"; app: Application }
   | { kind: "delete-category"; category: Category }
   | null;
@@ -121,6 +122,7 @@ export function DashboardDialogs(props: Props) {
         >
           <Suspense fallback={loading}>
             <SettingsPanel
+              initialTab={dialog.tab}
               previewApp={apps[0]}
               onBusyChange={props.setBusy}
               settings={settings}

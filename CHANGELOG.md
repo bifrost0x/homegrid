@@ -31,6 +31,10 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   services first and searches all logos by name and alias.
   Uploads are written atomically, so an interrupted write never leaves a
   truncated image behind.
+- Settings as an administration area: section navigation, a large sheet
+  with a fixed action bar, an About section with version and project links,
+  and an account menu in the top bar for every section and signing out.
+  On a background, the top bar, heading and categories use frosted glass.
 - Calm application cards: edit, duplicate and delete live in a keyboard-accessible
   card menu; the favorite toggle appears on hover or focus and stays visible
   once set. The dashboard heading summarizes applications and categories.

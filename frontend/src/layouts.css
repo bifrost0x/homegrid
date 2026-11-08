@@ -226,9 +226,6 @@
   text-underline-offset: 4px;
   min-height: 44px;
 }
-.settings-tabs {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-}
 .settings-section-heading > p {
   font-size: 13px;
   line-height: 1.6;
@@ -267,27 +264,11 @@
   height: 24px;
 }
 @media (min-width: 900px) {
-  .dialog.wide:has(.settings-panel[data-tab="Appearance"]),
-  .dialog.wide:has(.settings-panel[data-tab="Layout"]) {
-    max-width: 1080px;
-  }
-  .appearance-layout {
-    grid-template-columns: minmax(0, 1fr) 330px;
-    gap: 36px;
-  }
   .design-thumbnail {
     height: 128px;
   }
 }
 @media (max-width: 560px) {
-  .settings-tabs [role="tab"] {
-    font-size: 11px;
-    padding: 10px 4px;
-    gap: 4px;
-  }
-  .settings-tabs [role="tab"] > svg {
-    display: none;
-  }
   .dashboard .app-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -296,29 +277,60 @@
   }
 }
 
-/* Keep the scene visible while giving every reading surface a dependable ground. */
+/* On a background, chrome becomes frosted glass: readable, but the image
+   still shows through. Only a handful of elements get backdrop filters, so
+   large dashboards stay smooth on modest hardware. */
+.dashboard:has(.custom-background) {
+  --glass: color-mix(in srgb, var(--surface) 74%, transparent);
+  --glass-line: color-mix(in srgb, var(--line) 70%, transparent);
+}
+.dashboard:has(.custom-background) > .topbar,
+.dashboard:has(.custom-background)
+  :is(
+    .page-heading,
+    .category-heading,
+    .favorites-heading,
+    .organize-guidance
+  ) {
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  backdrop-filter: blur(18px) saturate(140%);
+}
 .dashboard:has(.custom-background) > .topbar {
-  background: color-mix(in srgb, var(--page) 96%, transparent);
-  border-radius: 0 0 16px 16px;
-  border-bottom: 0;
+  border-top: 0;
+  border-radius: 0 0 18px 18px;
 }
 .dashboard:has(.custom-background) .page-heading {
-  padding: 24px 28px;
-  border-radius: 16px;
-  background: color-mix(in srgb, var(--page) 96%, transparent);
+  padding: 22px 26px;
+  border-radius: 18px;
 }
 .dashboard:has(.custom-background) .category-heading {
-  background: color-mix(in srgb, var(--page) 96%, transparent);
-  border-radius: 10px;
-  padding: 7px 10px;
+  border-radius: 999px;
+  padding: 4px 12px 4px 6px;
   margin: 0 0 13px;
+}
+.dashboard:has(.custom-background)
+  .category-section:not(.category-drop-target)
+  > .category-heading {
+  width: fit-content;
+  max-width: 100%;
+}
+.dashboard:has(.custom-background) .category-drop-target > .category-heading {
+  border-radius: 12px;
 }
 .dashboard:has(.custom-background) :is(.favorites-heading, .organize-guidance) {
   width: fit-content;
   max-width: 100%;
-  padding: 8px 12px;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--page) 96%, transparent);
+  padding: 6px 12px;
+  border-radius: 999px;
+}
+.dashboard:has(.custom-background) :is(.app-card, .favorite-link) {
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  border-color: var(--glass-line);
+}
+.dashboard:has(.custom-background) :is(.dashboard-search, .secondary) {
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
 }
 .appearance-preview:has(.preview-background)
   :is(.preview-brand, .preview-category) {

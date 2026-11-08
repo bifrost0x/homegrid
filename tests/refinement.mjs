@@ -169,6 +169,10 @@ try {
       await appearance.focus();
       await page.keyboard.press("End");
       await expect(
+        d.getByRole("tab", { name: "About", exact: true }),
+      ).toHaveAttribute("aria-selected", "true");
+      await page.keyboard.press("ArrowUp");
+      await expect(
         d.getByRole("tab", { name: "Account", exact: true }),
       ).toHaveAttribute("aria-selected", "true");
       await expect(
@@ -256,7 +260,8 @@ try {
       );
       assert.equal((await other.request.get(base + "/api/apps")).status(), 401);
       await d.getByRole("button", { name: "Done", exact: true }).click();
-      await page.getByRole("button", { name: "Sign out" }).click();
+      await page.getByRole("button", { name: /^Account menu for / }).click();
+      await page.getByRole("menuitem", { name: "Sign out" }).click();
       await page.getByLabel("Username", { exact: true }).fill("testadmin");
       await page.getByLabel("Password", { exact: true }).fill(original);
       await page.getByRole("button", { name: "Sign in", exact: true }).click();
