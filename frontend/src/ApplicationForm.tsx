@@ -24,7 +24,8 @@ import {
   serviceTemplates,
   type ServiceTemplate,
 } from "./catalog";
-import { serviceIconUrl, serviceIcons } from "./serviceIcons";
+import { serviceIconUrl } from "./serviceIcons";
+import { findServiceIcon } from "./serviceIndex";
 import { detectService, type DetectedService } from "./serviceDetection";
 import { IconPicker } from "./IconPicker";
 import { appSchema } from "./appSchema";
@@ -366,7 +367,7 @@ export function ApplicationForm({
                   : icon.startsWith("/uploads/")
                     ? "Custom image"
                     : serviceIconUrl(icon)
-                      ? serviceIcons[icon.slice("service:".length)].name
+                      ? (findServiceIcon(icon)?.name ?? "Service logo")
                       : icon.replace("builtin:", "")}
               </strong>
               <p>Choose an icon or upload your own.</p>

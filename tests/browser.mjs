@@ -154,7 +154,8 @@ try {
     });
     await page.reload();
     await check("logout and login", async () => {
-      await page.getByRole("button", { name: "Sign out" }).click();
+      await page.getByRole("button", { name: /^Account menu for / }).click();
+      await page.getByRole("menuitem", { name: "Sign out" }).click();
       await expect(
         page.getByRole("button", { name: "Sign in", exact: true }),
       ).toBeVisible();
@@ -451,7 +452,8 @@ try {
           .fill("Files and backups");
         const other = await context.newPage();
         await other.goto(base);
-        await other.getByRole("button", { name: "Sign out" }).click();
+        await other.getByRole("button", { name: /^Account menu for / }).click();
+        await other.getByRole("menuitem", { name: "Sign out" }).click();
         await login(other);
         await other.close();
         await d.getByRole("button", { name: "Save changes" }).click();

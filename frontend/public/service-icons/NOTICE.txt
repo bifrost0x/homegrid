@@ -1,16 +1,22 @@
 Service icons
 
-340 SVGs: Dashboard Icons, Homarr Labs and contributors.
+2583 SVGs: Dashboard Icons, Homarr Labs and contributors.
 Source: https://github.com/homarr-labs/dashboard-icons/blob/59f1e9a4108f4f510f41e9588f078631de1e1405
 Navidrome source: https://github.com/homarr-labs/dashboard-icons/blob/45ea6c2595231d66b855e81b3fd99d3e8904cb36/svg/navidrome.svg
 License: Apache-2.0; see LICENSE.txt.
 Navidrome artwork modified for HomeGrid: decorative rotation removed to keep the artwork static.
-The other 339 SVGs from this collection are unchanged.
+The other 2582 SVGs from this collection were minified for HomeGrid:
+comments, metadata, editor-specific markup and insignificant whitespace were removed; shapes, path data, colors and text are unchanged.
 
 Linkwarden SVG: selfh.st Icons, selfh.st and contributors.
 Source: https://github.com/selfhst/icons/blob/b2378abb1a0c64149bb7621815b849d89602de23/svg/linkwarden.svg
 License: Creative Commons Attribution 4.0 International; see LICENSE-selfhst.txt.
 The Linkwarden artwork is unchanged.
+
+WebSSH SVG: WebSSH, bifrost0x and contributors.
+Source: https://github.com/bifrost0x/webssh/blob/26257eba3a7c6691aedb42b7aa9874d2e3753392/static/images/webssh-logo.svg
+License: Apache License 2.0; see LICENSE.txt.
+The WebSSH artwork is unchanged.
 
 Product names, logos and trademarks belong to their respective owners. Used for
 service identification only; no endorsement is implied. Collection licenses

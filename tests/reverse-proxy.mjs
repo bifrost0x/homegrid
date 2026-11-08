@@ -25,7 +25,8 @@ try {
   await expect(
     page.getByRole("button", { name: "Open settings" }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Sign out" }).click();
+  await page.getByRole("button", { name: /^Account menu for / }).click();
+  await page.getByRole("menuitem", { name: "Sign out" }).click();
   await expect(
     page.getByRole("heading", { name: "Welcome home." }),
   ).toBeVisible();

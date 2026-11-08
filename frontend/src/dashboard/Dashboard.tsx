@@ -17,6 +17,12 @@ import {
   Settings2,
   SlidersHorizontal,
   Sparkles,
+  ChevronDown,
+  Paintbrush,
+  LayoutGrid,
+  Archive,
+  KeyRound,
+  Info,
 } from "lucide-react";
 import { api, moveApplication, type Application, type Session } from "../lib";
 import { on } from "../events";
@@ -26,6 +32,7 @@ import { applicationDrop, type ApplicationOrder } from "../sorting";
 import { FirstRun } from "../FirstRun";
 import { Brand } from "../Brand";
 import { AppDragPreview } from "./AppCard";
+import { CardMenu } from "./CardMenu";
 import { CategorySection } from "./CategorySection";
 import { DashboardContext, type DashboardState } from "./context";
 import { DashboardDialogs, type DialogState } from "./DashboardDialogs";
@@ -42,6 +49,14 @@ import { useAppearance } from "./useAppearance";
 import { useCommandShortcut } from "./useCommandShortcut";
 import { useDashboardData } from "./useDashboardData";
 import { useOrganizeDrag } from "./useOrganizeDrag";
+
+const settingsSections = [
+  { tab: "Appearance", label: "Appearance", Icon: Paintbrush },
+  { tab: "Layout", label: "Layout", Icon: LayoutGrid },
+  { tab: "Backup", label: "Backup and import", Icon: Archive },
+  { tab: "Account", label: "Password", Icon: KeyRound },
+  { tab: "About", label: "About HomeGrid", Icon: Info },
+] as const;
 
 function count(n: number, singular: string, plural: string) {
   return n + " " + (n === 1 ? singular : plural);
@@ -243,19 +258,58 @@ export function Dashboard({ session }: { session: Session }) {
           >
             <Settings2 size={20} />
           </button>
-          <button
-            className="icon-button"
-            aria-label="Sign out"
-            title={"Signed in as " + session.username}
-            onClick={() =>
-              void action(async () => {
-                await api("/auth/logout", "POST");
-                await client.invalidateQueries({ queryKey: ["session"] });
-              })
+          <CardMenu
+            label="Account"
+            triggerLabel={null}
+            triggerClassName="account-trigger"
+            trigger={
+              <>
+                <span className="account-avatar" aria-hidden="true">
+                  {session.username.slice(0, 1).toUpperCase()}
+                </span>
+                <span className="visually-hidden">
+                  {"Account menu for " + session.username}
+                </span>
+                <span className="account-name" aria-hidden="true">
+                  {session.username}
+                </span>
+                <ChevronDown size={15} aria-hidden="true" />
+              </>
             }
-          >
-            <LogOut size={19} />
-          </button>
+            heading={
+              <>
+                <small>Signed in as</small>
+                <strong>{session.username}</strong>
+              </>
+            }
+            items={[
+              ...settingsSections.map(({ tab, label, Icon }) => ({
+                label,
+                icon: <Icon size={15} />,
+                onSelect: () => setDialog({ kind: "settings" as const, tab }),
+              })),
+              ...(logoSuggestions.length
+                ? [
+                    {
+                      label: "Find logos",
+                      icon: <Sparkles size={15} />,
+                      separated: true,
+                      onSelect: () => setReviewLogos(true),
+                    },
+                  ]
+                : []),
+              {
+                label: "Sign out",
+                icon: <LogOut size={15} />,
+                separated: true,
+                onSelect: () =>
+                  void action(async () => {
+                    await api("/auth/logout", "POST");
+                    await client.invalidateQueries({ queryKey: ["session"] });
+                  }),
+              },
+            ]}
+          />
         </nav>
       </header>
       <main className="main-content">

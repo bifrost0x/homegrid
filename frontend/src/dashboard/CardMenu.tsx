@@ -16,6 +16,8 @@ export interface CardMenuItem {
   name?: string;
   icon: ReactNode;
   danger?: boolean;
+  /** Draws a divider above this item. */
+  separated?: boolean;
   onSelect: () => void;
 }
 
@@ -30,10 +32,24 @@ export function CardMenu({
   label,
   items,
   disabled,
+  triggerLabel,
+  trigger: triggerContent,
+  triggerClassName = "icon-button card-menu-trigger",
+  heading,
 }: {
   label: string;
   items: CardMenuItem[];
   disabled?: boolean;
+  /**
+   * Accessible name of the trigger; defaults to "More actions for <label>".
+   * Pass null when the trigger content already names it.
+   */
+  triggerLabel?: string | null;
+  /** Visible trigger content; defaults to a "more" icon. */
+  trigger?: ReactNode;
+  triggerClassName?: string;
+  /** Non-interactive context shown above the items. */
+  heading?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState<{ top: number; left: number }>();
@@ -121,8 +137,12 @@ export function CardMenu({
       <button
         ref={trigger}
         type="button"
-        className={"icon-button card-menu-trigger" + (open ? " open" : "")}
-        aria-label={"More actions for " + label}
+        className={triggerClassName + (open ? " open" : "")}
+        aria-label={
+          triggerLabel === null
+            ? undefined
+            : (triggerLabel ?? "More actions for " + label)
+        }
         aria-haspopup="menu"
         aria-expanded={open}
         aria-controls={open ? id : undefined}
@@ -135,7 +155,7 @@ export function CardMenu({
           }
         }}
       >
-        <MoreHorizontal size={16} />
+        {triggerContent ?? <MoreHorizontal size={16} />}
       </button>
       {open &&
         createPortal(
@@ -152,6 +172,11 @@ export function CardMenu({
             }
             onKeyDown={onMenuKeyDown}
           >
+            {heading && (
+              <div className="card-menu-heading" role="presentation">
+                {heading}
+              </div>
+            )}
             {items.map((item) => (
               <button
                 key={item.label}
@@ -160,7 +185,9 @@ export function CardMenu({
                 tabIndex={-1}
                 aria-label={item.name}
                 className={
-                  "card-menu-item" + (item.danger ? " destructive" : "")
+                  "card-menu-item" +
+                  (item.danger ? " destructive" : "") +
+                  (item.separated ? " separated" : "")
                 }
                 onClick={() => {
                   // Return focus to the trigger first so dialogs restore it on close.

@@ -3,7 +3,8 @@ import type { IconColor } from "./lib";
 
 // One curated entry per bundled service logo. service-catalog.json is the
 // single source of truth; scripts/sync-service-icons.mjs derives the icon
-// files, serviceIcons.ts and the backend allowlist from it.
+// files and the backend allowlist from it, and adds the extended tier
+// (serviceIconsExtended.ts) from the upstream collection.
 export interface ServiceEntry {
   id: string;
   name: string;

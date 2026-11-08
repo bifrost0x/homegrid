@@ -27,13 +27,20 @@ func TestValidIconAcceptsGeneratedServiceLogos(t *testing.T) {
 			t.Fatalf("new service:%s rejected", id)
 		}
 	}
+	// Extended logos keep their upstream names, dashes included.
+	for _, id := range []string{"webssh", "ugreen", "sshwifty", "unifi-voucher-site", "13ft"} {
+		if !ValidIcon("service:" + id) {
+			t.Fatalf("extended service:%s rejected", id)
+		}
+	}
 }
 
 func TestValidIconRejectsUnknownServiceLogos(t *testing.T) {
 	for _, icon := range []string{
 		"service:", "service:unknown", "service:Jellyfin", "service:jellyfin.svg", "service:../jellyfin",
 		"service:jellyfin?x=1", "service: jellyfin", "service:__proto__", "Service:jellyfin", "jellyfin",
-		"service:open-webui", "https://remote.invalid/icon.svg", "builtin:jellyfin",
+		// open-webui.svg backs the curated "openwebui" id, so it is no separate logo.
+		"service:open-webui", "service:unifi-voucher-site.svg", "service:-unifi", "https://remote.invalid/icon.svg", "builtin:jellyfin",
 	} {
 		if ValidIcon(icon) {
 			t.Fatalf("%q accepted", icon)

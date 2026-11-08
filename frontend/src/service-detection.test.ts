@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
   AMBIGUOUS_KEYS,
+  COMMON_WORDS,
   GENERIC_LABELS,
   detectService,
 } from "./serviceDetection";
 import { serviceCatalog } from "./serviceCatalog";
+import { serviceIcons } from "./serviceIndex";
 
 const detected = (name: string, url = "") => detectService(name, url)?.id;
 const signal = (name: string, url = "") => detectService(name, url)?.signal;
@@ -102,7 +104,9 @@ describe("detectService", () => {
       ["My server", ""],
       ["Media", ""],
       ["Cinema", "https://media.home"],
-      ["Vault", "https://vault.example.com"],
+      ["", "https://vault.example.com"],
+      ["My vault", ""],
+      ["Outline notes", "https://outline.home.example"],
     ])
       expect(detectService(name, url), `${name} ${url}`).toBeUndefined();
     expect(detected("HashiCorp Vault")).toBe("vault");
@@ -115,13 +119,118 @@ describe("detectService", () => {
     const ids = new Set(serviceCatalog.map((service) => service.id));
     for (const service of serviceCatalog) {
       const result = detectService(service.name, "");
-      if (AMBIGUOUS_KEYS.has(service.id) && result?.id !== service.id) continue;
       expect(result?.id, service.name).toBe(service.id);
       expect(ids.has(result!.id)).toBe(true);
       expect(detectService(service.name, "")).toEqual(result);
     }
     for (const label of GENERIC_LABELS)
       expect(detectService(label, `https://${label}.lan`)).toBeUndefined();
+  });
+});
+
+describe("ambiguous names", () => {
+  it("match only as the entire application name", () => {
+    for (const key of AMBIGUOUS_KEYS) {
+      expect(detected(key), key).toBe(key === "vault" ? undefined : key);
+      expect(detected("", `https://${key}.home.example`), key).toBeUndefined();
+      expect(detected(`My ${key}`), key).toBeUndefined();
+    }
+    expect(detectService("Outline", "https://outline.home.example")).toEqual({
+      id: "outline",
+      name: "Outline",
+      icon: "service:outline",
+      signal: "name",
+    });
+    // A bare "Vault" is usually Vaultwarden, so it stays unrecognized.
+    expect(detected("Vault")).toBeUndefined();
+    expect(detected("Outline 2")).toBe("outline");
+  });
+});
+
+describe("extended logos", () => {
+  it("resolves names from this dashboard", () => {
+    expect(detected("Unifi Gateway")).toBe("unifi");
+    expect(detected("UniFi")).toBe("unifi");
+    expect(detected("UGreen NAS")).toBe("ugreen");
+    expect(detected("UGOS")).toBe("ugreen");
+    expect(detected("Proxmox Backup")).toBe("proxmoxbackupserver");
+    expect(detected("Outline")).toBe("outline");
+    expect(detected("WebSSH")).toBe("webssh");
+    expect(detected("Web SSH")).toBe("webssh");
+    expect(detected("IT-Tools")).toBe("itools");
+    expect(detected("Cyberchef")).toBe("cyberchef");
+    expect(detected("Stirling PDF")).toBe("stirlingpdf");
+    expect(detected("Technitium")).toBe("technitium");
+    expect(detected("Technitium DNS")).toBe("technitium");
+    expect(detected("", "https://ugreen.home.lan")).toBe("ugreen");
+  });
+
+  it("recognizes extended names, aliases and hostname labels", () => {
+    expect(detectService("Sshwifty", "")).toEqual({
+      id: "sshwifty",
+      name: "Sshwifty",
+      icon: "service:sshwifty",
+      signal: "name",
+    });
+    expect(detected("", "https://sshwifty.home.lan")).toBe("sshwifty");
+    expect(detected("Ubiquiti UniFi")).toBe("ubiquiti-unifi");
+    expect(detected("Unifi Voucher Site")).toBe("unifi-voucher-site");
+    expect(detected("Paywall remover")).toBe("13ft");
+  });
+
+  it("lets curated services win shared keys and keeps ports curated", () => {
+    // Upstream has a separate "kibana" logo; the curated entry keeps the id.
+    expect(detected("Kibana")).toBe("kibana");
+    expect(detected("TrueNAS")).toBe("truenas");
+    // "truenasscale" is a curated alias, so the extended logo does not take it.
+    expect(detected("My TrueNAS Scale")).toBe("truenas");
+    const curated = new Set(serviceCatalog.map((service) => service.id));
+    for (const port of [80, 443, 3000, 8080])
+      expect(detected("", `http://10.0.0.1:${port}`)).toBeUndefined();
+    expect(curated.has(detected("", "http://10.0.0.1:8096")!)).toBe(true);
+  });
+
+  it("ignores ordinary words that happen to be extended product names", () => {
+    for (const word of COMMON_WORDS) {
+      const result = detectService(word, `https://${word}.home.lan`);
+      if (result)
+        expect(
+          serviceIcons.find((icon) => icon.id === result.id)?.curated,
+          word,
+        ).toBe(true);
+    }
+    for (const [name, url] of [
+      ["Files", "https://files.home.lan"],
+      ["Router", "http://router.lan"],
+      ["Media", "https://media.home"],
+      ["Photos", "https://photos.example.com"],
+      ["Backup", ""],
+      ["Wiki", "https://wiki.lan"],
+      ["Status", "https://status.lan"],
+    ])
+      expect(detectService(name, url), name).toBeUndefined();
+  });
+});
+
+describe("performance", () => {
+  it("stays well below 50 ms per call with the full catalog", () => {
+    expect(serviceIcons.length).toBeGreaterThan(2000);
+    const long = Array.from({ length: 30 }, (_, i) => "label" + i).join(".");
+    const inputs: [string, string][] = [
+      ["Unifi Gateway", "https://unifi.home.lan"],
+      ["", "https://" + long + ".lan/" + "x".repeat(900)],
+      ["word ".repeat(20).trim(), "https://a-b-c-d-e-f-g-h-i-j-k-l.lan"],
+      ["", "https://" + "a-".repeat(500) + "b.lan"],
+      ["Nothing to see here", "http://10.0.0.1:12345"],
+    ];
+    let slowest = 0;
+    for (let round = 0; round < 20; round++)
+      for (const [name, url] of inputs) {
+        const started = performance.now();
+        detectService(name, url);
+        slowest = Math.max(slowest, performance.now() - started);
+      }
+    expect(slowest).toBeLessThan(50);
   });
 });
 
