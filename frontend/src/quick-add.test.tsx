@@ -1,7 +1,7 @@
 import { it, expect, vi, afterEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ApplicationForm } from "./components";
+import { ApplicationForm } from "./ApplicationForm";
 import { duplicateName, type Application } from "./lib";
 import { serviceTemplates, findIcons } from "./catalog";
 import { serviceIcons } from "./serviceIcons";
@@ -134,7 +134,7 @@ it("opens the card duplicate control as a create dialog and waits for explicit s
     screen.getByRole("menuitem", { name: "Duplicate Cinema" }),
   );
   const dialog = screen.getByRole("dialog", { name: "Duplicate application" });
-  expect(within(dialog).getByLabelText("Application name")).toHaveValue(
+  expect(await within(dialog).findByLabelText("Application name")).toHaveValue(
     "Cinema copy",
   );
   expect(

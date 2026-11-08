@@ -1,7 +1,7 @@
 import { expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ApplicationForm } from "./components";
+import { ApplicationForm } from "./ApplicationForm";
 import type { Application } from "./lib";
 
 const category = { id: 1, name: "General", sort_order: 0, collapsed: false };

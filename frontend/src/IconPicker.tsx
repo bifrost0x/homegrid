@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Globe } from "lucide-react";
-import { findIcons } from "./catalog";
+import { findIcons } from "./builtinIcons";
 import { serviceIcons } from "./serviceIcons";
 
 function ServiceThumbnail({ src }: { src: string }) {

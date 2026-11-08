@@ -87,6 +87,8 @@ async function add(name, url, category = "General", description = "") {
 async function settings(tab = "Appearance") {
   await page.getByRole("button", { name: "Open settings" }).click();
   const dialog = page.getByRole("dialog");
+  // The settings panel loads on first use; wait for it before choosing a tab.
+  await dialog.getByRole("tablist", { name: "Settings" }).waitFor();
   const target = dialog.getByRole("tab", { name: tab, exact: true });
   if (await target.count()) await target.click();
   return dialog;

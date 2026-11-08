@@ -1,4 +1,3 @@
-import { z } from "zod";
 import { emit } from "./events";
 export type IconColor =
   "auto" | "sage" | "blue" | "amber" | "rose" | "violet" | "cyan";
@@ -115,26 +114,11 @@ export async function api<T>(
     }
     throw new Error(message);
   }
-  if (response.headers.get("X-HomeGrid-Undo"))
-    emit("homegrid:undo-available");
+  if (response.headers.get("X-HomeGrid-Undo")) emit("homegrid:undo-available");
   return response.status === 204
     ? (undefined as T)
     : (response.json() as Promise<T>);
 }
-export const appSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(1, "Enter an application name.")
-    .max(100)
-    .refine(
-      (value) => new TextEncoder().encode(value).length <= 100,
-      "Use an application name of at most 100 UTF-8 bytes.",
-    ),
-  url: z
-    .url("Enter a complete http:// or https:// URL.")
-    .refine((v) => /^https?:\/\//i.test(v), "Use an HTTP or HTTPS URL."),
-});
 export function filterApps(
   apps: Application[],
   categories: Category[],
