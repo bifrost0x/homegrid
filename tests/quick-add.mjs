@@ -184,7 +184,13 @@ try {
         })
         .click();
       await page
-        .getByRole("button", { name: "Edit Jellyfin Lab", exact: true })
+        .getByRole("button", {
+          name: "More actions for Jellyfin Lab",
+          exact: true,
+        })
+        .click();
+      await page
+        .getByRole("menuitem", { name: "Edit Jellyfin Lab", exact: true })
         .click();
       const d = page.getByRole("dialog");
       await d.getByLabel("Search icons").fill("");
@@ -209,7 +215,13 @@ try {
     async () => {
       const before = await api("/apps");
       await page
-        .getByRole("button", { name: "Duplicate Jellyfin Lab", exact: true })
+        .getByRole("button", {
+          name: "More actions for Jellyfin Lab",
+          exact: true,
+        })
+        .click();
+      await page
+        .getByRole("menuitem", { name: "Duplicate Jellyfin Lab", exact: true })
         .click();
       const d = page.getByRole("dialog");
       assert.ok(
@@ -231,7 +243,13 @@ try {
     "saving a duplicate preserves category, icon, tint, favorite and opening behavior",
     async () => {
       await page
-        .getByRole("button", { name: "Duplicate Jellyfin Lab", exact: true })
+        .getByRole("button", {
+          name: "More actions for Jellyfin Lab",
+          exact: true,
+        })
+        .click();
+      await page
+        .getByRole("menuitem", { name: "Duplicate Jellyfin Lab", exact: true })
         .click();
       const d = page.getByRole("dialog");
       await d

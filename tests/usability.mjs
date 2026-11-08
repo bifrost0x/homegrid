@@ -248,7 +248,13 @@ try {
           String(!app.favorite),
         );
         await card
-          .getByRole("button", { name: `Edit ${app.name}`, exact: true })
+          .getByRole("button", {
+            name: `More actions for ${app.name}`,
+            exact: true,
+          })
+          .tap();
+        await touch
+          .getByRole("menuitem", { name: `Edit ${app.name}`, exact: true })
           .tap();
         await touch
           .getByLabel("Description", { exact: false })

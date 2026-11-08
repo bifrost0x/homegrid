@@ -214,11 +214,6 @@ svg {
   align-items: center;
   gap: 8px;
 }
-.private-label {
-  font-size: 12px;
-  color: var(--muted);
-  margin-right: 24px;
-}
 .icon-button,
 .drag-handle {
   background: transparent;
@@ -381,18 +376,132 @@ kbd {
   min-width: 0;
   transition:
     border-color 0.2s,
+    box-shadow 0.2s,
     transform 0.2s;
   overflow: hidden;
 }
-.app-card:hover {
-  border-color: var(--accent);
+.app-card:hover,
+.app-card:focus-within {
+  border-color: color-mix(in srgb, var(--accent) 70%, var(--line));
+  box-shadow: 0 10px 28px -18px color-mix(in srgb, var(--text) 45%, transparent);
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .app-card:not(.organizing):hover {
+    transform: translateY(-2px);
+  }
 }
 .app-link {
-  min-height: 108px;
-  padding: 20px 17px 26px;
+  min-height: 96px;
+  padding: 18px 44px 18px 17px;
   display: flex;
   align-items: center;
   gap: 13px;
+}
+.app-link:focus-visible {
+  outline-offset: -3px;
+}
+/* Card controls: favorite and the action menu sit in the top-right corner and
+   appear on hover or keyboard focus. A set favorite and touch devices keep
+   them visible. Organize mode moves the controls into a row under the card. */
+.card-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: 10px;
+}
+.app-card:hover > .card-actions,
+.app-card:focus-within > .card-actions {
+  background: var(--surface);
+}
+.card-actions .icon-button,
+.card-actions .drag-handle {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+}
+.card-actions > * {
+  opacity: 0;
+  transition:
+    opacity 0.15s,
+    background-color 0.15s,
+    color 0.15s;
+}
+.app-card:hover .card-actions > *,
+.app-card:focus-within .card-actions > *,
+.card-actions .card-menu-trigger.open,
+.app-card.is-favorite .favorite-toggle {
+  opacity: 1;
+}
+.favorite-toggle[aria-pressed="true"] {
+  color: var(--accent-ink, var(--accent));
+}
+.favorite-toggle:hover {
+  background: var(--accent-soft);
+  color: var(--accent-ink, var(--accent));
+}
+@media (hover: none) {
+  .card-actions > * {
+    opacity: 1;
+  }
+}
+.app-card.organizing > .card-actions {
+  position: static;
+  justify-content: flex-end;
+  padding: 0 8px 6px;
+}
+.app-card.organizing > .card-actions > * {
+  opacity: 1;
+}
+.app-card.organizing > .app-link {
+  padding-right: 17px;
+  padding-bottom: 8px;
+}
+.card-menu {
+  position: fixed;
+  z-index: 60;
+  min-width: 168px;
+  padding: 5px;
+  display: grid;
+  gap: 1px;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px -12px #0007;
+}
+.card-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+.card-menu-item svg {
+  color: var(--muted);
+}
+.card-menu-item:hover,
+.card-menu-item:focus-visible {
+  background: var(--accent-soft);
+  outline: none;
+}
+.card-menu-item.destructive,
+.card-menu-item.destructive svg {
+  color: #a53434;
+}
+[data-theme="dark"] .card-menu-item.destructive,
+[data-theme="dark"] .card-menu-item.destructive svg {
+  color: #f19a91;
 }
 .app-icon {
   width: 43px;
@@ -432,34 +541,10 @@ kbd {
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.launch-arrow {
-  color: var(--muted);
-  opacity: 0.55;
-  align-self: flex-start;
-  margin-top: 3px;
-}
-.card-actions {
-  display: flex;
-  position: absolute;
-  bottom: 3px;
-  right: 8px;
-  gap: 0;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-.app-card:hover .card-actions,
-.app-card:focus-within .card-actions {
-  opacity: 1;
-}
-.card-actions .icon-button,
-.card-actions .drag-handle {
-  width: 23px;
-  height: 23px;
-}
 .compact .app-link {
-  min-height: 88px;
+  min-height: 76px;
   padding-top: 12px;
-  padding-bottom: 24px;
+  padding-bottom: 12px;
 }
 .square .app-card {
   border-radius: 3px;
@@ -507,18 +592,6 @@ kbd {
 }
 .first-app .button {
   margin-top: 26px;
-}
-.page-footer {
-  display: flex;
-  justify-content: space-between;
-  font-size: 11px;
-  color: var(--muted);
-  border-top: 1px solid var(--line);
-  margin-top: 80px;
-  padding: 24px 0 30px;
-}
-.page-footer > span:first-child {
-  font-weight: 650;
 }
 .custom-background {
   position: fixed;
@@ -936,15 +1009,6 @@ legend {
   .app-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .private-label {
-    display: none;
-  }
-  .card-actions {
-    opacity: 1;
-  }
-  .app-link {
-    padding-bottom: 29px;
-  }
   .category-actions .icon-button {
     width: 26px;
   }
@@ -1000,12 +1064,8 @@ legend {
     grid-template-columns: 1fr;
   }
   .app-link {
-    min-height: 91px;
-    padding: 16px 17px 27px;
-  }
-  .card-actions {
-    right: 10px;
-    bottom: 4px;
+    min-height: 84px;
+    padding: 16px 44px 16px 16px;
   }
   .category-list {
     gap: 28px;
@@ -1030,11 +1090,6 @@ legend {
   }
   .first-app p {
     font-size: 13px;
-  }
-  .page-footer {
-    margin-top: 45px;
-    font-size: 10px;
-    gap: 15px;
   }
   .dialog {
     padding: 22px;
@@ -1184,31 +1239,6 @@ legend {
   margin: -12px 0 25px;
   line-height: 1.5;
 }
-.card-actions {
-  opacity: 0.78;
-  gap: 1px;
-  right: 8px;
-  bottom: 5px;
-}
-.card-actions .icon-button,
-.card-actions .drag-handle {
-  width: 27px;
-  height: 27px;
-}
-.card-actions .is-favorite {
-  color: var(--accent-ink, var(--accent));
-  opacity: 1;
-}
-.card-actions .favorite-toggle:hover {
-  background: var(--accent-soft);
-  color: var(--accent-ink, var(--accent));
-}
-.app-link {
-  padding-bottom: 31px;
-}
-.organizing .app-link {
-  padding-bottom: 35px;
-}
 .settings-tabs {
   display: flex;
   gap: 4px;
@@ -1295,14 +1325,7 @@ legend {
 .category-toggle {
   min-height: 33px;
 }
-.compact .app-link {
-  min-height: 99px;
-  padding-bottom: 32px;
-}
 @media (max-width: 800px) {
-  .card-actions {
-    opacity: 1;
-  }
   .heading-actions {
     margin-top: 0;
     align-self: auto;
@@ -1341,25 +1364,21 @@ legend {
   }
   .app-link,
   .compact .app-link {
-    min-height: 133px;
-    padding-bottom: 53px;
+    min-height: 76px;
+    padding-right: 104px;
   }
-  .organizing .app-link {
-    padding-bottom: 53px;
+  .card-actions {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .app-card.organizing > .card-actions {
+    transform: none;
+    flex-wrap: wrap;
   }
   .card-actions .icon-button,
   .card-actions .drag-handle {
     width: 44px;
     height: 44px;
-  }
-  .card-actions {
-    right: 6px;
-    bottom: 3px;
-    gap: 0;
-  }
-  .card-actions svg {
-    width: 16px;
-    height: 16px;
   }
   .category-heading {
     flex-wrap: wrap;
@@ -1878,20 +1897,8 @@ legend {
   .service-chooser-toggle small {
     font-size: 10px;
   }
-  .organizing .card-actions {
-    display: grid;
-    grid-template-columns: repeat(4, 44px);
-    width: max-content;
-  }
-  .organizing .app-link {
-    min-height: 177px;
-    padding-bottom: 97px;
-  }
   .organizing .app-copy {
     align-self: center;
-  }
-  .organizing .launch-arrow {
-    margin-top: 0;
   }
 }
 .icon-navigation-hint {

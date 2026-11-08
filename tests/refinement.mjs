@@ -115,7 +115,13 @@ try {
     "editing preserves the favorite and backups include it",
     async () => {
       await page
-        .getByRole("button", { name: `Edit ${first.name}`, exact: true })
+        .getByRole("button", {
+          name: `More actions for ${first.name}`,
+          exact: true,
+        })
+        .click();
+      await page
+        .getByRole("menuitem", { name: `Edit ${first.name}`, exact: true })
         .click();
       const d = page.getByRole("dialog");
       await d.getByRole("button", { name: "Save changes" }).click();

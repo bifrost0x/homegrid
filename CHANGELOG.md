@@ -19,6 +19,9 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   84 searchable icons, icon colors, browser favicons and raster image uploads.
   Uploads are written atomically, so an interrupted write never leaves a
   truncated image behind.
+- Calm application cards: edit, duplicate and delete live in a keyboard-accessible
+  card menu; the favorite toggle appears on hover or focus and stays visible
+  once set. The dashboard heading summarizes applications and categories.
 - Optional example cards that require configuration before launch.
 - In-dashboard Organize mode with drag-and-drop, keyboard and explicit sorting
   controls; empty categories are hidden during normal use.

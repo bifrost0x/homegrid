@@ -2,6 +2,7 @@ import { useState } from "react";
 import { KeyRound, Check } from "lucide-react";
 import { z } from "zod";
 import { api, setSession, type Session } from "./lib";
+import { emit } from "./events";
 import { ErrorMessage } from "./components";
 const passwordSchema = z
   .object({
@@ -58,11 +59,7 @@ export function PasswordForm() {
               new_password: password,
             });
             setSession(session);
-            window.dispatchEvent(
-              new CustomEvent("homegrid:session-refreshed", {
-                detail: session,
-              }),
-            );
+            emit("homegrid:session-refreshed", session);
             setCurrent("");
             setPassword("");
             setConfirmation("");

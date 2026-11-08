@@ -88,9 +88,9 @@
   gap: 8px;
 }
 .dashboard[data-style="list"] .app-link {
-  min-height: 76px;
+  min-height: 64px;
   padding-top: 12px;
-  padding-bottom: 26px;
+  padding-bottom: 12px;
 }
 .dashboard[data-style="tiles"] .app-link,
 .appearance-preview[data-style="tiles"] .app-link {
@@ -136,8 +136,6 @@
     .page-heading p,
     .category-toggle span,
     .category-toggle > svg,
-    .private-label,
-    .page-footer,
     .favorites-heading,
     .organize-guidance,
     .first-app p,
@@ -459,12 +457,6 @@
   border-radius: 8px;
   background: color-mix(in srgb, var(--page) 96%, transparent);
 }
-.dashboard:has(.custom-background) .page-footer {
-  padding: 18px;
-  border-radius: 12px 12px 0 0;
-  border-top: 0;
-  background: color-mix(in srgb, var(--page) 96%, transparent);
-}
 .appearance-preview:has(.preview-background)
   :is(.preview-brand, .preview-category) {
   width: fit-content;
@@ -496,15 +488,6 @@
   color: var(--text);
   box-shadow: 0 14px 38px #0005;
   pointer-events: none;
-}
-.dashboard .app-card.organizing > .card-actions {
-  position: static;
-  opacity: 1;
-  justify-content: flex-end;
-  padding: 0 8px 4px;
-}
-.dashboard .app-card.organizing > .app-link {
-  padding-bottom: 12px;
 }
 .move-category-select {
   display: block;
