@@ -127,7 +127,10 @@ it("opens the card duplicate control as a create dialog and waits for explicit s
     </QueryClientProvider>,
   );
   await userEvent.click(
-    await screen.findByRole("button", { name: "Duplicate Cinema" }),
+    await screen.findByRole("button", { name: "More actions for Cinema" }),
+  );
+  await userEvent.click(
+    screen.getByRole("menuitem", { name: "Duplicate Cinema" }),
   );
   const dialog = screen.getByRole("dialog", { name: "Duplicate application" });
   expect(within(dialog).getByLabelText("Application name")).toHaveValue(
@@ -139,7 +142,9 @@ it("opens the card duplicate control as a create dialog and waits for explicit s
   await userEvent.click(
     within(dialog).getByRole("button", { name: "Add application" }),
   );
-  await screen.findByRole("button", { name: "Duplicate Cinema copy" });
+  await screen.findByRole("button", {
+    name: "More actions for Cinema copy",
+  });
   expect(
     fetch.mock.calls.filter(([, init]) => init?.method === "POST"),
   ).toHaveLength(1);

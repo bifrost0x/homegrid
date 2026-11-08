@@ -96,7 +96,13 @@ try {
       "run browser.mjs to create the disposable application fixtures first",
     );
     await page
-      .getByRole("button", { name: `Duplicate ${sample.name}`, exact: true })
+      .getByRole("button", {
+        name: `More actions for ${sample.name}`,
+        exact: true,
+      })
+      .click();
+    await page
+      .getByRole("menuitem", { name: `Duplicate ${sample.name}`, exact: true })
       .click();
     await scan(`Duplicate application ${theme}`);
     await page.getByRole("button", { name: "Close dialog" }).click();

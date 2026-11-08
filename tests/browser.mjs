@@ -265,7 +265,10 @@ try {
     });
     await check("edit and move application", async () => {
       await page
-        .getByRole("button", { name: "Edit Atlas", exact: true })
+        .getByRole("button", { name: "More actions for Atlas", exact: true })
+        .click();
+      await page
+        .getByRole("menuitem", { name: "Edit Atlas", exact: true })
         .click();
       const d = page.getByRole("dialog");
       await d
@@ -356,7 +359,13 @@ try {
     });
     await check("delete application", async () => {
       await page
-        .getByRole("button", { name: "Delete Echo Music", exact: true })
+        .getByRole("button", {
+          name: "More actions for Echo Music",
+          exact: true,
+        })
+        .click();
+      await page
+        .getByRole("menuitem", { name: "Delete Echo Music", exact: true })
         .click();
       await page
         .getByRole("button", { name: "Delete application", exact: true })
@@ -388,7 +397,13 @@ try {
     });
     await check("uploaded icon content and searchable picker", async () => {
       await page
-        .getByRole("button", { name: "Edit Atlas Storage", exact: true })
+        .getByRole("button", {
+          name: "More actions for Atlas Storage",
+          exact: true,
+        })
+        .click();
+      await page
+        .getByRole("menuitem", { name: "Edit Atlas Storage", exact: true })
         .click();
       const d = page.getByRole("dialog");
       await d.getByLabel("Search icons").fill("database");
@@ -420,7 +435,13 @@ try {
       "cross-tab session changes preserve edits and allow retry",
       async () => {
         await page
-          .getByRole("button", { name: "Edit Atlas Storage", exact: true })
+          .getByRole("button", {
+            name: "More actions for Atlas Storage",
+            exact: true,
+          })
+          .click();
+        await page
+          .getByRole("menuitem", { name: "Edit Atlas Storage", exact: true })
           .click();
         const d = page.getByRole("dialog");
         await d

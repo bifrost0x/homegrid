@@ -215,7 +215,13 @@ try {
           card.locator('img[src="/service-icons/jellyfin.svg"]'),
         ).toBeVisible();
         await card
-          .getByRole("button", { name: "Edit Jellyfin", exact: true })
+          .getByRole("button", {
+            name: "More actions for Jellyfin",
+            exact: true,
+          })
+          .click();
+        await page
+          .getByRole("menuitem", { name: "Edit Jellyfin", exact: true })
           .click();
         await page
           .getByLabel("Description", { exact: false })
@@ -320,7 +326,10 @@ try {
         state.apps = await api("/apps");
         state.deleted = state.apps.find((app) => app.name === "Plex");
         await page
-          .getByRole("button", { name: "Delete Plex", exact: true })
+          .getByRole("button", { name: "More actions for Plex", exact: true })
+          .click();
+        await page
+          .getByRole("menuitem", { name: "Delete Plex", exact: true })
           .click();
         await page
           .getByRole("dialog")

@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { emit } from "./events";
 export type IconColor =
   "auto" | "sage" | "blue" | "amber" | "rose" | "violet" | "cyan";
 export interface Application {
@@ -93,7 +94,7 @@ export async function api<T>(
     body: body === undefined ? undefined : form ? body : JSON.stringify(body),
   });
   if (response.status === 401) {
-    window.dispatchEvent(new Event("homegrid:unauthorized"));
+    emit("homegrid:unauthorized");
   }
   if (!response.ok) {
     let message = "Something went wrong. Please try again.";
@@ -103,9 +104,7 @@ export async function api<T>(
       if (response.status === 403 && error.code === "csrf") {
         const session = await api<Session>("/auth/session");
         setSession(session);
-        window.dispatchEvent(
-          new CustomEvent("homegrid:session-refreshed", { detail: session }),
-        );
+        emit("homegrid:session-refreshed", session);
         message =
           path === "/auth/login"
             ? "Your sign-in session changed. Please try signing in again."
@@ -117,7 +116,7 @@ export async function api<T>(
     throw new Error(message);
   }
   if (response.headers.get("X-HomeGrid-Undo"))
-    window.dispatchEvent(new Event("homegrid:undo-available"));
+    emit("homegrid:undo-available");
   return response.status === 204
     ? (undefined as T)
     : (response.json() as Promise<T>);
@@ -231,9 +230,7 @@ export function moveApplication(
 }
 export function launch(app: Application) {
   if (isExampleApp(app)) {
-    window.dispatchEvent(
-      new CustomEvent("homegrid:configure-example", { detail: app }),
-    );
+    emit("homegrid:configure-example", app);
     return;
   }
   if (app.open_in_new_tab)

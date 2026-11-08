@@ -150,7 +150,9 @@ it("favorites are reversible and organizing controls are deliberately revealed",
   expect(
     screen.queryByRole("button", { name: "Drag Atlas" }),
   ).not.toBeInTheDocument();
-  expect(screen.getByRole("button", { name: "Edit Atlas" })).toBeVisible();
+  expect(
+    screen.getByRole("button", { name: "More actions for Atlas" }),
+  ).toBeVisible();
 });
 it("rejects short new passwords and keeps the form ready to correct", async () => {
   const fetch = vi.fn();
