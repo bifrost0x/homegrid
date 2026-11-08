@@ -1,0 +1,3235 @@
+{
+  "$comment": "Curated service catalog. Edit this file, then run: node scripts/sync-service-icons.mjs",
+  "upstream": {
+    "collection": "dashboard-icons",
+    "repository": "homarr-labs/dashboard-icons",
+    "commit": "59f1e9a4108f4f510f41e9588f078631de1e1405",
+    "license": "Apache-2.0"
+  },
+  "services": [
+    {
+      "id": "jellyfin",
+      "name": "Jellyfin",
+      "category": "Media",
+      "color": "violet",
+      "description": "Your films, series, and home videos.",
+      "keywords": "media movies television",
+      "aliases": ["jf"],
+      "ports": [8096],
+      "upstream": "jellyfin.svg"
+    },
+    {
+      "id": "plex",
+      "name": "Plex",
+      "category": "Media",
+      "color": "amber",
+      "description": "A place for your personal media collection.",
+      "keywords": "movies television",
+      "aliases": ["plexmediaserver", "pms"],
+      "ports": [32400],
+      "upstream": "plex.svg"
+    },
+    {
+      "id": "emby",
+      "name": "Emby",
+      "category": "Media",
+      "color": "sage",
+      "description": "Your video library, ready to watch.",
+      "keywords": "media movies",
+      "aliases": ["embyserver"],
+      "upstream": "emby.svg"
+    },
+    {
+      "id": "sonarr",
+      "name": "Sonarr",
+      "category": "Media",
+      "color": "blue",
+      "description": "Organize your series collection.",
+      "keywords": "television media",
+      "ports": [8989],
+      "upstream": "sonarr.svg"
+    },
+    {
+      "id": "radarr",
+      "name": "Radarr",
+      "category": "Media",
+      "color": "amber",
+      "description": "Keep your film collection in order.",
+      "keywords": "movies media",
+      "ports": [7878],
+      "upstream": "radarr.svg"
+    },
+    {
+      "id": "lidarr",
+      "name": "Lidarr",
+      "category": "Media",
+      "color": "rose",
+      "description": "A well-organized home for your music.",
+      "keywords": "songs audio",
+      "ports": [8686],
+      "upstream": "lidarr.svg"
+    },
+    {
+      "id": "audiobookshelf",
+      "name": "Audiobookshelf",
+      "category": "Media",
+      "color": "amber",
+      "description": "Your audiobooks and podcasts, together.",
+      "keywords": "books listening audio",
+      "aliases": ["abs"],
+      "ports": [13378],
+      "upstream": "audiobookshelf.svg"
+    },
+    {
+      "id": "navidrome",
+      "name": "Navidrome",
+      "category": "Media",
+      "color": "cyan",
+      "description": "Your music library, wherever you listen.",
+      "keywords": "songs audio",
+      "ports": [4533],
+      "vendored": {
+        "collection": "dashboard-icons",
+        "url": "https://github.com/homarr-labs/dashboard-icons/blob/45ea6c2595231d66b855e81b3fd99d3e8904cb36/svg/navidrome.svg",
+        "file": "navidrome.svg",
+        "license": "Apache-2.0",
+        "modified": "Decorative rotation removed to keep the artwork static."
+      }
+    },
+    {
+      "id": "immich",
+      "name": "Immich",
+      "category": "Media",
+      "color": "rose",
+      "description": "A home for your photos and memories.",
+      "keywords": "pictures gallery",
+      "ports": [2283],
+      "upstream": "immich.svg"
+    },
+    {
+      "id": "photoprism",
+      "name": "PhotoPrism",
+      "category": "Media",
+      "color": "violet",
+      "description": "Explore and organize your photo library.",
+      "keywords": "pictures gallery",
+      "ports": [2342],
+      "upstream": "photoprism.svg"
+    },
+    {
+      "id": "nextcloud",
+      "name": "Nextcloud",
+      "category": "Storage",
+      "color": "blue",
+      "description": "Your files, calendars, and everyday collaboration.",
+      "keywords": "storage documents",
+      "aliases": ["nc"],
+      "upstream": "nextcloud.svg"
+    },
+    {
+      "id": "syncthing",
+      "name": "Syncthing",
+      "category": "Storage",
+      "color": "cyan",
+      "description": "Keep your files in step across devices.",
+      "keywords": "sync backup",
+      "ports": [8384],
+      "upstream": "syncthing.svg"
+    },
+    {
+      "id": "paperlessngx",
+      "name": "Paperless-ngx",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Find a little order in your paperwork.",
+      "keywords": "documents pdf archive",
+      "aliases": ["paperless", "paperlessng"],
+      "upstream": "paperless-ngx.svg"
+    },
+    {
+      "id": "vaultwarden",
+      "name": "Vaultwarden",
+      "category": "Security",
+      "color": "violet",
+      "description": "A private place for your passwords.",
+      "keywords": "secrets credentials security",
+      "aliases": ["vw", "bitwardenrs"],
+      "upstream": "vaultwarden.svg"
+    },
+    {
+      "id": "homeassistant",
+      "name": "Home Assistant",
+      "category": "Automation",
+      "color": "blue",
+      "description": "Your home, working together.",
+      "keywords": "smart automation lights",
+      "aliases": ["ha", "hass", "hassio"],
+      "ports": [8123],
+      "upstream": "home-assistant.svg"
+    },
+    {
+      "id": "adguardhome",
+      "name": "AdGuard Home",
+      "category": "Network",
+      "color": "sage",
+      "description": "Manage your home network’s DNS filtering.",
+      "keywords": "network privacy dns",
+      "aliases": ["adguard", "agh"],
+      "upstream": "adguard-home.svg"
+    },
+    {
+      "id": "pihole",
+      "name": "Pi-hole",
+      "category": "Network",
+      "color": "rose",
+      "description": "Your network’s DNS filtering in one place.",
+      "keywords": "network privacy adblocking",
+      "upstream": "pi-hole.svg"
+    },
+    {
+      "id": "uptimekuma",
+      "name": "Uptime Kuma",
+      "category": "Monitoring",
+      "color": "sage",
+      "description": "A place to check on your services.",
+      "keywords": "status availability",
+      "aliases": ["kuma"],
+      "ports": [3001],
+      "upstream": "uptime-kuma.svg"
+    },
+    {
+      "id": "grafana",
+      "name": "Grafana",
+      "category": "Monitoring",
+      "color": "amber",
+      "description": "Explore your own charts and dashboards.",
+      "keywords": "graphs analytics",
+      "upstream": "grafana.svg"
+    },
+    {
+      "id": "prometheus",
+      "name": "Prometheus",
+      "category": "Monitoring",
+      "color": "rose",
+      "description": "Your metrics and queries, close at hand.",
+      "keywords": "monitoring data",
+      "aliases": ["prom"],
+      "upstream": "prometheus.svg"
+    },
+    {
+      "id": "portainer",
+      "name": "Portainer",
+      "category": "Infrastructure",
+      "color": "blue",
+      "description": "Your container management workspace.",
+      "keywords": "docker",
+      "ports": [9443],
+      "upstream": "portainer.svg"
+    },
+    {
+      "id": "dockge",
+      "name": "Dockge",
+      "category": "Infrastructure",
+      "color": "cyan",
+      "description": "Organize your container stacks.",
+      "keywords": "docker compose",
+      "upstream": "dockge.svg"
+    },
+    {
+      "id": "proxmox",
+      "name": "Proxmox",
+      "category": "Infrastructure",
+      "color": "amber",
+      "description": "Your virtual machines and containers.",
+      "keywords": "virtualization computing",
+      "aliases": ["pve", "proxmoxve"],
+      "ports": [8006],
+      "upstream": "proxmox.svg"
+    },
+    {
+      "id": "truenas",
+      "name": "TrueNAS",
+      "category": "Storage",
+      "color": "blue",
+      "description": "Your storage and shared files.",
+      "keywords": "nas disks backup",
+      "aliases": ["truenasscale", "truenascore", "freenas"],
+      "upstream": "truenas.svg"
+    },
+    {
+      "id": "gitea",
+      "name": "Gitea",
+      "category": "Development",
+      "color": "sage",
+      "description": "Your repositories and development projects.",
+      "keywords": "git source code",
+      "upstream": "gitea.svg"
+    },
+    {
+      "id": "forgejo",
+      "name": "Forgejo",
+      "category": "Development",
+      "color": "amber",
+      "description": "A place to build and share your projects.",
+      "keywords": "git source code",
+      "upstream": "forgejo.svg"
+    },
+    {
+      "id": "gitlab",
+      "name": "GitLab",
+      "category": "Development",
+      "color": "rose",
+      "description": "Your code, issues, and project workflows.",
+      "keywords": "git development",
+      "upstream": "gitlab.svg"
+    },
+    {
+      "id": "mealie",
+      "name": "Mealie",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Your recipes and weekly meal ideas.",
+      "keywords": "cooking food",
+      "ports": [9925],
+      "upstream": "mealie.svg"
+    },
+    {
+      "id": "freshrss",
+      "name": "FreshRSS",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Your favorite feeds, ready to read.",
+      "keywords": "news reading",
+      "upstream": "freshrss.svg"
+    },
+    {
+      "id": "miniflux",
+      "name": "Miniflux",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "A quiet place to catch up on your feeds.",
+      "keywords": "news reading",
+      "upstream": "miniflux.svg"
+    },
+    {
+      "id": "qbittorrent",
+      "name": "qBittorrent",
+      "category": "Downloads",
+      "color": "blue",
+      "description": "Your downloads and transfers.",
+      "keywords": "torrent files",
+      "aliases": ["qbit", "qbt"],
+      "upstream": "qbittorrent.svg"
+    },
+    {
+      "id": "transmission",
+      "name": "Transmission",
+      "category": "Downloads",
+      "color": "rose",
+      "description": "Manage your downloads in one place.",
+      "keywords": "torrent files",
+      "upstream": "transmission.svg"
+    },
+    {
+      "id": "sabnzbd",
+      "name": "SABnzbd",
+      "category": "Downloads",
+      "color": "amber",
+      "description": "Your download queue, organized.",
+      "keywords": "usenet files",
+      "aliases": ["sab"],
+      "upstream": "sabnzbd.svg"
+    },
+    {
+      "id": "kavita",
+      "name": "Kavita",
+      "category": "Media",
+      "color": "violet",
+      "description": "Your ebooks, comics, and reading collection.",
+      "keywords": "library manga",
+      "upstream": "kavita.svg"
+    },
+    {
+      "id": "calibreweb",
+      "name": "Calibre-Web",
+      "category": "Media",
+      "color": "blue",
+      "description": "Browse your personal ebook library.",
+      "keywords": "reading books",
+      "ports": [8083],
+      "upstream": "calibre-web.svg"
+    },
+    {
+      "id": "linkwarden",
+      "name": "Linkwarden",
+      "category": "Tools",
+      "color": "violet",
+      "description": "Keep useful links within reach.",
+      "keywords": "bookmarks saved reading",
+      "vendored": {
+        "collection": "selfhst-icons",
+        "url": "https://github.com/selfhst/icons/blob/b2378abb1a0c64149bb7621815b849d89602de23/svg/linkwarden.svg",
+        "file": "linkwarden.svg",
+        "license": "CC-BY-4.0"
+      }
+    },
+    {
+      "id": "nginxproxymanager",
+      "name": "Nginx Proxy Manager",
+      "category": "Network",
+      "color": "sage",
+      "description": "Your hosts and proxy settings.",
+      "keywords": "reverse proxy network",
+      "aliases": ["npm", "nginxpm"],
+      "ports": [81],
+      "upstream": "nginx-proxy-manager.svg"
+    },
+    {
+      "id": "traefik",
+      "name": "Traefik",
+      "category": "Network",
+      "color": "blue",
+      "description": "Your routing and service entry points.",
+      "keywords": "reverse proxy network",
+      "upstream": "traefik.svg"
+    },
+    {
+      "id": "authentik",
+      "name": "Authentik",
+      "category": "Security",
+      "color": "cyan",
+      "description": "Your sign-in and identity settings.",
+      "keywords": "authentication sso",
+      "upstream": "authentik.svg"
+    },
+    {
+      "id": "authelia",
+      "name": "Authelia",
+      "category": "Security",
+      "color": "sage",
+      "description": "Your authentication gateway settings.",
+      "keywords": "security sso",
+      "upstream": "authelia.svg"
+    },
+    {
+      "id": "readarr",
+      "name": "Readarr",
+      "category": "Media",
+      "color": "violet",
+      "description": "Keep your book collection organized.",
+      "keywords": "books ebooks audiobooks",
+      "ports": [8787],
+      "upstream": "readarr.svg"
+    },
+    {
+      "id": "bazarr",
+      "name": "Bazarr",
+      "category": "Media",
+      "color": "cyan",
+      "description": "Subtitles for your films and series.",
+      "keywords": "subtitles",
+      "ports": [6767],
+      "upstream": "bazarr.svg"
+    },
+    {
+      "id": "overseerr",
+      "name": "Overseerr",
+      "category": "Media",
+      "color": "sage",
+      "description": "Media requests for your Plex server.",
+      "keywords": "requests movies television",
+      "upstream": "overseerr.svg"
+    },
+    {
+      "id": "jellyseerr",
+      "name": "Jellyseerr",
+      "category": "Media",
+      "color": "blue",
+      "description": "Media requests for Jellyfin, Plex and Emby.",
+      "keywords": "requests movies television",
+      "upstream": "jellyseerr.svg"
+    },
+    {
+      "id": "seerr",
+      "name": "Seerr",
+      "category": "Media",
+      "color": "amber",
+      "description": "Media requests for your household.",
+      "keywords": "requests movies television",
+      "upstream": "seerr.svg"
+    },
+    {
+      "id": "ombi",
+      "name": "Ombi",
+      "category": "Media",
+      "color": "rose",
+      "description": "Let your household request new media.",
+      "keywords": "requests movies television",
+      "ports": [3579],
+      "upstream": "ombi.svg"
+    },
+    {
+      "id": "tautulli",
+      "name": "Tautulli",
+      "category": "Media",
+      "color": "violet",
+      "description": "Watch history and statistics for Plex.",
+      "keywords": "plex statistics history",
+      "ports": [8181],
+      "upstream": "tautulli.svg"
+    },
+    {
+      "id": "mylar3",
+      "name": "Mylar3",
+      "category": "Media",
+      "color": "cyan",
+      "description": "Keep your comic collection current.",
+      "keywords": "comics",
+      "aliases": ["mylar"],
+      "upstream": "mylar-3.svg"
+    },
+    {
+      "id": "tdarr",
+      "name": "Tdarr",
+      "category": "Media",
+      "color": "sage",
+      "description": "Transcode your media library.",
+      "keywords": "transcode video",
+      "ports": [8265],
+      "upstream": "tdarr.svg"
+    },
+    {
+      "id": "handbrake",
+      "name": "HandBrake",
+      "category": "Media",
+      "color": "blue",
+      "description": "Convert your video files.",
+      "keywords": "transcode video convert",
+      "upstream": "handbrake.svg"
+    },
+    {
+      "id": "wizarr",
+      "name": "Wizarr",
+      "category": "Media",
+      "color": "rose",
+      "description": "Invite people to your media server.",
+      "keywords": "invitations users",
+      "ports": [5690],
+      "upstream": "wizarr.svg"
+    },
+    {
+      "id": "notifiarr",
+      "name": "Notifiarr",
+      "category": "Media",
+      "color": "violet",
+      "description": "Notifications for your media stack.",
+      "keywords": "notifications",
+      "upstream": "notifiarr.svg"
+    },
+    {
+      "id": "recyclarr",
+      "name": "Recyclarr",
+      "category": "Media",
+      "color": "cyan",
+      "description": "Keep your quality profiles in sync.",
+      "keywords": "quality profiles sync",
+      "upstream": "recyclarr.svg"
+    },
+    {
+      "id": "funkwhale",
+      "name": "Funkwhale",
+      "category": "Media",
+      "color": "sage",
+      "description": "Listen to and share your music.",
+      "keywords": "music audio podcasts",
+      "upstream": "funkwhale.svg"
+    },
+    {
+      "id": "airsonic",
+      "name": "Airsonic",
+      "category": "Media",
+      "color": "blue",
+      "description": "Stream your music collection.",
+      "keywords": "music audio streaming",
+      "aliases": ["airsonicadvanced"],
+      "upstream": "airsonic.svg"
+    },
+    {
+      "id": "gonic",
+      "name": "gonic",
+      "category": "Media",
+      "color": "amber",
+      "description": "A lightweight music streaming server.",
+      "keywords": "music subsonic",
+      "upstream": "gonic.svg"
+    },
+    {
+      "id": "koel",
+      "name": "Koel",
+      "category": "Media",
+      "color": "rose",
+      "description": "Stream your music from the browser.",
+      "keywords": "music audio streaming",
+      "upstream": "koel.svg"
+    },
+    {
+      "id": "owncast",
+      "name": "Owncast",
+      "category": "Media",
+      "color": "violet",
+      "description": "Your own live streaming server.",
+      "keywords": "live streaming video",
+      "upstream": "owncast.svg"
+    },
+    {
+      "id": "stash",
+      "name": "Stash",
+      "category": "Media",
+      "color": "cyan",
+      "description": "Organize your video collection.",
+      "keywords": "video organizer",
+      "upstream": "stash.svg"
+    },
+    {
+      "id": "komga",
+      "name": "Komga",
+      "category": "Media",
+      "color": "sage",
+      "description": "Your comics and manga library.",
+      "keywords": "comics manga books",
+      "ports": [25600],
+      "upstream": "komga.svg"
+    },
+    {
+      "id": "calibre",
+      "name": "Calibre",
+      "category": "Media",
+      "color": "blue",
+      "description": "Manage your ebook library.",
+      "keywords": "ebooks books library",
+      "upstream": "calibre.svg"
+    },
+    {
+      "id": "booklore",
+      "name": "BookLore",
+      "category": "Media",
+      "color": "amber",
+      "description": "A library for your books.",
+      "keywords": "books ebooks library",
+      "upstream": "booklore.svg"
+    },
+    {
+      "id": "peertube",
+      "name": "PeerTube",
+      "category": "Media",
+      "color": "rose",
+      "description": "Your own video sharing platform.",
+      "keywords": "video sharing federated",
+      "upstream": "peertube.svg"
+    },
+    {
+      "id": "invidious",
+      "name": "Invidious",
+      "category": "Media",
+      "color": "violet",
+      "description": "A private front end for online videos.",
+      "keywords": "video youtube privacy",
+      "upstream": "invidious.svg"
+    },
+    {
+      "id": "piped",
+      "name": "Piped",
+      "category": "Media",
+      "color": "cyan",
+      "description": "A privacy-friendly video front end.",
+      "keywords": "video youtube privacy",
+      "upstream": "piped.svg"
+    },
+    {
+      "id": "piwigo",
+      "name": "Piwigo",
+      "category": "Media",
+      "color": "sage",
+      "description": "Share and organize your photos.",
+      "keywords": "photos gallery",
+      "upstream": "piwigo.svg"
+    },
+    {
+      "id": "pigallery2",
+      "name": "PiGallery 2",
+      "category": "Media",
+      "color": "amber",
+      "description": "A fast directory-based photo gallery.",
+      "keywords": "photos gallery",
+      "aliases": ["pigallery"],
+      "upstream": "pigallery2.svg"
+    },
+    {
+      "id": "medusa",
+      "name": "Medusa",
+      "category": "Media",
+      "color": "rose",
+      "description": "Manage your series collection.",
+      "keywords": "television series",
+      "aliases": ["pymedusa"],
+      "upstream": "medusa.svg"
+    },
+    {
+      "id": "prowlarr",
+      "name": "Prowlarr",
+      "category": "Downloads",
+      "color": "violet",
+      "description": "Manage your indexers in one place.",
+      "keywords": "indexers usenet torrent",
+      "ports": [9696],
+      "upstream": "prowlarr.svg"
+    },
+    {
+      "id": "jackett",
+      "name": "Jackett",
+      "category": "Downloads",
+      "color": "cyan",
+      "description": "Connect your tools to torrent indexers.",
+      "keywords": "indexers torrent",
+      "ports": [9117],
+      "upstream": "jackett.svg"
+    },
+    {
+      "id": "flaresolverr",
+      "name": "FlareSolverr",
+      "category": "Downloads",
+      "color": "sage",
+      "description": "A proxy for protected indexers.",
+      "keywords": "proxy indexers",
+      "ports": [8191],
+      "upstream": "flaresolverr.svg"
+    },
+    {
+      "id": "autobrr",
+      "name": "autobrr",
+      "category": "Downloads",
+      "color": "blue",
+      "description": "Automate your torrent releases.",
+      "keywords": "torrent irc automation",
+      "upstream": "autobrr.svg"
+    },
+    {
+      "id": "deluge",
+      "name": "Deluge",
+      "category": "Downloads",
+      "color": "amber",
+      "description": "A lightweight torrent client.",
+      "keywords": "torrent files",
+      "ports": [8112],
+      "upstream": "deluge.svg"
+    },
+    {
+      "id": "nzbget",
+      "name": "NZBGet",
+      "category": "Downloads",
+      "color": "rose",
+      "description": "An efficient Usenet downloader.",
+      "keywords": "usenet files",
+      "ports": [6789],
+      "upstream": "nzbget.svg"
+    },
+    {
+      "id": "rutorrent",
+      "name": "ruTorrent",
+      "category": "Downloads",
+      "color": "violet",
+      "description": "A web front end for rTorrent.",
+      "keywords": "torrent files",
+      "aliases": ["rtorrent"],
+      "upstream": "rutorrent.svg"
+    },
+    {
+      "id": "flood",
+      "name": "Flood",
+      "category": "Downloads",
+      "color": "cyan",
+      "description": "A modern torrent web interface.",
+      "keywords": "torrent files",
+      "upstream": "flood.svg"
+    },
+    {
+      "id": "vuetorrent",
+      "name": "VueTorrent",
+      "category": "Downloads",
+      "color": "sage",
+      "description": "A modern interface for qBittorrent.",
+      "keywords": "torrent qbittorrent",
+      "upstream": "vuetorrent.svg"
+    },
+    {
+      "id": "pyload",
+      "name": "pyLoad",
+      "category": "Downloads",
+      "color": "blue",
+      "description": "A download manager for the web.",
+      "keywords": "downloads files",
+      "upstream": "pyload.svg"
+    },
+    {
+      "id": "nzbhydra2",
+      "name": "NZBHydra 2",
+      "category": "Downloads",
+      "color": "amber",
+      "description": "Search your Usenet indexers together.",
+      "keywords": "usenet indexers search",
+      "aliases": ["nzbhydra", "hydra", "hydra2"],
+      "ports": [5076],
+      "upstream": "nzbhydra2.svg"
+    },
+    {
+      "id": "bitmagnet",
+      "name": "bitmagnet",
+      "category": "Downloads",
+      "color": "rose",
+      "description": "Index and search torrents.",
+      "keywords": "torrent dht search",
+      "upstream": "bitmagnet.svg"
+    },
+    {
+      "id": "metube",
+      "name": "MeTube",
+      "category": "Downloads",
+      "color": "violet",
+      "description": "Download videos from the web.",
+      "keywords": "video youtube download",
+      "upstream": "metube.svg"
+    },
+    {
+      "id": "seafile",
+      "name": "Seafile",
+      "category": "Storage",
+      "color": "cyan",
+      "description": "Sync and share your files.",
+      "keywords": "files sync",
+      "upstream": "seafile.svg"
+    },
+    {
+      "id": "owncloud",
+      "name": "ownCloud",
+      "category": "Storage",
+      "color": "sage",
+      "description": "Your files, accessible anywhere.",
+      "keywords": "files sync",
+      "upstream": "owncloud.svg"
+    },
+    {
+      "id": "filebrowser",
+      "name": "File Browser",
+      "category": "Storage",
+      "color": "blue",
+      "description": "Browse and manage your files.",
+      "keywords": "files manager",
+      "upstream": "filebrowser.svg"
+    },
+    {
+      "id": "filestash",
+      "name": "Filestash",
+      "category": "Storage",
+      "color": "amber",
+      "description": "A file manager for any storage.",
+      "keywords": "files manager",
+      "upstream": "filestash.svg"
+    },
+    {
+      "id": "minio",
+      "name": "MinIO",
+      "category": "Storage",
+      "color": "rose",
+      "description": "S3-compatible object storage.",
+      "keywords": "s3 object storage",
+      "upstream": "minio.svg"
+    },
+    {
+      "id": "pydio",
+      "name": "Pydio Cells",
+      "category": "Storage",
+      "color": "violet",
+      "description": "File sharing and collaboration.",
+      "keywords": "files sync share",
+      "aliases": ["pydiocells"],
+      "upstream": "pydio.svg"
+    },
+    {
+      "id": "kopia",
+      "name": "Kopia",
+      "category": "Storage",
+      "color": "cyan",
+      "description": "Fast, encrypted backups.",
+      "keywords": "backup snapshots",
+      "upstream": "kopia.svg"
+    },
+    {
+      "id": "duplicati",
+      "name": "Duplicati",
+      "category": "Storage",
+      "color": "sage",
+      "description": "Encrypted backups to the storage you choose.",
+      "keywords": "backup encrypted",
+      "upstream": "duplicati.svg"
+    },
+    {
+      "id": "borg",
+      "name": "BorgBackup",
+      "category": "Storage",
+      "color": "blue",
+      "description": "Deduplicating backups.",
+      "keywords": "backup deduplication",
+      "aliases": ["borgbackup"],
+      "upstream": "borg.svg"
+    },
+    {
+      "id": "borgmatic",
+      "name": "borgmatic",
+      "category": "Storage",
+      "color": "amber",
+      "description": "Backups made simple with Borg.",
+      "keywords": "backup borg",
+      "upstream": "borgmatic.svg"
+    },
+    {
+      "id": "backrest",
+      "name": "Backrest",
+      "category": "Storage",
+      "color": "rose",
+      "description": "A web interface for restic backups.",
+      "keywords": "backup restic",
+      "upstream": "backrest.svg"
+    },
+    {
+      "id": "rclone",
+      "name": "Rclone",
+      "category": "Storage",
+      "color": "violet",
+      "description": "Sync files to cloud storage.",
+      "keywords": "sync cloud storage",
+      "upstream": "rclone.svg"
+    },
+    {
+      "id": "copyparty",
+      "name": "copyparty",
+      "category": "Storage",
+      "color": "cyan",
+      "description": "A portable file server.",
+      "keywords": "files share upload",
+      "ports": [3923],
+      "upstream": "copyparty.svg"
+    },
+    {
+      "id": "zipline",
+      "name": "Zipline",
+      "category": "Storage",
+      "color": "sage",
+      "description": "Share files and screenshots.",
+      "keywords": "share upload screenshots",
+      "upstream": "zipline.svg"
+    },
+    {
+      "id": "pingvinshare",
+      "name": "Pingvin Share",
+      "category": "Storage",
+      "color": "blue",
+      "description": "Share files with a link.",
+      "keywords": "share files",
+      "aliases": ["pingvin"],
+      "upstream": "pingvin-share.svg"
+    },
+    {
+      "id": "resiliosync",
+      "name": "Resilio Sync",
+      "category": "Storage",
+      "color": "amber",
+      "description": "Peer-to-peer file sync.",
+      "keywords": "sync files",
+      "aliases": ["resilio"],
+      "upstream": "resiliosync.svg"
+    },
+    {
+      "id": "synology",
+      "name": "Synology DSM",
+      "category": "Storage",
+      "color": "rose",
+      "description": "Your Synology NAS.",
+      "keywords": "nas storage",
+      "aliases": ["dsm", "diskstation", "synologydsm"],
+      "upstream": "synology.svg"
+    },
+    {
+      "id": "qnap",
+      "name": "QNAP",
+      "category": "Storage",
+      "color": "violet",
+      "description": "Your QNAP NAS.",
+      "keywords": "nas storage",
+      "aliases": ["qts"],
+      "upstream": "qnap.svg"
+    },
+    {
+      "id": "asustor",
+      "name": "ASUSTOR",
+      "category": "Storage",
+      "color": "cyan",
+      "description": "Your ASUSTOR NAS.",
+      "keywords": "nas storage",
+      "upstream": "asustor.svg"
+    },
+    {
+      "id": "unraid",
+      "name": "Unraid",
+      "category": "Storage",
+      "color": "sage",
+      "description": "Your Unraid server.",
+      "keywords": "nas storage array",
+      "aliases": ["tower"],
+      "upstream": "unraid.svg"
+    },
+    {
+      "id": "openmediavault",
+      "name": "OpenMediaVault",
+      "category": "Storage",
+      "color": "blue",
+      "description": "Your network-attached storage.",
+      "keywords": "nas storage",
+      "aliases": ["omv"],
+      "upstream": "openmediavault.svg"
+    },
+    {
+      "id": "terramaster",
+      "name": "TerraMaster",
+      "category": "Storage",
+      "color": "amber",
+      "description": "Your TerraMaster NAS.",
+      "keywords": "nas storage",
+      "upstream": "terramaster.svg"
+    },
+    {
+      "id": "stirlingpdf",
+      "name": "Stirling-PDF",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Work with your PDF files.",
+      "keywords": "pdf documents",
+      "aliases": ["stirling"],
+      "upstream": "stirling-pdf.svg"
+    },
+    {
+      "id": "papra",
+      "name": "Papra",
+      "category": "Tools",
+      "color": "violet",
+      "description": "A simple document archive.",
+      "keywords": "documents archive",
+      "upstream": "papra.svg"
+    },
+    {
+      "id": "docuseal",
+      "name": "DocuSeal",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "Sign documents online.",
+      "keywords": "documents signatures",
+      "upstream": "docuseal.svg"
+    },
+    {
+      "id": "bookstack",
+      "name": "BookStack",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Your documentation and knowledge base.",
+      "keywords": "wiki documentation notes",
+      "upstream": "bookstack.svg"
+    },
+    {
+      "id": "wikijs",
+      "name": "Wiki.js",
+      "category": "Tools",
+      "color": "blue",
+      "description": "A modern wiki.",
+      "keywords": "wiki documentation",
+      "upstream": "wikijs.svg"
+    },
+    {
+      "id": "dokuwiki",
+      "name": "DokuWiki",
+      "category": "Tools",
+      "color": "amber",
+      "description": "A simple wiki without a database.",
+      "keywords": "wiki documentation",
+      "upstream": "dokuwiki.svg"
+    },
+    {
+      "id": "outline",
+      "name": "Outline",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Your team’s knowledge base.",
+      "keywords": "wiki knowledge base",
+      "upstream": "outline.svg"
+    },
+    {
+      "id": "trilium",
+      "name": "Trilium Notes",
+      "category": "Tools",
+      "color": "violet",
+      "description": "Your personal knowledge base.",
+      "keywords": "notes knowledge",
+      "aliases": ["triliumnotes", "triliumnext"],
+      "upstream": "trilium.svg"
+    },
+    {
+      "id": "siyuan",
+      "name": "SiYuan",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "A privacy-first note-taking app.",
+      "keywords": "notes knowledge",
+      "upstream": "siyuan.svg"
+    },
+    {
+      "id": "joplin",
+      "name": "Joplin",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Your notes and to-dos.",
+      "keywords": "notes sync",
+      "upstream": "joplin.svg"
+    },
+    {
+      "id": "logseq",
+      "name": "Logseq",
+      "category": "Tools",
+      "color": "blue",
+      "description": "An outliner for your knowledge.",
+      "keywords": "notes outliner",
+      "upstream": "logseq.svg"
+    },
+    {
+      "id": "affine",
+      "name": "AFFiNE",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Docs, whiteboards and notes.",
+      "keywords": "notes whiteboard",
+      "upstream": "affine.svg"
+    },
+    {
+      "id": "obsidian",
+      "name": "Obsidian",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Your notes in Markdown.",
+      "keywords": "notes markdown",
+      "upstream": "obsidian.svg"
+    },
+    {
+      "id": "hedgedoc",
+      "name": "HedgeDoc",
+      "category": "Tools",
+      "color": "violet",
+      "description": "Collaborative Markdown notes.",
+      "keywords": "notes markdown collaboration",
+      "aliases": ["codimd"],
+      "upstream": "hedgedoc.svg"
+    },
+    {
+      "id": "etherpad",
+      "name": "Etherpad",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "Write documents together in real time.",
+      "keywords": "documents collaboration",
+      "upstream": "etherpad.svg"
+    },
+    {
+      "id": "cryptpad",
+      "name": "CryptPad",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Encrypted collaborative documents.",
+      "keywords": "documents collaboration encrypted",
+      "upstream": "cryptpad.svg"
+    },
+    {
+      "id": "onlyoffice",
+      "name": "ONLYOFFICE",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Office documents in the browser.",
+      "keywords": "documents office",
+      "upstream": "onlyoffice.svg"
+    },
+    {
+      "id": "collaboraonline",
+      "name": "Collabora Online",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Office documents in the browser.",
+      "keywords": "documents office",
+      "aliases": ["collabora"],
+      "upstream": "collabora-online.svg"
+    },
+    {
+      "id": "standardnotes",
+      "name": "Standard Notes",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Encrypted notes.",
+      "keywords": "notes encrypted",
+      "upstream": "standard-notes.svg"
+    },
+    {
+      "id": "notesnook",
+      "name": "Notesnook",
+      "category": "Tools",
+      "color": "violet",
+      "description": "Private, encrypted notes.",
+      "keywords": "notes encrypted",
+      "upstream": "notesnook.svg"
+    },
+    {
+      "id": "mediawiki",
+      "name": "MediaWiki",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "A full-featured wiki.",
+      "keywords": "wiki documentation",
+      "upstream": "mediawiki.svg"
+    },
+    {
+      "id": "vikunja",
+      "name": "Vikunja",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Your tasks and projects.",
+      "keywords": "tasks todo projects",
+      "ports": [3456],
+      "upstream": "vikunja.svg"
+    },
+    {
+      "id": "planka",
+      "name": "Planka",
+      "category": "Tools",
+      "color": "blue",
+      "description": "A kanban board for your projects.",
+      "keywords": "kanban tasks projects",
+      "upstream": "planka.svg"
+    },
+    {
+      "id": "wekan",
+      "name": "Wekan",
+      "category": "Tools",
+      "color": "amber",
+      "description": "An open-source kanban board.",
+      "keywords": "kanban tasks",
+      "upstream": "wekan.svg"
+    },
+    {
+      "id": "kanboard",
+      "name": "Kanboard",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Minimal kanban project management.",
+      "keywords": "kanban tasks",
+      "upstream": "kanboard.svg"
+    },
+    {
+      "id": "taiga",
+      "name": "Taiga",
+      "category": "Tools",
+      "color": "violet",
+      "description": "Agile project management.",
+      "keywords": "agile projects",
+      "upstream": "taiga.svg"
+    },
+    {
+      "id": "openproject",
+      "name": "OpenProject",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "Project planning and tracking.",
+      "keywords": "projects planning",
+      "upstream": "openproject.svg"
+    },
+    {
+      "id": "redmine",
+      "name": "Redmine",
+      "category": "Development",
+      "color": "sage",
+      "description": "Project management and issue tracking.",
+      "keywords": "projects issues",
+      "upstream": "redmine.svg"
+    },
+    {
+      "id": "grocy",
+      "name": "Grocy",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Groceries and household management.",
+      "keywords": "groceries household",
+      "upstream": "grocy.svg"
+    },
+    {
+      "id": "readeck",
+      "name": "Readeck",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Save web pages to read later.",
+      "keywords": "read later bookmarks",
+      "upstream": "readeck.svg"
+    },
+    {
+      "id": "wallabag",
+      "name": "wallabag",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Save articles to read later.",
+      "keywords": "read later articles",
+      "upstream": "wallabag.svg"
+    },
+    {
+      "id": "linkding",
+      "name": "linkding",
+      "category": "Tools",
+      "color": "violet",
+      "description": "A minimal bookmark manager.",
+      "keywords": "bookmarks links",
+      "upstream": "linkding.svg"
+    },
+    {
+      "id": "shiori",
+      "name": "Shiori",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "A simple bookmark manager.",
+      "keywords": "bookmarks links",
+      "upstream": "shiori.svg"
+    },
+    {
+      "id": "shaarli",
+      "name": "Shaarli",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Your personal bookmarks.",
+      "keywords": "bookmarks links",
+      "upstream": "shaarli.svg"
+    },
+    {
+      "id": "karakeep",
+      "name": "Karakeep",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Bookmark everything.",
+      "keywords": "bookmarks links notes",
+      "aliases": ["hoarder"],
+      "upstream": "karakeep.svg"
+    },
+    {
+      "id": "glance",
+      "name": "Glance",
+      "category": "Tools",
+      "color": "amber",
+      "description": "A dashboard for your feeds.",
+      "keywords": "dashboard feeds",
+      "upstream": "glance.svg"
+    },
+    {
+      "id": "homarr",
+      "name": "Homarr",
+      "category": "Tools",
+      "color": "rose",
+      "description": "A dashboard for your server.",
+      "keywords": "dashboard",
+      "ports": [7575],
+      "upstream": "homarr.svg"
+    },
+    {
+      "id": "heimdall",
+      "name": "Heimdall",
+      "category": "Tools",
+      "color": "violet",
+      "description": "An application dashboard.",
+      "keywords": "dashboard",
+      "upstream": "heimdall.svg"
+    },
+    {
+      "id": "homer",
+      "name": "Homer",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "A static application dashboard.",
+      "keywords": "dashboard",
+      "upstream": "homer.svg"
+    },
+    {
+      "id": "commafeed",
+      "name": "CommaFeed",
+      "category": "Tools",
+      "color": "sage",
+      "description": "A feed reader for your news.",
+      "keywords": "rss news reading",
+      "upstream": "commafeed.svg"
+    },
+    {
+      "id": "itools",
+      "name": "IT Tools",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Handy tools for developers.",
+      "keywords": "utilities developer",
+      "aliases": ["ittools"],
+      "upstream": "it-tools.svg"
+    },
+    {
+      "id": "cyberchef",
+      "name": "CyberChef",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Encode, decode and analyze data.",
+      "keywords": "encoding decoding utilities",
+      "upstream": "cyberchef.svg"
+    },
+    {
+      "id": "drawio",
+      "name": "draw.io",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Draw diagrams in the browser.",
+      "keywords": "diagrams drawing",
+      "aliases": ["diagramsnet"],
+      "upstream": "draw-io.svg"
+    },
+    {
+      "id": "excalidraw",
+      "name": "Excalidraw",
+      "category": "Tools",
+      "color": "violet",
+      "description": "A virtual whiteboard for sketches.",
+      "keywords": "whiteboard drawing",
+      "upstream": "excalidraw.svg"
+    },
+    {
+      "id": "privatebin",
+      "name": "PrivateBin",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "An encrypted pastebin.",
+      "keywords": "pastebin encrypted",
+      "upstream": "privatebin.svg"
+    },
+    {
+      "id": "shlink",
+      "name": "Shlink",
+      "category": "Tools",
+      "color": "sage",
+      "description": "A URL shortener.",
+      "keywords": "url shortener links",
+      "upstream": "shlink.svg"
+    },
+    {
+      "id": "yourls",
+      "name": "YOURLS",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Your own URL shortener.",
+      "keywords": "url shortener links",
+      "upstream": "yourls.svg"
+    },
+    {
+      "id": "radicale",
+      "name": "Radicale",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Your calendar and contacts server.",
+      "keywords": "calendar contacts caldav",
+      "ports": [5232],
+      "upstream": "radicale.svg"
+    },
+    {
+      "id": "baikal",
+      "name": "Baïkal",
+      "category": "Tools",
+      "color": "rose",
+      "description": "A lightweight CalDAV and CardDAV server.",
+      "keywords": "calendar contacts caldav",
+      "upstream": "baikal.svg"
+    },
+    {
+      "id": "homebox",
+      "name": "Homebox",
+      "category": "Tools",
+      "color": "violet",
+      "description": "An inventory for your home.",
+      "keywords": "inventory home",
+      "upstream": "homebox.svg"
+    },
+    {
+      "id": "inventree",
+      "name": "InvenTree",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "Inventory and parts management.",
+      "keywords": "inventory parts",
+      "upstream": "inventree.svg"
+    },
+    {
+      "id": "partdb",
+      "name": "Part-DB",
+      "category": "Tools",
+      "color": "sage",
+      "description": "An inventory for electronic parts.",
+      "keywords": "inventory electronics parts",
+      "upstream": "part-db.svg"
+    },
+    {
+      "id": "spoolman",
+      "name": "Spoolman",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Track your 3D printing filament.",
+      "keywords": "3d printing filament",
+      "upstream": "spoolman.svg"
+    },
+    {
+      "id": "monica",
+      "name": "Monica",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Your personal relationship manager.",
+      "keywords": "contacts relationships crm",
+      "upstream": "monica.svg"
+    },
+    {
+      "id": "odoo",
+      "name": "Odoo",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Your business apps.",
+      "keywords": "erp business crm",
+      "upstream": "odoo.svg"
+    },
+    {
+      "id": "wordpress",
+      "name": "WordPress",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "Your website and blog.",
+      "keywords": "website blog cms",
+      "upstream": "wordpress.svg"
+    },
+    {
+      "id": "fireflyiii",
+      "name": "Firefly III",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Your personal finances.",
+      "keywords": "finance budget money",
+      "aliases": ["firefly"],
+      "upstream": "firefly-iii.svg"
+    },
+    {
+      "id": "actualbudget",
+      "name": "Actual Budget",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Your budget, simply.",
+      "keywords": "finance budget money",
+      "aliases": ["actual"],
+      "upstream": "actual-budget.svg"
+    },
+    {
+      "id": "ghostfolio",
+      "name": "Ghostfolio",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Track your investments.",
+      "keywords": "finance portfolio wealth",
+      "upstream": "ghostfolio.svg"
+    },
+    {
+      "id": "invoiceninja",
+      "name": "Invoice Ninja",
+      "category": "Tools",
+      "color": "rose",
+      "description": "Invoices and payments.",
+      "keywords": "invoices finance",
+      "upstream": "invoice-ninja.svg"
+    },
+    {
+      "id": "kimai",
+      "name": "Kimai",
+      "category": "Tools",
+      "color": "violet",
+      "description": "Track your working time.",
+      "keywords": "time tracking",
+      "upstream": "kimai.svg"
+    },
+    {
+      "id": "tandoorrecipes",
+      "name": "Tandoor Recipes",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "Your recipes and meal plans.",
+      "keywords": "recipes cooking food",
+      "aliases": ["tandoor"],
+      "upstream": "tandoor-recipes.svg"
+    },
+    {
+      "id": "kitchenowl",
+      "name": "KitchenOwl",
+      "category": "Tools",
+      "color": "sage",
+      "description": "Groceries and recipes together.",
+      "keywords": "groceries recipes",
+      "upstream": "kitchenowl.svg"
+    },
+    {
+      "id": "wger",
+      "name": "wger",
+      "category": "Tools",
+      "color": "blue",
+      "description": "Your workouts and nutrition.",
+      "keywords": "fitness workout",
+      "upstream": "wger.svg"
+    },
+    {
+      "id": "dawarich",
+      "name": "Dawarich",
+      "category": "Tools",
+      "color": "amber",
+      "description": "Your location history.",
+      "keywords": "location history",
+      "upstream": "dawarich.svg"
+    },
+    {
+      "id": "traccar",
+      "name": "Traccar",
+      "category": "Tools",
+      "color": "rose",
+      "description": "GPS tracking for your devices.",
+      "keywords": "gps tracking",
+      "upstream": "traccar.svg"
+    },
+    {
+      "id": "searxng",
+      "name": "SearXNG",
+      "category": "Tools",
+      "color": "violet",
+      "description": "Private metasearch.",
+      "keywords": "search privacy",
+      "aliases": ["searx"],
+      "upstream": "searxng.svg"
+    },
+    {
+      "id": "redlib",
+      "name": "Redlib",
+      "category": "Tools",
+      "color": "cyan",
+      "description": "A private Reddit front end.",
+      "keywords": "reddit privacy",
+      "aliases": ["libreddit"],
+      "upstream": "redlib.svg"
+    },
+    {
+      "id": "bitwarden",
+      "name": "Bitwarden",
+      "category": "Security",
+      "color": "sage",
+      "description": "Your password manager.",
+      "keywords": "passwords secrets",
+      "upstream": "bitwarden.svg"
+    },
+    {
+      "id": "keycloak",
+      "name": "Keycloak",
+      "category": "Security",
+      "color": "blue",
+      "description": "Identity and access management.",
+      "keywords": "sso identity authentication",
+      "upstream": "keycloak.svg"
+    },
+    {
+      "id": "lldap",
+      "name": "LLDAP",
+      "category": "Security",
+      "color": "amber",
+      "description": "A lightweight LDAP server.",
+      "keywords": "ldap users",
+      "upstream": "lldap.svg"
+    },
+    {
+      "id": "freeipa",
+      "name": "FreeIPA",
+      "category": "Security",
+      "color": "rose",
+      "description": "Identity management.",
+      "keywords": "identity ldap",
+      "upstream": "freeipa.svg"
+    },
+    {
+      "id": "zitadel",
+      "name": "Zitadel",
+      "category": "Security",
+      "color": "violet",
+      "description": "Identity infrastructure.",
+      "keywords": "sso identity",
+      "upstream": "zitadel.svg"
+    },
+    {
+      "id": "kanidm",
+      "name": "Kanidm",
+      "category": "Security",
+      "color": "cyan",
+      "description": "An identity management platform.",
+      "keywords": "identity authentication",
+      "upstream": "kanidm.svg"
+    },
+    {
+      "id": "crowdsec",
+      "name": "CrowdSec",
+      "category": "Security",
+      "color": "sage",
+      "description": "Collaborative intrusion prevention.",
+      "keywords": "security intrusion",
+      "upstream": "crowdsec.svg"
+    },
+    {
+      "id": "wazuh",
+      "name": "Wazuh",
+      "category": "Security",
+      "color": "blue",
+      "description": "Security monitoring.",
+      "keywords": "siem security",
+      "upstream": "wazuh.svg"
+    },
+    {
+      "id": "passbolt",
+      "name": "Passbolt",
+      "category": "Security",
+      "color": "amber",
+      "description": "A password manager for teams.",
+      "keywords": "passwords team",
+      "upstream": "passbolt.svg"
+    },
+    {
+      "id": "vault",
+      "name": "HashiCorp Vault",
+      "category": "Security",
+      "color": "rose",
+      "description": "Secrets management.",
+      "keywords": "secrets",
+      "aliases": ["hashicorpvault"],
+      "upstream": "hashicorp-vault.svg"
+    },
+    {
+      "id": "stepca",
+      "name": "step-ca",
+      "category": "Security",
+      "color": "violet",
+      "description": "Your private certificate authority.",
+      "keywords": "certificates pki",
+      "aliases": ["smallstep"],
+      "upstream": "step-ca.svg"
+    },
+    {
+      "id": "tinyauth",
+      "name": "Tinyauth",
+      "category": "Security",
+      "color": "cyan",
+      "description": "A simple authentication middleware.",
+      "keywords": "authentication",
+      "upstream": "tinyauth.svg"
+    },
+    {
+      "id": "pocketid",
+      "name": "Pocket ID",
+      "category": "Security",
+      "color": "sage",
+      "description": "An OIDC provider with passkeys.",
+      "keywords": "oidc passkeys",
+      "upstream": "pocket-id.svg"
+    },
+    {
+      "id": "enteauth",
+      "name": "Ente Auth",
+      "category": "Security",
+      "color": "blue",
+      "description": "Your two-factor codes.",
+      "keywords": "2fa otp",
+      "upstream": "ente-auth.svg"
+    },
+    {
+      "id": "openhab",
+      "name": "openHAB",
+      "category": "Automation",
+      "color": "amber",
+      "description": "Automation for your home.",
+      "keywords": "smart home automation",
+      "upstream": "openhab.svg"
+    },
+    {
+      "id": "homebridge",
+      "name": "Homebridge",
+      "category": "Automation",
+      "color": "rose",
+      "description": "HomeKit for your devices.",
+      "keywords": "homekit smart home",
+      "upstream": "homebridge.svg"
+    },
+    {
+      "id": "nodered",
+      "name": "Node-RED",
+      "category": "Automation",
+      "color": "violet",
+      "description": "Wire together your automations.",
+      "keywords": "flows automation",
+      "ports": [1880],
+      "upstream": "node-red.svg"
+    },
+    {
+      "id": "zigbee2mqtt",
+      "name": "Zigbee2MQTT",
+      "category": "Automation",
+      "color": "cyan",
+      "description": "Your Zigbee devices over MQTT.",
+      "keywords": "zigbee mqtt",
+      "aliases": ["z2m"],
+      "upstream": "zigbee2mqtt.svg"
+    },
+    {
+      "id": "esphome",
+      "name": "ESPHome",
+      "category": "Automation",
+      "color": "sage",
+      "description": "Firmware for your ESP devices.",
+      "keywords": "esp32 devices",
+      "ports": [6052],
+      "upstream": "esphome.svg"
+    },
+    {
+      "id": "frigate",
+      "name": "Frigate",
+      "category": "Automation",
+      "color": "blue",
+      "description": "Your NVR with object detection.",
+      "keywords": "nvr cameras",
+      "ports": [8971],
+      "upstream": "frigate.svg"
+    },
+    {
+      "id": "mosquitto",
+      "name": "Mosquitto",
+      "category": "Automation",
+      "color": "amber",
+      "description": "Your MQTT broker.",
+      "keywords": "mqtt broker",
+      "aliases": ["mqtt"],
+      "upstream": "mosquitto.svg"
+    },
+    {
+      "id": "hubitat",
+      "name": "Hubitat",
+      "category": "Automation",
+      "color": "rose",
+      "description": "Your smart home hub.",
+      "keywords": "smart home hub",
+      "upstream": "hubitat.svg"
+    },
+    {
+      "id": "iobroker",
+      "name": "ioBroker",
+      "category": "Automation",
+      "color": "violet",
+      "description": "Automation for your home.",
+      "keywords": "smart home automation",
+      "upstream": "iobroker.svg"
+    },
+    {
+      "id": "zwavejsui",
+      "name": "Z-Wave JS UI",
+      "category": "Automation",
+      "color": "cyan",
+      "description": "Your Z-Wave network.",
+      "keywords": "zwave devices",
+      "aliases": ["zwavejs", "zwavejs2mqtt"],
+      "upstream": "z-wave-js-ui.svg"
+    },
+    {
+      "id": "motioneye",
+      "name": "motionEye",
+      "category": "Automation",
+      "color": "sage",
+      "description": "Your camera surveillance.",
+      "keywords": "cameras surveillance",
+      "upstream": "motioneye.svg"
+    },
+    {
+      "id": "phoscon",
+      "name": "Phoscon",
+      "category": "Automation",
+      "color": "blue",
+      "description": "Your Zigbee gateway.",
+      "keywords": "zigbee devices",
+      "aliases": ["deconz"],
+      "upstream": "phoscon.svg"
+    },
+    {
+      "id": "tasmota",
+      "name": "Tasmota",
+      "category": "Automation",
+      "color": "amber",
+      "description": "Firmware for your smart devices.",
+      "keywords": "esp devices firmware",
+      "upstream": "tasmota.svg"
+    },
+    {
+      "id": "shelly",
+      "name": "Shelly",
+      "category": "Automation",
+      "color": "rose",
+      "description": "Your Shelly devices.",
+      "keywords": "smart devices relays",
+      "upstream": "shelly.svg"
+    },
+    {
+      "id": "n8n",
+      "name": "n8n",
+      "category": "Automation",
+      "color": "violet",
+      "description": "Workflow automation.",
+      "keywords": "workflows automation",
+      "ports": [5678],
+      "upstream": "n8n.svg"
+    },
+    {
+      "id": "huginn",
+      "name": "Huginn",
+      "category": "Automation",
+      "color": "cyan",
+      "description": "Agents that work for you.",
+      "keywords": "agents automation",
+      "upstream": "huginn.svg"
+    },
+    {
+      "id": "pfsense",
+      "name": "pfSense",
+      "category": "Network",
+      "color": "sage",
+      "description": "Your firewall and router.",
+      "keywords": "firewall router",
+      "upstream": "pfsense.svg"
+    },
+    {
+      "id": "opnsense",
+      "name": "OPNsense",
+      "category": "Network",
+      "color": "blue",
+      "description": "Your firewall and router.",
+      "keywords": "firewall router",
+      "upstream": "opnsense.svg"
+    },
+    {
+      "id": "unifi",
+      "name": "UniFi",
+      "category": "Network",
+      "color": "amber",
+      "description": "Your UniFi network.",
+      "keywords": "network wifi controller",
+      "aliases": ["unificontroller", "unifinetwork"],
+      "upstream": "unifi.svg"
+    },
+    {
+      "id": "ubiquiti",
+      "name": "Ubiquiti",
+      "category": "Network",
+      "color": "rose",
+      "description": "Your Ubiquiti device.",
+      "keywords": "network router",
+      "aliases": ["edgeos", "edgerouter"],
+      "upstream": "ubiquiti.svg"
+    },
+    {
+      "id": "mikrotik",
+      "name": "MikroTik",
+      "category": "Network",
+      "color": "violet",
+      "description": "Your MikroTik router.",
+      "keywords": "router network",
+      "aliases": ["routeros"],
+      "upstream": "mikrotik.svg"
+    },
+    {
+      "id": "openwrt",
+      "name": "OpenWrt",
+      "category": "Network",
+      "color": "cyan",
+      "description": "Your OpenWrt router.",
+      "keywords": "router firmware",
+      "aliases": ["luci"],
+      "upstream": "openwrt.svg"
+    },
+    {
+      "id": "fritzbox",
+      "name": "FRITZ!Box",
+      "category": "Network",
+      "color": "sage",
+      "description": "Your FRITZ!Box.",
+      "keywords": "router modem",
+      "aliases": ["fritz"],
+      "upstream": "fritzbox.svg"
+    },
+    {
+      "id": "omada",
+      "name": "Omada",
+      "category": "Network",
+      "color": "blue",
+      "description": "Your Omada network.",
+      "keywords": "network wifi controller",
+      "aliases": ["omadacontroller"],
+      "upstream": "omada.svg"
+    },
+    {
+      "id": "tplink",
+      "name": "TP-Link",
+      "category": "Network",
+      "color": "amber",
+      "description": "Your TP-Link device.",
+      "keywords": "router network",
+      "upstream": "tp-link.svg"
+    },
+    {
+      "id": "asusrouter",
+      "name": "ASUS Router",
+      "category": "Network",
+      "color": "rose",
+      "description": "Your ASUS router.",
+      "keywords": "router network",
+      "aliases": ["asuswrt"],
+      "upstream": "asus-router.svg"
+    },
+    {
+      "id": "netgear",
+      "name": "NETGEAR",
+      "category": "Network",
+      "color": "violet",
+      "description": "Your NETGEAR device.",
+      "keywords": "router network",
+      "upstream": "netgear.svg"
+    },
+    {
+      "id": "sophos",
+      "name": "Sophos",
+      "category": "Network",
+      "color": "cyan",
+      "description": "Your Sophos firewall.",
+      "keywords": "firewall",
+      "upstream": "sophos.svg"
+    },
+    {
+      "id": "wireguard",
+      "name": "WireGuard",
+      "category": "Network",
+      "color": "sage",
+      "description": "Your VPN.",
+      "keywords": "vpn",
+      "aliases": ["wg"],
+      "upstream": "wireguard.svg"
+    },
+    {
+      "id": "tailscale",
+      "name": "Tailscale",
+      "category": "Network",
+      "color": "blue",
+      "description": "Your tailnet.",
+      "keywords": "vpn mesh",
+      "upstream": "tailscale.svg"
+    },
+    {
+      "id": "headscale",
+      "name": "Headscale",
+      "category": "Network",
+      "color": "amber",
+      "description": "A self-hosted Tailscale control server.",
+      "keywords": "vpn tailscale",
+      "upstream": "headscale.svg"
+    },
+    {
+      "id": "netbird",
+      "name": "NetBird",
+      "category": "Network",
+      "color": "rose",
+      "description": "Your private mesh network.",
+      "keywords": "vpn mesh",
+      "upstream": "netbird.svg"
+    },
+    {
+      "id": "zerotier",
+      "name": "ZeroTier",
+      "category": "Network",
+      "color": "violet",
+      "description": "Your virtual network.",
+      "keywords": "vpn mesh",
+      "upstream": "zerotier.svg"
+    },
+    {
+      "id": "openvpn",
+      "name": "OpenVPN",
+      "category": "Network",
+      "color": "cyan",
+      "description": "Your VPN server.",
+      "keywords": "vpn",
+      "aliases": ["ovpn"],
+      "upstream": "openvpn.svg"
+    },
+    {
+      "id": "caddy",
+      "name": "Caddy",
+      "category": "Network",
+      "color": "sage",
+      "description": "A web server with automatic HTTPS.",
+      "keywords": "reverse proxy web server",
+      "upstream": "caddy.svg"
+    },
+    {
+      "id": "nginx",
+      "name": "NGINX",
+      "category": "Network",
+      "color": "blue",
+      "description": "Your web server.",
+      "keywords": "web server reverse proxy",
+      "upstream": "nginx.svg"
+    },
+    {
+      "id": "haproxy",
+      "name": "HAProxy",
+      "category": "Network",
+      "color": "amber",
+      "description": "A reliable load balancer.",
+      "keywords": "load balancer proxy",
+      "upstream": "haproxy.svg"
+    },
+    {
+      "id": "cloudflare",
+      "name": "Cloudflare",
+      "category": "Network",
+      "color": "rose",
+      "description": "Your Cloudflare dashboard.",
+      "keywords": "dns cdn tunnel",
+      "upstream": "cloudflare.svg"
+    },
+    {
+      "id": "zoraxy",
+      "name": "Zoraxy",
+      "category": "Network",
+      "color": "violet",
+      "description": "A general-purpose reverse proxy.",
+      "keywords": "reverse proxy",
+      "upstream": "zoraxy.svg"
+    },
+    {
+      "id": "pangolin",
+      "name": "Pangolin",
+      "category": "Network",
+      "color": "cyan",
+      "description": "A tunneled reverse proxy.",
+      "keywords": "tunnel reverse proxy",
+      "upstream": "pangolin.svg"
+    },
+    {
+      "id": "technitium",
+      "name": "Technitium DNS",
+      "category": "Network",
+      "color": "sage",
+      "description": "Your DNS server.",
+      "keywords": "dns",
+      "aliases": ["technitiumdns"],
+      "upstream": "technitium.svg"
+    },
+    {
+      "id": "unbound",
+      "name": "Unbound",
+      "category": "Network",
+      "color": "blue",
+      "description": "A validating DNS resolver.",
+      "keywords": "dns resolver",
+      "upstream": "unbound.svg"
+    },
+    {
+      "id": "blocky",
+      "name": "Blocky",
+      "category": "Network",
+      "color": "amber",
+      "description": "A DNS proxy and ad blocker.",
+      "keywords": "dns adblocking",
+      "upstream": "blocky.svg"
+    },
+    {
+      "id": "powerdns",
+      "name": "PowerDNS",
+      "category": "Network",
+      "color": "rose",
+      "description": "Your DNS server.",
+      "keywords": "dns",
+      "aliases": ["pdns"],
+      "upstream": "powerdns.svg"
+    },
+    {
+      "id": "openspeedtest",
+      "name": "OpenSpeedTest",
+      "category": "Network",
+      "color": "violet",
+      "description": "Test your network speed.",
+      "keywords": "speed test",
+      "upstream": "openspeedtest.svg"
+    },
+    {
+      "id": "librespeed",
+      "name": "LibreSpeed",
+      "category": "Network",
+      "color": "cyan",
+      "description": "Test your network speed.",
+      "keywords": "speed test",
+      "upstream": "librespeed.svg"
+    },
+    {
+      "id": "speedtesttracker",
+      "name": "Speedtest Tracker",
+      "category": "Network",
+      "color": "sage",
+      "description": "Track your internet speed.",
+      "keywords": "speed test",
+      "aliases": ["speedtest"],
+      "upstream": "ookla-speedtest.svg"
+    },
+    {
+      "id": "netdata",
+      "name": "Netdata",
+      "category": "Monitoring",
+      "color": "blue",
+      "description": "Real-time system metrics.",
+      "keywords": "metrics monitoring",
+      "ports": [19999],
+      "upstream": "netdata.svg"
+    },
+    {
+      "id": "zabbix",
+      "name": "Zabbix",
+      "category": "Monitoring",
+      "color": "amber",
+      "description": "Infrastructure monitoring.",
+      "keywords": "monitoring alerts",
+      "upstream": "zabbix.svg"
+    },
+    {
+      "id": "glances",
+      "name": "Glances",
+      "category": "Monitoring",
+      "color": "rose",
+      "description": "System monitoring at a glance.",
+      "keywords": "system monitoring",
+      "ports": [61208],
+      "upstream": "glances.svg"
+    },
+    {
+      "id": "checkmk",
+      "name": "Checkmk",
+      "category": "Monitoring",
+      "color": "violet",
+      "description": "IT monitoring.",
+      "keywords": "monitoring",
+      "upstream": "checkmk.svg"
+    },
+    {
+      "id": "librenms",
+      "name": "LibreNMS",
+      "category": "Monitoring",
+      "color": "cyan",
+      "description": "Network monitoring.",
+      "keywords": "network monitoring snmp",
+      "upstream": "librenms.svg"
+    },
+    {
+      "id": "nagios",
+      "name": "Nagios",
+      "category": "Monitoring",
+      "color": "sage",
+      "description": "Infrastructure monitoring.",
+      "keywords": "monitoring alerts",
+      "upstream": "nagios.svg"
+    },
+    {
+      "id": "icinga",
+      "name": "Icinga",
+      "category": "Monitoring",
+      "color": "blue",
+      "description": "Infrastructure monitoring.",
+      "keywords": "monitoring alerts",
+      "aliases": ["icingaweb"],
+      "upstream": "icinga.svg"
+    },
+    {
+      "id": "influxdb",
+      "name": "InfluxDB",
+      "category": "Monitoring",
+      "color": "amber",
+      "description": "Your time series data.",
+      "keywords": "time series database",
+      "aliases": ["influx"],
+      "ports": [8086],
+      "upstream": "influxdb.svg"
+    },
+    {
+      "id": "loki",
+      "name": "Loki",
+      "category": "Monitoring",
+      "color": "rose",
+      "description": "Your log aggregation.",
+      "keywords": "logs",
+      "aliases": ["grafanaloki"],
+      "ports": [3100],
+      "upstream": "loki.svg"
+    },
+    {
+      "id": "graylog",
+      "name": "Graylog",
+      "category": "Monitoring",
+      "color": "violet",
+      "description": "Centralized log management.",
+      "keywords": "logs",
+      "upstream": "graylog.svg"
+    },
+    {
+      "id": "kibana",
+      "name": "Kibana",
+      "category": "Monitoring",
+      "color": "cyan",
+      "description": "Explore your Elasticsearch data.",
+      "keywords": "logs search elastic",
+      "ports": [5601],
+      "upstream": "elastic-kibana.svg"
+    },
+    {
+      "id": "elasticsearch",
+      "name": "Elasticsearch",
+      "category": "Monitoring",
+      "color": "sage",
+      "description": "Search and analytics engine.",
+      "keywords": "search logs",
+      "ports": [9200],
+      "upstream": "elasticsearch.svg"
+    },
+    {
+      "id": "opensearch",
+      "name": "OpenSearch",
+      "category": "Monitoring",
+      "color": "blue",
+      "description": "Search and analytics.",
+      "keywords": "search logs",
+      "upstream": "opensearch.svg"
+    },
+    {
+      "id": "gatus",
+      "name": "Gatus",
+      "category": "Monitoring",
+      "color": "amber",
+      "description": "A health dashboard for your services.",
+      "keywords": "status health",
+      "upstream": "gatus.svg"
+    },
+    {
+      "id": "healthchecks",
+      "name": "Healthchecks",
+      "category": "Monitoring",
+      "color": "rose",
+      "description": "Know when your jobs stop running.",
+      "keywords": "cron monitoring",
+      "aliases": ["healthchecksio"],
+      "upstream": "healthchecks.svg"
+    },
+    {
+      "id": "beszel",
+      "name": "Beszel",
+      "category": "Monitoring",
+      "color": "violet",
+      "description": "Lightweight server monitoring.",
+      "keywords": "server monitoring",
+      "upstream": "beszel.svg"
+    },
+    {
+      "id": "dozzle",
+      "name": "Dozzle",
+      "category": "Monitoring",
+      "color": "cyan",
+      "description": "Your container logs.",
+      "keywords": "docker logs",
+      "upstream": "dozzle.svg"
+    },
+    {
+      "id": "scrutiny",
+      "name": "Scrutiny",
+      "category": "Monitoring",
+      "color": "sage",
+      "description": "Hard drive health.",
+      "keywords": "disks smart",
+      "upstream": "scrutiny.svg"
+    },
+    {
+      "id": "alertmanager",
+      "name": "Alertmanager",
+      "category": "Monitoring",
+      "color": "blue",
+      "description": "Alerts from Prometheus.",
+      "keywords": "alerts prometheus",
+      "ports": [9093],
+      "upstream": "alertmanager.svg"
+    },
+    {
+      "id": "changedetection",
+      "name": "changedetection.io",
+      "category": "Monitoring",
+      "color": "amber",
+      "description": "Get notified when web pages change.",
+      "keywords": "website changes alerts",
+      "aliases": ["changedetectionio"],
+      "upstream": "changedetection.svg"
+    },
+    {
+      "id": "ntfy",
+      "name": "ntfy",
+      "category": "Monitoring",
+      "color": "rose",
+      "description": "Push notifications.",
+      "keywords": "notifications push",
+      "upstream": "ntfy.svg"
+    },
+    {
+      "id": "victoriametrics",
+      "name": "VictoriaMetrics",
+      "category": "Monitoring",
+      "color": "cyan",
+      "description": "Fast time series storage.",
+      "keywords": "metrics time series",
+      "upstream": "victoriametrics.svg"
+    },
+    {
+      "id": "sentry",
+      "name": "Sentry",
+      "category": "Monitoring",
+      "color": "sage",
+      "description": "Error tracking.",
+      "keywords": "errors",
+      "upstream": "sentry.svg"
+    },
+    {
+      "id": "umami",
+      "name": "Umami",
+      "category": "Monitoring",
+      "color": "blue",
+      "description": "Privacy-friendly web analytics.",
+      "keywords": "web analytics",
+      "upstream": "umami.svg"
+    },
+    {
+      "id": "plausible",
+      "name": "Plausible",
+      "category": "Monitoring",
+      "color": "amber",
+      "description": "Privacy-friendly web analytics.",
+      "keywords": "web analytics",
+      "upstream": "plausible.svg"
+    },
+    {
+      "id": "proxmoxbackupserver",
+      "name": "Proxmox Backup Server",
+      "category": "Infrastructure",
+      "color": "violet",
+      "description": "Backups for your virtual machines.",
+      "keywords": "backup proxmox",
+      "aliases": ["pbs"],
+      "ports": [8007],
+      "upstream": "proxmox-backup-server.svg"
+    },
+    {
+      "id": "vmwareesxi",
+      "name": "VMware ESXi",
+      "category": "Infrastructure",
+      "color": "cyan",
+      "description": "Your hypervisor.",
+      "keywords": "virtualization",
+      "aliases": ["esxi", "vsphere"],
+      "upstream": "vmware-esxi.svg"
+    },
+    {
+      "id": "vmware",
+      "name": "VMware",
+      "category": "Infrastructure",
+      "color": "sage",
+      "description": "Your VMware environment.",
+      "keywords": "virtualization",
+      "upstream": "vmware.svg"
+    },
+    {
+      "id": "incus",
+      "name": "Incus",
+      "category": "Infrastructure",
+      "color": "blue",
+      "description": "System containers and virtual machines.",
+      "keywords": "containers virtualization",
+      "upstream": "incus.svg"
+    },
+    {
+      "id": "cockpit",
+      "name": "Cockpit",
+      "category": "Infrastructure",
+      "color": "amber",
+      "description": "Administer your server in the browser.",
+      "keywords": "server admin",
+      "upstream": "cockpit.svg"
+    },
+    {
+      "id": "webmin",
+      "name": "Webmin",
+      "category": "Infrastructure",
+      "color": "rose",
+      "description": "Web-based system administration.",
+      "keywords": "server admin",
+      "ports": [10000],
+      "upstream": "webmin.svg"
+    },
+    {
+      "id": "docker",
+      "name": "Docker",
+      "category": "Infrastructure",
+      "color": "violet",
+      "description": "Your containers.",
+      "keywords": "containers",
+      "upstream": "docker.svg"
+    },
+    {
+      "id": "rancher",
+      "name": "Rancher",
+      "category": "Infrastructure",
+      "color": "cyan",
+      "description": "Kubernetes management.",
+      "keywords": "kubernetes",
+      "upstream": "rancher.svg"
+    },
+    {
+      "id": "kubernetes",
+      "name": "Kubernetes",
+      "category": "Infrastructure",
+      "color": "sage",
+      "description": "Your cluster.",
+      "keywords": "containers orchestration",
+      "aliases": ["k8s"],
+      "upstream": "kubernetes.svg"
+    },
+    {
+      "id": "k3s",
+      "name": "K3s",
+      "category": "Infrastructure",
+      "color": "blue",
+      "description": "Lightweight Kubernetes.",
+      "keywords": "kubernetes",
+      "upstream": "k3s.svg"
+    },
+    {
+      "id": "podman",
+      "name": "Podman",
+      "category": "Infrastructure",
+      "color": "amber",
+      "description": "Daemonless containers.",
+      "keywords": "containers",
+      "upstream": "podman.svg"
+    },
+    {
+      "id": "arcane",
+      "name": "Arcane",
+      "category": "Infrastructure",
+      "color": "rose",
+      "description": "Manage your Docker containers.",
+      "keywords": "docker containers",
+      "upstream": "arcane.svg"
+    },
+    {
+      "id": "watchtower",
+      "name": "Watchtower",
+      "category": "Infrastructure",
+      "color": "violet",
+      "description": "Keeps your containers up to date.",
+      "keywords": "docker updates",
+      "upstream": "watchtower.svg"
+    },
+    {
+      "id": "coolify",
+      "name": "Coolify",
+      "category": "Infrastructure",
+      "color": "cyan",
+      "description": "Your self-hosted platform for deployments.",
+      "keywords": "paas deploy",
+      "upstream": "coolify.svg"
+    },
+    {
+      "id": "dokploy",
+      "name": "Dokploy",
+      "category": "Infrastructure",
+      "color": "sage",
+      "description": "Deploy your applications.",
+      "keywords": "paas deploy",
+      "upstream": "dokploy.svg"
+    },
+    {
+      "id": "apacheguacamole",
+      "name": "Apache Guacamole",
+      "category": "Infrastructure",
+      "color": "blue",
+      "description": "Remote desktops in the browser.",
+      "keywords": "remote desktop ssh",
+      "aliases": ["guacamole", "guac"],
+      "upstream": "apache-guacamole.svg"
+    },
+    {
+      "id": "rustdesk",
+      "name": "RustDesk",
+      "category": "Infrastructure",
+      "color": "amber",
+      "description": "Remote desktop access.",
+      "keywords": "remote desktop",
+      "upstream": "rustdesk.svg"
+    },
+    {
+      "id": "kasm",
+      "name": "Kasm Workspaces",
+      "category": "Infrastructure",
+      "color": "rose",
+      "description": "Browser-based workspaces.",
+      "keywords": "remote desktop workspaces",
+      "aliases": ["kasmworkspaces"],
+      "upstream": "kasm.svg"
+    },
+    {
+      "id": "octoprint",
+      "name": "OctoPrint",
+      "category": "Infrastructure",
+      "color": "violet",
+      "description": "Control your 3D printer.",
+      "keywords": "3d printing",
+      "upstream": "octoprint.svg"
+    },
+    {
+      "id": "mainsail",
+      "name": "Mainsail",
+      "category": "Infrastructure",
+      "color": "cyan",
+      "description": "A Klipper web interface.",
+      "keywords": "3d printing klipper",
+      "upstream": "mainsail.svg"
+    },
+    {
+      "id": "fluidd",
+      "name": "Fluidd",
+      "category": "Infrastructure",
+      "color": "sage",
+      "description": "A Klipper web interface.",
+      "keywords": "3d printing klipper",
+      "upstream": "fluidd.svg"
+    },
+    {
+      "id": "cups",
+      "name": "CUPS",
+      "category": "Infrastructure",
+      "color": "blue",
+      "description": "Your print server.",
+      "keywords": "printing",
+      "upstream": "cups.svg"
+    },
+    {
+      "id": "vscode",
+      "name": "VS Code",
+      "category": "Development",
+      "color": "amber",
+      "description": "Your code editor.",
+      "keywords": "editor ide",
+      "aliases": ["codeserver", "vscodium"],
+      "upstream": "vscode.svg"
+    },
+    {
+      "id": "jenkins",
+      "name": "Jenkins",
+      "category": "Development",
+      "color": "rose",
+      "description": "An automation server.",
+      "keywords": "ci automation builds",
+      "upstream": "jenkins.svg"
+    },
+    {
+      "id": "woodpeckerci",
+      "name": "Woodpecker CI",
+      "category": "Development",
+      "color": "violet",
+      "description": "A simple CI engine.",
+      "keywords": "ci builds",
+      "aliases": ["woodpecker"],
+      "upstream": "woodpecker-ci.svg"
+    },
+    {
+      "id": "sonarqube",
+      "name": "SonarQube",
+      "category": "Development",
+      "color": "cyan",
+      "description": "Code quality analysis.",
+      "keywords": "code quality",
+      "upstream": "sonarqube.svg"
+    },
+    {
+      "id": "nexus",
+      "name": "Nexus Repository",
+      "category": "Development",
+      "color": "sage",
+      "description": "Your artifact repository.",
+      "keywords": "artifacts packages",
+      "aliases": ["nexusrepository"],
+      "upstream": "nexus.svg"
+    },
+    {
+      "id": "harbor",
+      "name": "Harbor",
+      "category": "Development",
+      "color": "blue",
+      "description": "A container registry.",
+      "keywords": "container registry",
+      "upstream": "harbor.svg"
+    },
+    {
+      "id": "jupyter",
+      "name": "Jupyter",
+      "category": "Development",
+      "color": "amber",
+      "description": "Interactive notebooks.",
+      "keywords": "notebooks python",
+      "aliases": ["jupyterlab", "jupyterhub"],
+      "ports": [8888],
+      "upstream": "jupyter.svg"
+    },
+    {
+      "id": "nocodb",
+      "name": "NocoDB",
+      "category": "Development",
+      "color": "rose",
+      "description": "Turn databases into spreadsheets.",
+      "keywords": "database spreadsheet",
+      "upstream": "nocodb.svg"
+    },
+    {
+      "id": "baserow",
+      "name": "Baserow",
+      "category": "Development",
+      "color": "violet",
+      "description": "A no-code database.",
+      "keywords": "database no-code",
+      "upstream": "baserow.svg"
+    },
+    {
+      "id": "directus",
+      "name": "Directus",
+      "category": "Development",
+      "color": "cyan",
+      "description": "A data platform.",
+      "keywords": "cms database",
+      "upstream": "directus.svg"
+    },
+    {
+      "id": "strapi",
+      "name": "Strapi",
+      "category": "Development",
+      "color": "sage",
+      "description": "A headless CMS.",
+      "keywords": "cms headless",
+      "upstream": "strapi.svg"
+    },
+    {
+      "id": "supabase",
+      "name": "Supabase",
+      "category": "Development",
+      "color": "blue",
+      "description": "An open-source backend.",
+      "keywords": "database backend",
+      "upstream": "supabase.svg"
+    },
+    {
+      "id": "pocketbase",
+      "name": "PocketBase",
+      "category": "Development",
+      "color": "amber",
+      "description": "A backend in one file.",
+      "keywords": "database backend",
+      "upstream": "pocketbase.svg"
+    },
+    {
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "category": "Development",
+      "color": "rose",
+      "description": "Your PostgreSQL database.",
+      "keywords": "database sql",
+      "aliases": ["postgresql"],
+      "upstream": "postgres.svg"
+    },
+    {
+      "id": "mysql",
+      "name": "MySQL",
+      "category": "Development",
+      "color": "violet",
+      "description": "Your MySQL database.",
+      "keywords": "database sql",
+      "upstream": "mysql.svg"
+    },
+    {
+      "id": "mariadb",
+      "name": "MariaDB",
+      "category": "Development",
+      "color": "cyan",
+      "description": "Your MariaDB database.",
+      "keywords": "database sql",
+      "upstream": "mariadb.svg"
+    },
+    {
+      "id": "mongodb",
+      "name": "MongoDB",
+      "category": "Development",
+      "color": "sage",
+      "description": "Your MongoDB database.",
+      "keywords": "database nosql",
+      "aliases": ["mongo"],
+      "upstream": "mongodb.svg"
+    },
+    {
+      "id": "redis",
+      "name": "Redis",
+      "category": "Development",
+      "color": "blue",
+      "description": "Your Redis instance.",
+      "keywords": "database cache",
+      "upstream": "redis.svg"
+    },
+    {
+      "id": "pgadmin",
+      "name": "pgAdmin",
+      "category": "Development",
+      "color": "amber",
+      "description": "PostgreSQL administration.",
+      "keywords": "postgres database admin",
+      "aliases": ["pgadmin4"],
+      "upstream": "pgadmin.svg"
+    },
+    {
+      "id": "adminer",
+      "name": "Adminer",
+      "category": "Development",
+      "color": "rose",
+      "description": "Database management in one file.",
+      "keywords": "database admin",
+      "upstream": "adminer.svg"
+    },
+    {
+      "id": "phpmyadmin",
+      "name": "phpMyAdmin",
+      "category": "Development",
+      "color": "violet",
+      "description": "MySQL administration.",
+      "keywords": "mysql database admin",
+      "aliases": ["pma"],
+      "upstream": "phpmyadmin.svg"
+    },
+    {
+      "id": "hoppscotch",
+      "name": "Hoppscotch",
+      "category": "Development",
+      "color": "cyan",
+      "description": "API development.",
+      "keywords": "api testing",
+      "upstream": "hoppscotch.svg"
+    },
+    {
+      "id": "github",
+      "name": "GitHub",
+      "category": "Development",
+      "color": "sage",
+      "description": "Your GitHub.",
+      "keywords": "git",
+      "upstream": "github.svg"
+    },
+    {
+      "id": "semaphore",
+      "name": "Semaphore UI",
+      "category": "Development",
+      "color": "blue",
+      "description": "A UI for Ansible.",
+      "keywords": "ansible automation",
+      "aliases": ["semaphoreui"],
+      "upstream": "semaphore.svg"
+    },
+    {
+      "id": "ansible",
+      "name": "Ansible",
+      "category": "Development",
+      "color": "amber",
+      "description": "IT automation.",
+      "keywords": "automation configuration",
+      "aliases": ["awx"],
+      "upstream": "ansible.svg"
+    },
+    {
+      "id": "opengist",
+      "name": "Opengist",
+      "category": "Development",
+      "color": "rose",
+      "description": "Self-hosted code snippets.",
+      "keywords": "pastebin gists code",
+      "upstream": "opengist.svg"
+    },
+    {
+      "id": "mailpit",
+      "name": "Mailpit",
+      "category": "Development",
+      "color": "violet",
+      "description": "Email testing.",
+      "keywords": "mail testing smtp",
+      "upstream": "mailpit.svg"
+    },
+    {
+      "id": "rocketchat",
+      "name": "Rocket.Chat",
+      "category": "Communication",
+      "color": "cyan",
+      "description": "Team chat.",
+      "keywords": "chat team",
+      "upstream": "rocket-chat.svg"
+    },
+    {
+      "id": "matrix",
+      "name": "Matrix",
+      "category": "Communication",
+      "color": "sage",
+      "description": "Your Matrix homeserver.",
+      "keywords": "chat federated",
+      "upstream": "matrix.svg"
+    },
+    {
+      "id": "element",
+      "name": "Element",
+      "category": "Communication",
+      "color": "blue",
+      "description": "A Matrix chat client.",
+      "keywords": "chat matrix",
+      "aliases": ["elementweb"],
+      "upstream": "element.svg"
+    },
+    {
+      "id": "matrixsynapse",
+      "name": "Synapse",
+      "category": "Communication",
+      "color": "amber",
+      "description": "A Matrix homeserver.",
+      "keywords": "matrix homeserver",
+      "aliases": ["synapse"],
+      "ports": [8008],
+      "upstream": "matrix-synapse.svg"
+    },
+    {
+      "id": "mattermost",
+      "name": "Mattermost",
+      "category": "Communication",
+      "color": "rose",
+      "description": "Team collaboration.",
+      "keywords": "chat team",
+      "ports": [8065],
+      "upstream": "mattermost.svg"
+    },
+    {
+      "id": "zulip",
+      "name": "Zulip",
+      "category": "Communication",
+      "color": "violet",
+      "description": "Threaded team chat.",
+      "keywords": "chat team",
+      "upstream": "zulip.svg"
+    },
+    {
+      "id": "jitsimeet",
+      "name": "Jitsi Meet",
+      "category": "Communication",
+      "color": "cyan",
+      "description": "Video meetings.",
+      "keywords": "video conferencing",
+      "aliases": ["jitsi"],
+      "upstream": "jitsi-meet.svg"
+    },
+    {
+      "id": "revolt",
+      "name": "Revolt",
+      "category": "Communication",
+      "color": "sage",
+      "description": "An open chat platform.",
+      "keywords": "chat",
+      "upstream": "revolt.svg"
+    },
+    {
+      "id": "mailcow",
+      "name": "mailcow",
+      "category": "Communication",
+      "color": "blue",
+      "description": "Your mail server.",
+      "keywords": "mail email server",
+      "upstream": "mailcow.svg"
+    },
+    {
+      "id": "roundcube",
+      "name": "Roundcube",
+      "category": "Communication",
+      "color": "amber",
+      "description": "Webmail in your browser.",
+      "keywords": "mail webmail",
+      "upstream": "roundcube.svg"
+    },
+    {
+      "id": "snappymail",
+      "name": "SnappyMail",
+      "category": "Communication",
+      "color": "rose",
+      "description": "Fast webmail.",
+      "keywords": "mail webmail",
+      "upstream": "snappymail.svg"
+    },
+    {
+      "id": "stalwart",
+      "name": "Stalwart",
+      "category": "Communication",
+      "color": "violet",
+      "description": "A modern mail server.",
+      "keywords": "mail server",
+      "aliases": ["stalwartmail"],
+      "upstream": "stalwart.svg"
+    },
+    {
+      "id": "mailinabox",
+      "name": "Mail-in-a-Box",
+      "category": "Communication",
+      "color": "cyan",
+      "description": "Your mail server.",
+      "keywords": "mail server",
+      "upstream": "mail-in-a-box.svg"
+    },
+    {
+      "id": "dockermailserver",
+      "name": "docker-mailserver",
+      "category": "Communication",
+      "color": "sage",
+      "description": "A containerized mail server.",
+      "keywords": "mail server",
+      "upstream": "docker-mailserver.svg"
+    },
+    {
+      "id": "mumble",
+      "name": "Mumble",
+      "category": "Communication",
+      "color": "blue",
+      "description": "Voice chat.",
+      "keywords": "voice chat",
+      "aliases": ["murmur"],
+      "upstream": "mumble.svg"
+    },
+    {
+      "id": "teamspeak",
+      "name": "TeamSpeak",
+      "category": "Communication",
+      "color": "amber",
+      "description": "Voice chat.",
+      "keywords": "voice chat",
+      "upstream": "teamspeak.svg"
+    },
+    {
+      "id": "mastodon",
+      "name": "Mastodon",
+      "category": "Communication",
+      "color": "rose",
+      "description": "Your social network.",
+      "keywords": "social federated",
+      "upstream": "mastodon.svg"
+    },
+    {
+      "id": "pixelfed",
+      "name": "Pixelfed",
+      "category": "Communication",
+      "color": "violet",
+      "description": "Federated photo sharing.",
+      "keywords": "photos social federated",
+      "upstream": "pixelfed.svg"
+    },
+    {
+      "id": "lemmy",
+      "name": "Lemmy",
+      "category": "Communication",
+      "color": "cyan",
+      "description": "Federated link aggregation.",
+      "keywords": "forum federated",
+      "upstream": "lemmy.svg"
+    },
+    {
+      "id": "gotosocial",
+      "name": "GoToSocial",
+      "category": "Communication",
+      "color": "sage",
+      "description": "A lightweight social server.",
+      "keywords": "social federated",
+      "upstream": "gotosocial.svg"
+    },
+    {
+      "id": "pterodactyl",
+      "name": "Pterodactyl",
+      "category": "Games",
+      "color": "blue",
+      "description": "Manage your game servers.",
+      "keywords": "game servers panel",
+      "upstream": "pterodactyl.svg"
+    },
+    {
+      "id": "pelican",
+      "name": "Pelican Panel",
+      "category": "Games",
+      "color": "amber",
+      "description": "Manage your game servers.",
+      "keywords": "game servers panel",
+      "aliases": ["pelicanpanel"],
+      "upstream": "pelican-panel.svg"
+    },
+    {
+      "id": "craftycontroller",
+      "name": "Crafty Controller",
+      "category": "Games",
+      "color": "rose",
+      "description": "Manage your Minecraft servers.",
+      "keywords": "minecraft servers",
+      "aliases": ["crafty"],
+      "upstream": "crafty-controller.svg"
+    },
+    {
+      "id": "lancache",
+      "name": "LanCache",
+      "category": "Games",
+      "color": "violet",
+      "description": "Cache your game downloads.",
+      "keywords": "games cache",
+      "upstream": "lancache.svg"
+    },
+    {
+      "id": "sunshine",
+      "name": "Sunshine",
+      "category": "Games",
+      "color": "cyan",
+      "description": "Stream your games.",
+      "keywords": "game streaming",
+      "upstream": "sunshine.svg"
+    },
+    {
+      "id": "romm",
+      "name": "RomM",
+      "category": "Games",
+      "color": "sage",
+      "description": "Organize your ROM collection.",
+      "keywords": "games emulation library",
+      "upstream": "romm.svg"
+    },
+    {
+      "id": "openwebui",
+      "name": "Open WebUI",
+      "category": "AI",
+      "color": "blue",
+      "description": "Chat with your models.",
+      "keywords": "ai chat llm",
+      "aliases": ["owui"],
+      "upstream": "open-webui.svg"
+    },
+    {
+      "id": "ollama",
+      "name": "Ollama",
+      "category": "AI",
+      "color": "amber",
+      "description": "Run language models locally.",
+      "keywords": "ai llm models",
+      "ports": [11434],
+      "upstream": "ollama.svg"
+    },
+    {
+      "id": "librechat",
+      "name": "LibreChat",
+      "category": "AI",
+      "color": "rose",
+      "description": "An AI chat interface.",
+      "keywords": "ai chat",
+      "ports": [3080],
+      "upstream": "librechat.svg"
+    },
+    {
+      "id": "lobechat",
+      "name": "LobeChat",
+      "category": "AI",
+      "color": "violet",
+      "description": "An AI chat workspace.",
+      "keywords": "ai chat",
+      "aliases": ["lobehub"],
+      "upstream": "lobe-chat.svg"
+    },
+    {
+      "id": "anythingllm",
+      "name": "AnythingLLM",
+      "category": "AI",
+      "color": "cyan",
+      "description": "Chat with your documents.",
+      "keywords": "ai chat documents",
+      "upstream": "anything-llm.svg"
+    },
+    {
+      "id": "comfyui",
+      "name": "ComfyUI",
+      "category": "AI",
+      "color": "sage",
+      "description": "Node-based image generation.",
+      "keywords": "ai images diffusion",
+      "aliases": ["comfy"],
+      "ports": [8188],
+      "upstream": "comfyui.svg"
+    },
+    {
+      "id": "invokeai",
+      "name": "InvokeAI",
+      "category": "AI",
+      "color": "blue",
+      "description": "Creative image generation.",
+      "keywords": "ai images diffusion",
+      "upstream": "invoke-ai.svg"
+    },
+    {
+      "id": "flowise",
+      "name": "Flowise",
+      "category": "AI",
+      "color": "amber",
+      "description": "Build AI agents visually.",
+      "keywords": "ai workflows",
+      "aliases": ["flowiseai"],
+      "upstream": "flowise.svg"
+    },
+    {
+      "id": "paperlessgpt",
+      "name": "paperless-gpt",
+      "category": "AI",
+      "color": "rose",
+      "description": "AI help for Paperless-ngx.",
+      "keywords": "documents ocr ai",
+      "upstream": "paperless-gpt.svg"
+    }
+  ]
+}

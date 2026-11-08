@@ -1,0 +1,49 @@
+/* Hint shown in the application form when a service is recognized. */
+/* Keep the empty live region in the accessibility tree without taking space. */
+.service-detection:not(.service-detection-active) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.service-detection-active {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 12px;
+  margin: 2px 0 4px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--text);
+}
+.service-detection-message {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 0;
+  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.service-detection-logo {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+}
+.button.service-detection-undo {
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: 13px;
+}
+@media (max-width: 560px) {
+  .button.service-detection-undo {
+    min-height: 44px;
+    width: 100%;
+  }
+}

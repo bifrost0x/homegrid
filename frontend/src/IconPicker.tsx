@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Globe } from "lucide-react";
-import { findIcons } from "./catalog";
+import { findIcons } from "./builtinIcons";
 import { serviceIcons } from "./serviceIcons";
 
 function ServiceThumbnail({ src }: { src: string }) {
@@ -12,6 +12,7 @@ function ServiceThumbnail({ src }: { src: string }) {
       className="service-picker-logo"
       src={src}
       alt=""
+      loading="lazy"
       onError={() => setFailed(true)}
     />
   );
@@ -36,7 +37,10 @@ export function IconPicker({
   const serviceEntries = Object.entries(serviceIcons)
     .filter(([id, icon]) =>
       words.every((word) =>
-        (id + " " + icon.name).toLocaleLowerCase().includes(word),
+        [id, icon.name, ...(icon.aliases ?? [])]
+          .join(" ")
+          .toLocaleLowerCase()
+          .includes(word),
       ),
     )
     .map(([id, icon]) => ({

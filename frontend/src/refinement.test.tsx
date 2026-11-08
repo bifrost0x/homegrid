@@ -1,7 +1,7 @@
 import { it, expect, vi, afterEach } from "vitest";
 import { render, screen, within, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ApplicationForm } from "./components";
+import { ApplicationForm } from "./ApplicationForm";
 import { SettingsPanel } from "./Settings";
 import { PasswordForm } from "./Account";
 import { defaults, filterApps } from "./lib";

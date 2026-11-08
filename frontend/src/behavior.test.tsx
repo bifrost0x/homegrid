@@ -1,13 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import {
-  ApplicationForm,
-  CategoryForm,
-  Icon,
-  CommandPalette,
-} from "./components";
-import { filterApps, appSchema, moveApplication, appHostname } from "./lib";
+import { CategoryForm, Icon, CommandPalette } from "./components";
+import { ApplicationForm } from "./ApplicationForm";
+import { filterApps, moveApplication, appHostname } from "./lib";
+import { appSchema } from "./appSchema";
 describe("launcher behavior", () => {
   const category = { id: 1, name: "General", collapsed: false, sort_order: 0 };
   const app = {

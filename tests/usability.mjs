@@ -98,7 +98,7 @@ try {
         const dialog = page.getByRole("dialog");
         await actionsVisible();
         await dialog
-          .getByRole("button", { name: "Use Porcelain design", exact: true })
+          .getByRole("button", { name: "Apply Porcelain preset", exact: true })
           .click();
         await expect(
           dialog.getByText("Unsaved changes", { exact: true }),

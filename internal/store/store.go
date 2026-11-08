@@ -158,6 +158,16 @@ func (s *Store) migrate() error {
 var uploadPath = regexp.MustCompile(`^/uploads/[a-f0-9]{64}\.(png|jpg|webp)$`)
 
 func ValidUpload(v string) bool { return uploadPath.MatchString(v) }
+
+// serviceIconSet indexes the generated list of bundled service logos.
+var serviceIconSet = func() map[string]struct{} {
+	set := make(map[string]struct{}, len(serviceIconIDs))
+	for _, id := range serviceIconIDs {
+		set[id] = struct{}{}
+	}
+	return set
+}()
+
 func ValidIcon(v string) bool {
 	if v == "" || v == "favicon" || ValidUpload(v) {
 		return true
@@ -167,10 +177,9 @@ func ValidIcon(v string) bool {
 			return true
 		}
 	}
-	for _, id := range []string{"jellyfin", "plex", "emby", "sonarr", "radarr", "lidarr", "audiobookshelf", "navidrome", "immich", "photoprism", "nextcloud", "syncthing", "paperlessngx", "vaultwarden", "homeassistant", "adguardhome", "pihole", "uptimekuma", "grafana", "prometheus", "portainer", "dockge", "proxmox", "truenas", "gitea", "forgejo", "gitlab", "mealie", "freshrss", "miniflux", "qbittorrent", "transmission", "sabnzbd", "kavita", "calibreweb", "linkwarden", "nginxproxymanager", "traefik", "authentik", "authelia"} {
-		if v == "service:"+id {
-			return true
-		}
+	if id, ok := strings.CutPrefix(v, "service:"); ok {
+		_, known := serviceIconSet[id]
+		return known
 	}
 	return false
 }
@@ -267,9 +276,29 @@ func normalizeSettings(v Settings) Settings {
 
 var customAccent = regexp.MustCompile(`^#[a-fA-F0-9]{6}$`)
 
-func validDesign(v string) bool {
+// validPhoto lists the bundled wallpaper photographs; each also names a palette.
+func validPhoto(v string) bool {
 	switch v {
 	case "homegrid", "porcelain", "dune", "terracotta", "rosewood", "lavender", "forest", "lagoon", "arctic", "midnight", "aurora", "ember":
+		return true
+	}
+	return false
+}
+
+// validDesign lists the surface palettes stored in Settings.Design.
+func validDesign(v string) bool {
+	switch v {
+	case "graphite", "paper", "nord", "mocha", "slate", "sakura":
+		return true
+	}
+	return validPhoto(v)
+}
+
+// validGradient lists the generated gradient backgrounds stored in Settings.Wallpaper.
+func validGradient(v string) bool {
+	switch v {
+	case "gradient-dawn", "gradient-meadow", "gradient-tide", "gradient-sand", "gradient-blossom", "gradient-mist",
+		"gradient-dusk", "gradient-nebula", "gradient-boreal", "gradient-ember", "gradient-deepsea", "gradient-carbon":
 		return true
 	}
 	return false
@@ -286,7 +315,7 @@ func ValidateSettings(v Settings) error {
 		return false
 	}
 	if len(strings.TrimSpace(v.Title)) < 1 || len(v.Title) > 100 || !in(v.Theme, "system", "light", "dark") || !in(v.Accent, "sage", "blue", "amber", "rose", "violet", "cyan") || !in(v.Density, "comfortable", "compact") || !in(v.Radius, "rounded", "square") || (v.Background != "" && !ValidUpload(v.Background)) ||
-		!validDesign(v.Design) || (v.Wallpaper != "none" && !validDesign(v.Wallpaper)) ||
+		!validDesign(v.Design) || (v.Wallpaper != "none" && !validPhoto(v.Wallpaper) && !validGradient(v.Wallpaper)) ||
 		(v.CustomAccent != "" && !customAccent.MatchString(v.CustomAccent)) ||
 		!in(v.BackgroundStrength, "subtle", "balanced", "vivid") || !in(v.ContentWidth, "focused", "standard", "wide", "full") ||
 		!in(v.Columns, "auto", "2", "3", "4", "5", "6") || !in(v.GroupColumns, "1", "2", "3") || !in(v.CardStyle, "cards", "tiles", "list") {

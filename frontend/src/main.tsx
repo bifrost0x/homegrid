@@ -6,6 +6,7 @@ import "./styles.css";
 import "./themes.css";
 import "./layouts.css";
 import "./product-quality.css";
+import "./service-detection.css";
 import { App } from "./App";
 const client = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

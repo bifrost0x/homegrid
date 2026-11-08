@@ -14,7 +14,7 @@ it("previews a complete design without saving and preserves the title", async ()
     />,
   );
   await userEvent.click(
-    screen.getByRole("button", { name: "Use Aurora design" }),
+    screen.getByRole("button", { name: "Apply Aurora preset" }),
   );
   expect(save).not.toHaveBeenCalled();
   expect(screen.getByLabelText("Dashboard title")).toHaveValue("My home");
@@ -40,7 +40,7 @@ it("saves layout choices while retaining unsaved appearance edits", async () => 
     <SettingsPanel settings={defaults} onSave={save} onClose={() => {}} />,
   );
   await userEvent.click(
-    screen.getByRole("button", { name: "Use Dune design" }),
+    screen.getByRole("button", { name: "Apply Dune preset" }),
   );
   await userEvent.click(screen.getByRole("tab", { name: "Layout" }));
   await userEvent.selectOptions(
@@ -68,22 +68,22 @@ it("saves layout choices while retaining unsaved appearance edits", async () => 
   );
 });
 
-it("can remove a wallpaper independently and restore the selected design", async () => {
+it("can remove a background independently and restore the preset", async () => {
   const save = vi.fn(async () => {});
   render(
     <SettingsPanel settings={defaults} onSave={save} onClose={() => {}} />,
   );
   await userEvent.click(
-    screen.getByRole("button", { name: "Use Forest design" }),
+    screen.getByRole("button", { name: "Apply Forest preset" }),
   );
-  await userEvent.click(screen.getByRole("button", { name: "No wallpaper" }));
+  await userEvent.click(screen.getByRole("radio", { name: "None" }));
   expect(
     within(
       screen.getByRole("region", { name: "Appearance preview" }),
     ).queryByTestId("preview-wallpaper"),
   ).toBeNull();
   await userEvent.click(
-    screen.getByRole("button", { name: "Restore Forest design" }),
+    screen.getByRole("button", { name: "Apply Forest preset" }),
   );
   await userEvent.click(
     screen.getByRole("button", { name: "Save appearance" }),

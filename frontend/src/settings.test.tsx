@@ -9,7 +9,7 @@ it("saves appearance choices", async () => {
   render(
     <SettingsPanel settings={defaults} onSave={save} onClose={() => {}} />,
   );
-  await userEvent.selectOptions(screen.getByLabelText("Theme"), "dark");
+  await userEvent.click(screen.getByRole("radio", { name: "Dark" }));
   await userEvent.click(
     screen.getByRole("button", { name: "Save appearance" }),
   );

@@ -44,7 +44,31 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
+      # The CodeQL bundle is downloaded from GitHub releases, which can fail
+      # transiently (HTTP 5xx). Retry twice with a pause before giving up.
       - name: Initialize CodeQL
+        id: init
+        continue-on-error: true
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build_mode }}
+      - name: Wait before retrying CodeQL setup
+        if: steps.init.outcome == 'failure'
+        run: sleep 60
+      - name: Initialize CodeQL (second attempt)
+        id: init_retry
+        if: steps.init.outcome == 'failure'
+        continue-on-error: true
+        uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build_mode }}
+      - name: Wait before the last CodeQL setup attempt
+        if: steps.init_retry.outcome == 'failure'
+        run: sleep 180
+      - name: Initialize CodeQL (last attempt)
+        if: steps.init_retry.outcome == 'failure'
         uses: github/codeql-action/init@33d7b85da1a04171e211befe2c739303b9a4c066 # v4.39.3
         with:
           languages: ${{ matrix.language }}

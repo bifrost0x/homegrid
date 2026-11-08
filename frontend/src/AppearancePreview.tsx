@@ -2,7 +2,15 @@ import { useEffect, useState } from "react";
 import { Search, LayoutGrid, Star } from "lucide-react";
 import { Icon } from "./components";
 import { appHostname, type Application, type Settings } from "./lib";
-import { appearanceStyle, wallpaperUrl } from "./themes";
+import {
+  appearanceStyle,
+  backgroundImage,
+  backgroundKind,
+  gradients,
+  matchingPreset,
+  palettes,
+  photos,
+} from "./themes";
 
 export function AppearancePreview({
   settings,
@@ -29,6 +37,7 @@ export function AppearancePreview({
         ? "dark"
         : "light"
       : settings.theme;
+  const background = backgroundImage(settings);
   const shown = app ?? {
     name: "Example application",
     url: "https://service.home",
@@ -54,13 +63,11 @@ export function AppearancePreview({
         data-strength={settings.background_strength}
         style={appearanceStyle(settings)}
       >
-        {wallpaperUrl(settings) && (
+        {background && (
           <div
             className="preview-background"
             data-testid="preview-wallpaper"
-            style={{
-              backgroundImage: `url(${JSON.stringify(wallpaperUrl(settings))})`,
-            }}
+            style={{ backgroundImage: background }}
           />
         )}
         <div className="preview-content">
@@ -115,6 +122,7 @@ export function AppearancePreview({
           )}
         </div>
       </section>
+      {!layout && <AppearanceSummary settings={settings} theme={theme} />}
       <p className="preview-caption">
         {layout && (
           <>
@@ -129,4 +137,54 @@ export function AppearancePreview({
       </p>
     </aside>
   );
+}
+
+/** Spells out what the current look is made of. */
+function AppearanceSummary({
+  settings,
+  theme,
+}: {
+  settings: Settings;
+  theme: string;
+}) {
+  const preset = matchingPreset(settings);
+  const kind = backgroundKind(settings);
+  const background =
+    kind === "upload"
+      ? "Your image"
+      : kind === "photo"
+        ? "Photo · " + photos.find((p) => p.id === settings.wallpaper)?.name
+        : kind === "gradient"
+          ? "Gradient · " +
+            gradients.find((g) => g.id === settings.wallpaper)?.name
+          : "None";
+  const rows: [string, string][] = [
+    ["Preset", preset ? preset.name : "Custom"],
+    [
+      "Mode",
+      settings.theme === "system"
+        ? `System · currently ${theme}`
+        : capitalize(settings.theme),
+    ],
+    [
+      "Palette",
+      palettes.find((p) => p.id === settings.design)?.name ?? settings.design,
+    ],
+    ["Accent", settings.custom_accent || capitalize(settings.accent)],
+    ["Background", background],
+  ];
+  return (
+    <dl className="appearance-summary" aria-label="Current appearance">
+      {rows.map(([term, value]) => (
+        <div key={term}>
+          <dt>{term}</dt>
+          <dd>{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function capitalize(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }

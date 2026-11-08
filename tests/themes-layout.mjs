@@ -89,14 +89,16 @@ try {
     "Ember",
   ];
   await check(
-    "twelve designs preview without writes; cancel restores saved appearance",
+    "photo presets preview without writes; cancel restores saved appearance",
     async () => {
       await page.getByRole("button", { name: "Open settings" }).click();
       const dialog = page.getByRole("dialog");
-      await expect(dialog.locator(".design-option")).toHaveCount(12);
+      await expect(dialog.locator(".preset-grid .design-option")).toHaveCount(
+        20,
+      );
       for (const name of designNames) {
         await dialog
-          .getByRole("button", { name: `Use ${name} design`, exact: true })
+          .getByRole("button", { name: `Apply ${name} preset`, exact: true })
           .click();
         await expect(
           dialog.locator(".appearance-preview").first(),
@@ -126,10 +128,10 @@ try {
       await page.getByRole("button", { name: "Open settings" }).click();
       const dialog = page.getByRole("dialog");
       await dialog
-        .getByRole("button", { name: "Use Aurora design", exact: true })
+        .getByRole("button", { name: "Apply Aurora preset", exact: true })
         .click();
       await dialog
-        .getByRole("button", { name: "Use Arctic wallpaper", exact: true })
+        .getByRole("button", { name: "Use Icebergs photo", exact: true })
         .click();
       await dialog
         .getByLabel("Custom accent color", { exact: true })
@@ -238,7 +240,7 @@ try {
           .evaluate((node) => node.scrollWidth <= node.clientWidth),
       );
       await page
-        .getByRole("button", { name: "Use Forest design", exact: true })
+        .getByRole("button", { name: "Apply Forest preset", exact: true })
         .click();
       await page.getByRole("tab", { name: "Layout", exact: true }).click();
       await scan("Layout settings mobile");

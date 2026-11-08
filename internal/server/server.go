@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"time"
 )
 
 type Config struct {
@@ -49,6 +50,7 @@ func New(cfg Config) (*Server, error) {
 		return nil, err
 	}
 	s.routes()
+	s.removeStaleUploadTemps(time.Now().Add(-time.Hour))
 	return s, nil
 }
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {

@@ -1,13 +1,22 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
+import { LoaderCircle } from "lucide-react";
 import { api, type Application, type Category, type Settings } from "../lib";
-import {
-  ApplicationForm,
-  CategoryForm,
-  ErrorMessage,
-  Modal,
-  saveApp,
-} from "../components";
-import { SettingsPanel } from "../Settings";
+import { CategoryForm, ErrorMessage, Modal, saveApp } from "../components";
+
+// The form carries the service catalog and recognition; load it on first use.
+const ApplicationForm = lazy(() =>
+  import("../ApplicationForm").then((m) => ({ default: m.ApplicationForm })),
+);
+
+const SettingsPanel = lazy(() =>
+  import("../Settings").then((m) => ({ default: m.SettingsPanel })),
+);
+const loading = (
+  <p className="dialog-loading" role="status">
+    <LoaderCircle className="spin" size={18} />
+    Loading…
+  </p>
+);
 
 export type DialogState =
   | {
@@ -58,21 +67,23 @@ export function DashboardDialogs(props: Props) {
           description="Give it a name and a link."
           onClose={onClose}
         >
-          <ApplicationForm
-            app={dialog.app}
-            duplicate={dialog.duplicate}
-            initialCategory={dialog.categoryId}
-            categories={categories}
-            onClose={onClose}
-            onSave={async (data, newCategory) => {
-              if (newCategory) {
-                const category = await findOrCreateCategory(newCategory);
-                data = { ...data, category_id: category.id };
-              }
-              await saveApp(data, dialog.app);
-              await refresh();
-            }}
-          />
+          <Suspense fallback={loading}>
+            <ApplicationForm
+              app={dialog.app}
+              duplicate={dialog.duplicate}
+              initialCategory={dialog.categoryId}
+              categories={categories}
+              onClose={onClose}
+              onSave={async (data, newCategory) => {
+                if (newCategory) {
+                  const category = await findOrCreateCategory(newCategory);
+                  data = { ...data, category_id: category.id };
+                }
+                await saveApp(data, dialog.app);
+                await refresh();
+              }}
+            />
+          </Suspense>
         </Modal>
       );
     case "category":
@@ -108,17 +119,19 @@ export function DashboardDialogs(props: Props) {
           description="Appearance, layout, backups and your account."
           onClose={closeWhenIdle}
         >
-          <SettingsPanel
-            previewApp={apps[0]}
-            onBusyChange={props.setBusy}
-            settings={settings}
-            onClose={closeWhenIdle}
-            onImported={refresh}
-            onSave={async (value) => {
-              await api("/settings", "PATCH", value);
-              await refresh();
-            }}
-          />
+          <Suspense fallback={loading}>
+            <SettingsPanel
+              previewApp={apps[0]}
+              onBusyChange={props.setBusy}
+              settings={settings}
+              onClose={closeWhenIdle}
+              onImported={refresh}
+              onSave={async (value) => {
+                await api("/settings", "PATCH", value);
+                await refresh();
+              }}
+            />
+          </Suspense>
         </Modal>
       );
     }

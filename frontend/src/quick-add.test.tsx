@@ -1,9 +1,10 @@
 import { it, expect, vi, afterEach } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { ApplicationForm } from "./components";
+import { ApplicationForm } from "./ApplicationForm";
 import { duplicateName, type Application } from "./lib";
 import { serviceTemplates, findIcons } from "./catalog";
+import { serviceIcons } from "./serviceIcons";
 import { defaults } from "./lib";
 import { App } from "./App";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -133,7 +134,7 @@ it("opens the card duplicate control as a create dialog and waits for explicit s
     screen.getByRole("menuitem", { name: "Duplicate Cinema" }),
   );
   const dialog = screen.getByRole("dialog", { name: "Duplicate application" });
-  expect(within(dialog).getByLabelText("Application name")).toHaveValue(
+  expect(await within(dialog).findByLabelText("Application name")).toHaveValue(
     "Cinema copy",
   );
   expect(
@@ -176,7 +177,7 @@ it("offers one icon toolbar tab stop and keyboard navigation plus selection", as
   expect(music).toHaveAttribute("aria-pressed", "true");
   await userEvent.keyboard("{End}");
   const bookmark = within(toolbar).getByRole("button", {
-    name: "Use Authelia service icon",
+    name: "Use " + Object.values(serviceIcons).at(-1)!.name + " service icon",
   });
   expect(bookmark).toHaveFocus();
   await userEvent.keyboard("{Enter}");

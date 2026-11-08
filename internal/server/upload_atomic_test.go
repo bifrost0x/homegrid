@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 func (c *client) uploadImage(raw []byte, want int) string {
@@ -90,4 +91,37 @@ func TestPanicRecoveryAndAbortHandler(t *testing.T) {
 	}()
 	s.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/test/abort", nil))
 	t.Fatal("abort handler returned normally")
+}
+
+func TestStaleUploadTempsAreRemovedAtStartup(t *testing.T) {
+	_, db := newClient(t)
+	dir := filepath.Join(db.DataDir, "uploads")
+	if e := os.MkdirAll(dir, 0700); e != nil {
+		t.Fatal(e)
+	}
+	stale := filepath.Join(dir, ".upload-stale")
+	fresh := filepath.Join(dir, ".upload-fresh")
+	kept := filepath.Join(dir, strings.Repeat("a", 64)+".png")
+	for _, name := range []string{stale, fresh, kept} {
+		if e := os.WriteFile(name, []byte("x"), 0600); e != nil {
+			t.Fatal(e)
+		}
+	}
+	old := time.Now().Add(-2 * time.Hour)
+	for _, name := range []string{stale, kept} {
+		if e := os.Chtimes(name, old, old); e != nil {
+			t.Fatal(e)
+		}
+	}
+	if _, e := New(Config{Store: db, DataDir: db.DataDir}); e != nil {
+		t.Fatal(e)
+	}
+	if _, e := os.Stat(stale); !os.IsNotExist(e) {
+		t.Fatal("stale temporary upload survived startup")
+	}
+	for _, name := range []string{fresh, kept} {
+		if _, e := os.Stat(name); e != nil {
+			t.Fatalf("%s was removed: %v", filepath.Base(name), e)
+		}
+	}
 }

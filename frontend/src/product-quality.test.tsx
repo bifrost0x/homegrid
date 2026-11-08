@@ -10,13 +10,13 @@ it("cancel returns the preview to the latest saved settings without another writ
     <SettingsPanel settings={defaults} onSave={save} onClose={() => {}} />,
   );
   await userEvent.click(
-    screen.getByRole("button", { name: "Use Forest design" }),
+    screen.getByRole("button", { name: "Apply Forest preset" }),
   );
   await userEvent.click(
     screen.getByRole("button", { name: "Save appearance" }),
   );
   await userEvent.click(
-    screen.getByRole("button", { name: "Use Dune design" }),
+    screen.getByRole("button", { name: "Apply Dune preset" }),
   );
   await userEvent.click(screen.getByRole("button", { name: "Cancel changes" }));
   expect(
