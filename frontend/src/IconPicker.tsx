@@ -1,7 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, Globe } from "lucide-react";
 import { findIcons } from "./builtinIcons";
-import { serviceIcons } from "./serviceIcons";
+import { serviceIconUrl } from "./serviceIcons";
+import {
+  findServiceIcon,
+  searchServiceIcons,
+  serviceIcons,
+} from "./serviceIndex";
+
+// Thousands of logos are bundled; the picker renders a bounded set and asks
+// for a more specific search beyond it.
+export const SERVICE_RESULT_LIMIT = 60;
 
 function ServiceThumbnail({ src }: { src: string }) {
   const [failed, setFailed] = useState(false);
@@ -13,6 +22,9 @@ function ServiceThumbnail({ src }: { src: string }) {
       src={src}
       alt=""
       loading="lazy"
+      decoding="async"
+      width={28}
+      height={28}
       onError={() => setFailed(true)}
     />
   );
@@ -34,21 +46,24 @@ export function IconPicker({
     label: id + " icon",
     content: <Icon size={21} />,
   }));
-  const serviceEntries = Object.entries(serviceIcons)
-    .filter(([id, icon]) =>
-      words.every((word) =>
-        [id, icon.name, ...(icon.aliases ?? [])]
-          .join(" ")
-          .toLocaleLowerCase()
-          .includes(word),
-      ),
-    )
-    .map(([id, icon]) => ({
-      id: "service:" + id,
-      value: "service:" + id,
-      label: icon.name + " service icon",
-      content: <ServiceThumbnail src={icon.src} />,
-    }));
+  const matches = useMemo(() => searchServiceIcons(query), [query]);
+  const shown = matches.slice(0, SERVICE_RESULT_LIMIT);
+  // Keep the current logo visible even when it is outside the first results.
+  const selected = findServiceIcon(value);
+  if (
+    selected &&
+    value.startsWith("service:") &&
+    !shown.includes(selected) &&
+    (!words.length || matches.includes(selected))
+  )
+    shown.unshift(selected);
+  const hidden = Math.max(0, matches.length - SERVICE_RESULT_LIMIT);
+  const serviceEntries = shown.map((icon) => ({
+    id: "service:" + icon.id,
+    value: "service:" + icon.id,
+    label: icon.name + " service icon",
+    content: <ServiceThumbnail src={serviceIconUrl("service:" + icon.id)} />,
+  }));
   const entries = words.length
     ? [...serviceEntries, ...genericEntries]
     : [...genericEntries, ...serviceEntries];
@@ -126,6 +141,13 @@ export function IconPicker({
           {value === entryValue && <Check className="icon-check" size={10} />}
         </button>
       ))}
+      {hidden > 0 && (
+        <p className="icon-more">
+          {words.length
+            ? `${hidden} more matching logos. Refine your search to see them.`
+            : `Showing popular services. Search to find all ${serviceIcons.length} logos.`}
+        </p>
+      )}
       {!entries.length && (
         <p className="icon-empty">No icons found. Try a different keyword.</p>
       )}

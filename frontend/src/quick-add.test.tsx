@@ -4,7 +4,8 @@ import userEvent from "@testing-library/user-event";
 import { ApplicationForm } from "./ApplicationForm";
 import { duplicateName, type Application } from "./lib";
 import { serviceTemplates, findIcons } from "./catalog";
-import { serviceIcons } from "./serviceIcons";
+import { serviceCatalog } from "./serviceCatalog";
+import { SERVICE_RESULT_LIMIT } from "./IconPicker";
 import { defaults } from "./lib";
 import { App } from "./App";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -177,16 +178,22 @@ it("offers one icon toolbar tab stop and keyboard navigation plus selection", as
   expect(music).toHaveAttribute("aria-pressed", "true");
   await userEvent.keyboard("{End}");
   const bookmark = within(toolbar).getByRole("button", {
-    name: "Use " + Object.values(serviceIcons).at(-1)!.name + " service icon",
+    name:
+      "Use " + serviceCatalog[SERVICE_RESULT_LIMIT - 1].name + " service icon",
   });
   expect(bookmark).toHaveFocus();
   await userEvent.keyboard("{Enter}");
   expect(bookmark).toHaveAttribute("aria-pressed", "true");
   expect(toolbar.querySelectorAll('[tabindex="0"]')).toHaveLength(1);
   await userEvent.type(screen.getByLabelText("Search icons"), "surveillance");
+  // Matching service logos lead while typing; generic keyword matches follow.
+  expect(
+    within(toolbar).getByRole("button", { name: "Use Axis service icon" }),
+  ).toHaveAttribute("tabindex", "0");
   expect(
     within(toolbar).getByRole("button", { name: "Use camera icon" }),
-  ).toHaveAttribute("tabindex", "0");
+  ).toHaveAttribute("tabindex", "-1");
+  expect(toolbar.querySelectorAll('[tabindex="0"]')).toHaveLength(1);
 });
 it("keeps manual entry immediate and prefills editable template details without inventing a URL", async () => {
   const fetch = vi.fn();

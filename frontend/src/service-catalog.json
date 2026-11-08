@@ -2448,7 +2448,7 @@
       "color": "violet",
       "description": "Backups for your virtual machines.",
       "keywords": "backup proxmox",
-      "aliases": ["pbs"],
+      "aliases": ["pbs", "proxmoxbackup"],
       "ports": [8007],
       "upstream": "proxmox-backup-server.svg"
     },
@@ -3230,6 +3230,30 @@
       "description": "AI help for Paperless-ngx.",
       "keywords": "documents ocr ai",
       "upstream": "paperless-gpt.svg"
+    },
+    {
+      "id": "ugreen",
+      "name": "UGREEN NAS",
+      "category": "Storage",
+      "color": "blue",
+      "description": "Your UGREEN NAS.",
+      "keywords": "nas storage ugos",
+      "aliases": ["ugos", "ugospro"],
+      "upstream": "ugreen.svg"
+    },
+    {
+      "id": "webssh",
+      "name": "WebSSH",
+      "category": "Infrastructure",
+      "color": "blue",
+      "description": "SSH and SFTP in the browser.",
+      "keywords": "remote terminal ssh sftp",
+      "vendored": {
+        "collection": "webssh",
+        "url": "https://github.com/bifrost0x/webssh/blob/26257eba3a7c6691aedb42b7aa9874d2e3753392/static/images/webssh-logo.svg",
+        "file": "webssh.svg",
+        "license": "Apache-2.0"
+      }
     }
   ]
 }

@@ -15,15 +15,20 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   lightweight previews and readable surfaces in both light and dark modes.
 - Reverse-proxy-compatible origin checks for HTTPS-to-HTTP deployments, with
   distinct address and expired-session errors and unchanged CSRF token checks.
-- 341 categorized service templates with local logos and URL-only setup;
-  385 searchable icons, icon colors, browser favicons and raster image uploads.
+- 343 categorized service templates with local logos and URL-only setup;
+  2,629 searchable icons, among them 2,585 service logos: the curated templates
+  plus every other SVG icon of the pinned Dashboard Icons commit, minified
+  without changing the artwork. Icon colors, browser favicons and raster image
+  uploads.
   New applications recognize well-known services from their name, hostname,
   URL path or a distinctive default port and preselect the matching logo, with
   a clear hint and a one-click way to keep the previous icon. Existing
   applications with automatic or generic icons get reviewable logo suggestions,
   and imports fill in missing logos the same way. Bundled logos are
   synchronized from a pinned upstream commit by `scripts/sync-service-icons.mjs`,
-  which also generates the backend allowlist and the icon credits.
+  which verifies every file against its upstream blob hash and generates the
+  backend allowlist and the icon credits. The icon picker shows popular
+  services first and searches all logos by name and alias.
   Uploads are written atomically, so an interrupted write never leaves a
   truncated image behind.
 - Calm application cards: edit, duplicate and delete live in a keyboard-accessible

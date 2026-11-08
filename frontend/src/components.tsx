@@ -38,7 +38,7 @@ export function Icon({
     <span
       className="app-icon"
       data-icon-color={app.icon_color ?? "auto"}
-      data-service-icon={!!serviceSrc}
+      data-service-icon={!!serviceSrc && !failed}
     >
       {src && !failed ? (
         <img

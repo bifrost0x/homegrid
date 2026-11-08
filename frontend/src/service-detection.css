@@ -47,3 +47,13 @@
     width: 100%;
   }
 }
+
+/* Note below a capped list of service logos in the icon picker. */
+.icon-more {
+  grid-column: 1 / -1;
+  margin: 2px 0 0;
+  padding: 6px 4px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
