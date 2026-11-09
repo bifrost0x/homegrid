@@ -14,6 +14,11 @@ try {
   const context = await browser.newContext();
   const page = await context.newPage();
   await page.goto(base.href);
+  // Wait until the app has stored its own pre-authentication cookie, so the
+  // session read below receives the same CSRF token instead of racing it.
+  await expect(
+    page.getByRole("heading", { name: "A home for your homelab." }),
+  ).toBeVisible();
   const session = await context.request.get(
     new URL("/api/auth/session", base).href,
   );
@@ -27,7 +32,7 @@ try {
       data: { username: "a", password },
     },
   );
-  expect(setup.status()).toBe(201);
+  expect(setup.status(), await setup.text()).toBe(201);
   // A fresh browser context verifies an actual sign-in, independent of setup's session.
   const loginContext = await browser.newContext();
   const login = await loginContext.newPage();
