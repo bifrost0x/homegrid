@@ -10,7 +10,9 @@ Built with Go, React, and SQLite; packaged as one container.
 [Releases](https://github.com/bifrost0x/homegrid/releases) ·
 [Roadmap](ROADMAP.md) · [Security](SECURITY.md)
 
-![HomeGrid desktop dashboard](site/assets/dashboard-desktop.webp)
+![HomeGrid in quick succession: presets such as Aurora, Porcelain, Midnight
+and Nebula, the color, background and layout settings, and tiles, list,
+compact, custom accent and square-corner variants](docs/assets/themes-montage.webp)
 
 ## Start with Docker
 
@@ -62,16 +64,29 @@ and optional local source builds.
 - **Keep your configuration portable.** Export and import applications,
   categories and appearance as JSON, with an import preview and merge or replace
   choices. Use a full data-volume backup to preserve uploaded files and accounts.
+- **Manage it in one place.** Settings open as one sheet with sections for
+  appearance, layout, backup, your account and the installed version. The
+  account menu in the top bar jumps straight to each section.
+
+![HomeGrid tour: finding Grafana with Ctrl+K, adding an application that is
+recognized from its URL, and previewing appearance presets](docs/assets/product-tour.webp)
 
 Optional example cards are explicitly unconfigured: supply your own service URL
 before launching them. Screenshots show an example configuration.
 
 <details>
-<summary>Mobile and appearance previews</summary>
+<summary>Screenshots</summary>
 
-<img src="site/assets/dashboard-mobile.webp" alt="HomeGrid mobile dashboard" width="320">
+![HomeGrid dashboard in light mode with the alpine lake background](site/assets/dashboard-desktop.webp)
 
-![HomeGrid appearance settings](site/assets/appearance.webp)
+![HomeGrid dashboard in dark mode with the Aurora preset](site/assets/dashboard-dark.webp)
+
+![HomeGrid appearance settings with presets and a live preview](site/assets/appearance.webp)
+
+<p>
+<img src="site/assets/add-application.webp" alt="Add application dialog recognizing Gitea from its URL" width="320">
+<img src="site/assets/dashboard-mobile.webp" alt="HomeGrid dashboard on a phone" width="260">
+</p>
 
 </details>
 
