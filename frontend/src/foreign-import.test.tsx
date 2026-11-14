@@ -221,3 +221,27 @@ it("previews a Homer configuration through the existing import", async () => {
   // Proxmox is a bundled logo, so the import recognizes it.
   expect(body.apps[0].icon).toMatch(/^service:/);
 });
+
+it("uses the singular for one skipped entry", async () => {
+  vi.stubGlobal(
+    "fetch",
+    async () =>
+      new Response(JSON.stringify({ apps: 1, categories: 2, duplicates: 0 })),
+  );
+  render(
+    <SettingsPanel
+      settings={defaults}
+      onSave={async () => {}}
+      onClose={() => {}}
+    />,
+  );
+  await userEvent.click(screen.getByRole("tab", { name: "Backup" }));
+  const file = new File([dashy], "conf.yml", { type: "" });
+  Object.defineProperty(file, "text", { value: async () => dashy });
+  await userEvent.upload(screen.getByLabelText("Import configuration"), file);
+  expect(
+    await screen.findByText(
+      /Dashy configuration · 1 entry without an HTTP or HTTPS link skipped/,
+    ),
+  ).toBeInTheDocument();
+});

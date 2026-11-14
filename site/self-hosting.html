@@ -35,10 +35,10 @@
 
     <section class="guide-section" id="install">
       <h2>Install with Docker Compose</h2>
-      <p>Save <a href="https://github.com/bifrost0x/homegrid/blob/main/docker-compose.yml"><code>docker-compose.yml</code></a> in a directory on your Docker host, then run from that directory:</p>
+      <p>Download the Compose file of the current release into a directory on your Docker host. It is pinned to that release's image. To follow <code>latest</code> instead, use <a href="https://github.com/bifrost0x/homegrid/blob/main/docker-compose.yml"><code>docker-compose.yml</code></a> from the repository. Then run from that directory:</p>
       <div class="code-card">
         <div class="code-card-header"><span>Shell</span><button class="copy-button" type="button" data-copy="Install commands"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
-        <pre tabindex="0" aria-label="Install commands"><code>docker compose pull
+        <pre tabindex="0" aria-label="Install commands"><code>curl -fsSLo docker-compose.yml https://github.com/bifrost0x/homegrid/releases/download/v0.1.0/docker-compose-0.1.0.yml
 docker compose up -d --wait
 docker compose ps</code></pre>
       </div>
@@ -112,7 +112,7 @@ HOMEGRID_SECURE_COOKIE=true</code></pre>
     <section class="guide-section" id="backups">
       <h2>Backups</h2>
       <h3>Portable JSON export</h3>
-      <p><strong>Settings → Backup</strong> exports applications, categories and appearance as JSON. The export excludes passwords and sessions and references uploaded images by path without embedding them. Imports show a preview and offer merge or replace. Exports can reveal internal service names and addresses, so treat them as sensitive.</p>
+      <p><strong>Settings → Backup</strong> exports applications, categories and appearance as JSON. The export excludes passwords and sessions and references uploaded images by path without embedding them. Imports also accept Homepage, Homer and Dashy configurations, show a preview and offer merge or replace. <strong>Find unused images</strong> lists uploads that nothing uses anymore and deletes them after you confirm. Exports can reveal internal service names and addresses, so treat them as sensitive.</p>
       <h3>Full data-volume backup</h3>
       <p>The named volume holds the database, uploaded files and the administrator account. Stop HomeGrid for the entire copy: copying only <code>homegrid.db</code> from a running SQLite database is not a complete backup. The <a href="https://github.com/bifrost0x/homegrid/blob/main/docs/docker.md#back-up">Docker guide</a> provides tested commands that create a private archive and restore it into a new volume, leaving the original untouched until you have verified the result.</p>
       <div class="callout"><p>A volume backup contains the password hash and everything on your dashboard. Store it in a protected location and test a restore before you rely on it.</p></div>

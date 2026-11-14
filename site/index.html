@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="HomeGrid is a free, open-source homepage for your homelab. Self-hosted in one container, with more than 2,500 offline service logos, drag-and-drop organizing and no telemetry.">
+  <meta name="description" content="HomeGrid is a free, open-source start page for your homelab: one container, more than 2,500 offline service logos, twenty designs, quick search with web search, imports from Homepage, Homer and Dashy, and no telemetry.">
   <meta name="theme-color" content="#f5f4ef" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#1b1e1b" media="(prefers-color-scheme: dark)">
   <meta name="referrer" content="no-referrer">
@@ -21,14 +21,14 @@
     <div class="shell header-inner">
       <a class="brand" href="./" aria-label="HomeGrid home"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-4 16 16)"><rect x="3" y="3" width="12" height="12" rx="3"/><rect x="17" y="3" width="12" height="12" rx="3"/><rect x="3" y="17" width="12" height="12" rx="3"/><rect x="17" y="17" width="12" height="12" rx="3"/></g></svg>HomeGrid</a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span class="sr-only">Toggle navigation</span></button>
-      <nav class="site-nav" id="site-navigation" aria-label="Main navigation" data-navigation><a href="./#features">Features</a><a href="self-hosting.html">Self-hosting</a><a href="security.html">Security</a><a href="./#quick-start">Quick start</a><a class="nav-source" href="https://github.com/bifrost0x/homegrid"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>GitHub</a></nav>
+      <nav class="site-nav" id="site-navigation" aria-label="Main navigation" data-navigation><a href="./#features">Features</a><a href="./#designs">Designs</a><a href="self-hosting.html">Self-hosting</a><a href="security.html">Security</a><a href="./#quick-start">Quick start</a><a class="nav-source" href="https://github.com/bifrost0x/homegrid"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6"/></svg>GitHub</a></nav>
     </div>
   </header>
   <main id="main-content">
     <section class="hero shell" aria-labelledby="hero-title">
       <p class="eyebrow">Self-hosted homelab dashboard</p>
       <h1 id="hero-title">Your services. <span>Beautifully organized.</span></h1>
-      <p class="lead">HomeGrid is a free, open-source homepage for your homelab. Add your applications, arrange them into categories and launch them from a dashboard that feels at home on any screen.</p>
+      <p class="lead">The free, open-source start page for your homelab. Every service one click away, recognized with its own logo, in a design that feels like yours. One small container, no cloud, no telemetry.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#quick-start">Get started <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         <a class="text-link" href="https://github.com/bifrost0x/homegrid">View on GitHub <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
@@ -39,7 +39,7 @@
       <h2 class="sr-only" id="preview-title">HomeGrid on desktop and mobile</h2>
       <div class="hero-shot">
         <figure class="screenshot">
-          <img src="assets/dashboard-desktop.webp" width="1440" height="900" fetchpriority="high" alt="HomeGrid dashboard with an alpine lake background: favorites, a search field and categories for media, files and documents with service logos such as Jellyfin, Immich and Nextcloud.">
+          <img src="assets/dashboard-desktop.webp" width="1440" height="900" fetchpriority="high" alt="HomeGrid dashboard with an alpine lake background: favorites, a search field that also searches the web, and categories for media, files and documents with service logos such as Jellyfin, Immich and Nextcloud, each with a green online dot.">
         </figure>
         <figure class="screenshot phone">
           <img src="assets/dashboard-mobile.webp" width="780" height="1688" decoding="async" alt="The same HomeGrid dashboard on a phone, with full-width application cards.">
@@ -50,6 +50,7 @@
         <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Open source</li>
         <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>No telemetry</li>
         <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>Offline logos</li>
+        <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg>AMD64 and ARM64</li>
       </ul>
     </section>
 
@@ -72,6 +73,60 @@
       </div>
     </section>
 
+    <section class="section shell" aria-labelledby="search-title">
+      <div class="feature reverse">
+        <div class="feature-copy">
+          <p class="eyebrow">Find anything in a keystroke</p>
+          <h2 id="search-title">Ctrl+K. Type. Go.</h2>
+          <p>Quick search finds services by name, description and category. If you like, the same search continues on the web, so HomeGrid can be your browser's start page.</p>
+          <ul class="check-list">
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>Web search with DuckDuckGo, Startpage, Brave Search, Google, Bing or your own SearXNG. Off until you choose one.</span></li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>Favorites stay at the top of the dashboard, one click away.</span></li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>Fully keyboard accessible: arrow keys to choose, Enter to open.</span></li>
+          </ul>
+        </div>
+        <figure class="screenshot">
+          <img src="assets/quick-search.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Quick search for pro lists Proxmox, Nginx Proxy Manager and Prometheus, followed by the option to search the web for pro via DuckDuckGo.">
+          <figcaption>Your services first, the web one arrow key away.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section shell" aria-labelledby="import-title">
+      <div class="feature">
+        <div class="feature-copy">
+          <p class="eyebrow">Move over in minutes</p>
+          <h2 id="import-title">Bring your old dashboard along.</h2>
+          <p>Import <code>services.yaml</code> and <code>bookmarks.yaml</code> from Homepage, <code>config.yml</code> from Homer or <code>conf.yml</code> from Dashy. HomeGrid takes over names, links, descriptions and groups and recognizes the logos.</p>
+          <ul class="check-list">
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>A preview shows what will be added before anything changes. Merge with your current setup or replace it.</span></li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>Widgets and templated links that only the old dashboard can resolve are skipped and counted.</span></li>
+            <li><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 5 5L20 7"/></svg><span>HomeGrid's own JSON export moves your configuration between installations.</span></li>
+          </ul>
+        </div>
+        <figure class="screenshot">
+          <img src="assets/import-homepage.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Backup settings with an import preview of a Homepage configuration: three applications, three categories, one skipped entry and three recognized logos.">
+          <figcaption>Every import starts with a preview.</figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <section class="section shell" id="designs" aria-labelledby="designs-title">
+      <div class="section-heading">
+        <p class="eyebrow">Designs and layouts</p>
+        <h2 id="designs-title">Twenty looks. Endless combinations.</h2>
+        <p>Photographs, gradients or a calm plain page, in light or dark. Cards, tiles or a list, one to three groups per row, compact or comfortable. Every look below is the same dashboard.</p>
+      </div>
+      <ul class="gallery" aria-label="Design examples">
+        <li><figure class="screenshot"><img src="assets/design-midnight.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Midnight preset in dark mode with a city photograph at night and application cards in two groups per row."><figcaption><strong>Midnight</strong> · dark, two groups per row</figcaption></figure></li>
+        <li><figure class="screenshot"><img src="assets/design-tiles.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Dune preset with a desert photograph and centered application tiles."><figcaption><strong>Dune</strong> · tiles</figcaption></figure></li>
+        <li><figure class="screenshot"><img src="assets/design-list.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Arctic preset with an iceberg photograph and applications as a compact list in three groups per row."><figcaption><strong>Arctic</strong> · list in three groups</figcaption></figure></li>
+        <li><figure class="screenshot"><img src="assets/design-nebula.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Nebula preset with a generated purple and blue gradient in dark mode."><figcaption><strong>Nebula</strong> · generated gradient</figcaption></figure></li>
+        <li><figure class="screenshot"><img src="assets/design-compact.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Forest preset with a forest photograph, compact cards without descriptions in three groups per row."><figcaption><strong>Forest</strong> · compact, no descriptions</figcaption></figure></li>
+        <li><figure class="screenshot"><img src="assets/design-paper.webp" width="1440" height="900" loading="lazy" decoding="async" alt="Paper preset without a background image and with square corners."><figcaption><strong>Paper</strong> · plain, square corners</figcaption></figure></li>
+      </ul>
+    </section>
+
     <section class="section shell" aria-labelledby="organize-title">
       <div class="section-heading">
         <p class="eyebrow">Organize in place</p>
@@ -80,9 +135,10 @@
       </div>
       <div class="card-grid">
         <article class="card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9 2 12l3 3M9 5l3-3 3 3M15 19l-3 3-3-3M19 9l3 3-3 3M2 12h20M12 2v20"/></svg><h3>Drag and drop</h3><p>Move cards and categories with drag-and-drop, keyboard sorting or explicit controls, including into empty or collapsed groups.</p></article>
-        <article class="card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><h3>Find it fast</h3><p>Favorite the services you use daily and search names, descriptions and categories with Ctrl+K or Cmd+K.</p></article>
+        <article class="card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><h3>See what is online</h3><p>An optional dot next to each name shows whether the service answers. Off by default, at most one request per address and minute, no history.</p></article>
         <article class="card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg><h3>Undo for 30 minutes</h3><p>Deletions, ordering and appearance changes can be undone for 30 minutes, even after a restart. Conflicting undos are refused.</p></article>
-        <article class="card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg><h3>Portable configuration</h3><p>Export applications, categories and appearance as JSON. Imports show a preview and let you merge or replace.</p></article>
+        <article class="card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg><h3>Install it like an app</h3><p>Add HomeGrid to your phone's home screen or install it on the desktop. It opens in its own window, and you stay signed in while you use it.</p></article>
+        <article class="card"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg><h3>Tidy storage</h3><p>Review icons and backgrounds that nothing uses anymore and delete them after confirming. Recent uploads are kept.</p></article>
       </div>
     </section>
 
@@ -127,22 +183,21 @@
           <p class="eyebrow">Quick start</p>
           <h2 id="quick-start-title">Running in a minute.</h2>
           <ol>
-            <li>Save <a href="https://github.com/bifrost0x/homegrid/blob/main/docker-compose.yml"><code>docker-compose.yml</code></a> in a directory on your Docker host.</li>
-            <li>Pull and start the container.</li>
+            <li>Download the Compose file of the current release into a directory on your Docker host.</li>
+            <li>Start the container.</li>
             <li>Open <code>http://&lt;docker-host-ip&gt;:8095</code> and create your administrator account.</li>
           </ol>
-          <p class="note">There are no default credentials. Compose publishes on all host interfaces, so complete setup from a trusted network. The image supports AMD64 and ARM64.</p>
+          <p class="note">There are no default credentials. Compose publishes on all host interfaces, so complete setup from a trusted network. The image supports AMD64 and ARM64, including a Raspberry Pi with a 64-bit operating system. Then add services from 343 templates or import your Homepage, Homer or Dashy configuration.</p>
           <p><a class="text-link" href="self-hosting.html">Configuration, HTTPS and backups <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a></p>
         </div>
         <div>
           <div class="code-card">
             <div class="code-card-header"><span>Download the Compose file</span><button class="copy-button" type="button" data-copy="Download command"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
-            <pre tabindex="0" aria-label="Command to download docker-compose.yml"><code>curl -fsSLO https://raw.githubusercontent.com/bifrost0x/homegrid/main/docker-compose.yml</code></pre>
+            <pre tabindex="0" aria-label="Command to download docker-compose.yml"><code>curl -fsSLo docker-compose.yml https://github.com/bifrost0x/homegrid/releases/download/v0.1.0/docker-compose-0.1.0.yml</code></pre>
           </div>
           <div class="code-card">
-            <div class="code-card-header"><span>Start HomeGrid</span><button class="copy-button" type="button" data-copy="Start commands"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
-            <pre tabindex="0" aria-label="Commands to start HomeGrid"><code>docker compose pull
-docker compose up -d --wait</code></pre>
+            <div class="code-card-header"><span>Start HomeGrid</span><button class="copy-button" type="button" data-copy="Start command"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg><span data-copy-label>Copy</span></button></div>
+            <pre tabindex="0" aria-label="Command to start HomeGrid"><code>docker compose up -d --wait</code></pre>
           </div>
           <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
         </div>
@@ -153,19 +208,34 @@ docker compose up -d --wait</code></pre>
       <div class="closing">
         <div>
           <h2 id="closing-title">Bring your homelab home.</h2>
-          <p>Free and open source under the Apache License 2.0.</p>
+          <p>Free and open source under the Apache License 2.0, made with love for the homelab community.</p>
         </div>
         <div class="closing-actions">
-          <a class="button button-primary" href="https://github.com/bifrost0x/homegrid/releases">See releases</a>
+          <a class="button button-primary" href="#quick-start">Get started</a>
           <a class="button button-secondary" href="https://github.com/bifrost0x/homegrid">Source on GitHub</a>
         </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="support" aria-labelledby="support-title">
+      <div class="section-heading">
+        <p class="eyebrow">Support HomeGrid</p>
+        <h2 id="support-title">Keep it growing.</h2>
+        <p>If HomeGrid makes your homelab a little nicer, a donation helps keep it maintained and free for everyone.</p>
+      </div>
+      <div class="card-grid support-grid">
+        <a class="card support-card" href="https://github.com/sponsors/bifrost0x"><h3>GitHub Sponsors</h3><p>Monthly or one-time support.</p></a>
+        <a class="card support-card" href="https://buymeacoffee.com/bifrost0x"><h3>Buy Me a Coffee</h3><p>A one-time thank you.</p></a>
+        <a class="card support-card" href="https://www.patreon.com/bifrost0x"><h3>Patreon</h3><p>Ongoing membership.</p></a>
+      </div>
+      <p class="note">Bug reports and ideas are just as welcome: <a href="https://github.com/bifrost0x/homegrid/issues/new/choose">open an issue</a>.</p>
       </div>
     </section>
   </main>
   <footer class="site-footer">
     <div class="shell footer-main">
       <a class="brand" href="./" aria-label="HomeGrid home"><svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true"><g transform="rotate(-4 16 16)"><rect x="3" y="3" width="12" height="12" rx="3"/><rect x="17" y="3" width="12" height="12" rx="3"/><rect x="3" y="17" width="12" height="12" rx="3"/><rect x="17" y="17" width="12" height="12" rx="3"/></g></svg>HomeGrid</a>
-      <nav class="footer-links" aria-label="Project links"><a href="https://github.com/bifrost0x/homegrid">GitHub</a><a href="https://github.com/bifrost0x/homegrid/releases">Releases</a><a href="https://github.com/bifrost0x/homegrid/blob/main/CHANGELOG.md">Changelog</a><a href="self-hosting.html">Self-hosting</a><a href="security.html">Security</a></nav>
+      <nav class="footer-links" aria-label="Project links"><a href="https://github.com/bifrost0x/homegrid">GitHub</a><a href="https://github.com/bifrost0x/homegrid/releases">Releases</a><a href="https://github.com/bifrost0x/homegrid/blob/main/CHANGELOG.md">Changelog</a><a href="self-hosting.html">Self-hosting</a><a href="security.html">Security</a><a href="./#support">Support</a></nav>
     </div>
     <div class="shell footer-legal">
       <span>Open source under the <a href="https://github.com/bifrost0x/homegrid/blob/main/LICENSE">Apache License 2.0</a>.</span>

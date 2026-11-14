@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- The import preview says "1 entry" instead of "1 entries" when one entry is
+  skipped.
+- README and website show the 0.1.0 features with new screenshots: a gallery of
+  designs and layouts, quick search with web search, the Homepage import and
+  status dots.
+
 ## 0.1.0 - 2026-11-14
 
 The first HomeGrid release brings a self-hosted application launcher with one

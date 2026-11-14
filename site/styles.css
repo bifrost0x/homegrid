@@ -704,6 +704,44 @@ code {
   font-size: 0.95rem;
 }
 
+/* Design gallery */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 28px 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.gallery figcaption strong {
+  color: var(--text);
+}
+
+/* Support */
+
+.support-card {
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s;
+}
+
+.support-card:hover,
+.support-card:focus-visible {
+  border-color: var(--accent);
+}
+
+.support-grid + .note {
+  margin-top: 20px;
+}
+
+.support-card h3::before {
+  content: "\2665";
+  color: #c2414b;
+  margin-right: 8px;
+}
+
 /* Closing */
 
 .closing {
@@ -927,6 +965,11 @@ td code {
 .footer-legal a {
   color: var(--text);
   text-decoration: none;
+}
+
+/* A link inside the license sentence needs more than color to stand out. */
+.footer-legal span a {
+  text-decoration: underline;
 }
 
 .footer-links a:hover,
