@@ -178,9 +178,9 @@ npm test
 npm run build
 ```
 
-Read the [changelog](CHANGELOG.md) and [0.1.0 release notes](docs/release-notes-0.1.0.md)
-for the prepared first release. Versioned images and GitHub releases are created
-from tags; see [releasing](docs/releasing.md).
+Read the [changelog](CHANGELOG.md) and [0.1.0 release notes](docs/release-notes-0.1.0.md).
+Versioned images and GitHub releases are created from tags; see
+[releasing](docs/releasing.md).
 
 ## License
 
