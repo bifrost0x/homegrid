@@ -59,6 +59,10 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   appearance/layout changes, with a 30-minute window and conflict protection.
 - Versioned JSON export, validated import previews, merge and confirmed replace;
   compatibility with a simple Homarr-derived application list.
+- Import from Homepage (`services.yaml`, `bookmarks.yaml`), Homer (`config.yml`)
+  and Dashy (`conf.yml`): names, links, descriptions and groups are carried
+  over with logo recognition; widgets and non-HTTP(S) links are skipped and
+  counted in the preview.
 - A single non-root container with a read-only root filesystem, persistent data
   volume, built-in health check and no Docker socket requirement.
 - Tag-driven releases: versioned AMD64/ARM64 images with SBOM, build provenance

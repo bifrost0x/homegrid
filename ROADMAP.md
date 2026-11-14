@@ -23,15 +23,13 @@ promise; issues, pull requests and release notes are the source of truth.
 
 ## Next candidates
 
-- **Importers** for Homepage (`services.yaml`), Homer and Dashy configurations,
-  combined with automatic logo recognition.
 - **Optional reachability indicator** per application. This would be the first
   backend request to a service URL, so it must stay opt-in and bounded:
   administrator-configured targets only, strict timeouts, no redirects, and a
   plain up/down result.
-- **Installable web app** (manifest and offline shell) for phone home screens.
+- **Offline shell** for the installed web app, without caching dashboard data
+  beyond the session.
 - **Automatic group layout** that places small categories side by side.
-- **Sliding sessions** that extend on use, with a hard upper limit.
 - **Reverse proxy hint** when requests arrive through an untrusted proxy, since
   rate limits then apply to the proxy address.
 - **Unused upload cleanup** with an explicit review step.

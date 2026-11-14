@@ -22,6 +22,7 @@ import { applyPreset } from "./themes";
 import { LayoutControls } from "./ThemeControls";
 import { AppearanceEditor } from "./AppearanceEditor";
 import { About } from "./About";
+import type { ForeignFormat } from "./foreignImport";
 
 export type SettingsTab =
   "Appearance" | "Layout" | "Backup" | "Account" | "About";
@@ -59,6 +60,8 @@ export function SettingsPanel({
       categories: number;
       duplicates: number;
       recognized: number;
+      format?: ForeignFormat;
+      skipped: number;
     }>(),
     [mode, setMode] = useState("merge"),
     [confirmed, setConfirmed] = useState(false),
@@ -308,6 +311,8 @@ export function SettingsPanel({
           <h3>Your configuration</h3>
           <p>
             Keep a backup, or bring your applications from another installation.
+            Import accepts HomeGrid backups and Homepage, Homer or Dashy
+            configuration files.
           </p>
           <div className="icon-tools">
             <button
@@ -338,7 +343,7 @@ export function SettingsPanel({
               Import configuration
               <input
                 type="file"
-                accept="application/json,.json"
+                accept="application/json,.json,.yaml,.yml"
                 disabled={busy}
                 onChange={(e) => {
                   const file = e.target.files?.[0];
@@ -350,24 +355,34 @@ export function SettingsPanel({
                     void perform(async () => {
                       if (file.size > 5 * 1024 * 1024)
                         throw new Error(
-                          "Choose a JSON file smaller than 5 MB.",
+                          "Choose a configuration file smaller than 5 MB.",
                         );
-                      const [{ detectService }, { recognizeImportedLogos }] =
-                        await Promise.all([
-                          import("./serviceDetection"),
-                          import("./importLogos"),
-                        ]);
+                      const [
+                        { detectService },
+                        { recognizeImportedLogos },
+                        { parseConfiguration },
+                      ] = await Promise.all([
+                        import("./serviceDetection"),
+                        import("./importLogos"),
+                        import("./foreignImport"),
+                      ]);
+                      const source = await parseConfiguration(
+                        await file.text(),
+                        file.name,
+                      );
                       const { data: parsed, recognized } =
-                        recognizeImportedLogos(
-                          JSON.parse(await file.text()) as unknown,
-                          detectService,
-                        );
+                        recognizeImportedLogos(source.data, detectService);
                       const result = await api<{
                         apps: number;
                         categories: number;
                         duplicates: number;
                       }>("/import/preview", "POST", parsed);
-                      setPreview({ ...result, recognized });
+                      setPreview({
+                        ...result,
+                        recognized,
+                        format: source.format,
+                        skipped: source.skipped,
+                      });
                       setData(parsed);
                       setConfirmed(false);
                     });
@@ -379,6 +394,13 @@ export function SettingsPanel({
           {preview && (
             <div className="import-preview">
               <h4>Import preview</h4>
+              {preview.format && (
+                <p>
+                  {preview.format} configuration
+                  {preview.skipped > 0 &&
+                    ` · ${preview.skipped} entries without an HTTP or HTTPS link skipped`}
+                </p>
+              )}
               <p>
                 {preview.apps} applications · {preview.categories} categories ·{" "}
                 {preview.duplicates} duplicate URLs

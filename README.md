@@ -64,6 +64,10 @@ and optional local source builds.
 - **Keep your configuration portable.** Export and import applications,
   categories and appearance as JSON, with an import preview and merge or replace
   choices. Use a full data-volume backup to preserve uploaded files and accounts.
+- **Move over from another dashboard.** Import `services.yaml` and
+  `bookmarks.yaml` from Homepage, `config.yml` from Homer or `conf.yml` from
+  Dashy. HomeGrid takes over names, links, descriptions and groups, recognizes
+  logos, and skips widgets and templated links it cannot resolve.
 - **Install it like an app.** Add HomeGrid to a phone's home screen or install
   it from the browser; it opens in its own window without browser controls.
 - **Manage it in one place.** Settings open as one sheet with sections for
