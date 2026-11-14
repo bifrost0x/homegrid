@@ -44,6 +44,9 @@ func (s *Server) frontend(w http.ResponseWriter, r *http.Request) {
 		// The distroless image has no MIME database to resolve this extension.
 		w.Header().Set("Content-Type", "application/manifest+json")
 		w.Header().Set("Cache-Control", "no-cache")
+	case ".ico":
+		w.Header().Set("Content-Type", "image/x-icon")
+		w.Header().Set("Cache-Control", "public, max-age=3600")
 	case ".html", "":
 		w.Header().Set("Cache-Control", "no-cache")
 	default:

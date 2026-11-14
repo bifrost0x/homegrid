@@ -214,7 +214,7 @@ func TestWebAppManifestIsPublicWithManifestType(t *testing.T) {
 		t.Fatal(e)
 	}
 	t.Cleanup(func() { db.Close() })
-	assets := fstest.MapFS{"index.html": {Data: []byte("<!doctype html>")}, "manifest.webmanifest": {Data: []byte(`{"name":"HomeGrid"}`)}, "icons/icon-192.png": {Data: []byte("\x89PNG\r\n\x1a\n")}}
+	assets := fstest.MapFS{"index.html": {Data: []byte("<!doctype html>")}, "manifest.webmanifest": {Data: []byte(`{"name":"HomeGrid"}`)}, "icons/icon-192.png": {Data: []byte("\x89PNG\r\n\x1a\n")}, "favicon.ico": {Data: []byte("\x00\x00\x01\x00")}}
 	s, e := New(Config{Store: db, Assets: assets})
 	if e != nil {
 		t.Fatal(e)
@@ -225,6 +225,10 @@ func TestWebAppManifestIsPublicWithManifestType(t *testing.T) {
 		t.Fatal(w.Code, w.Header(), w.Body.String())
 	}
 	if w = staticResponse(s, "GET", "/icons/icon-192.png", "", ""); w.Code != 200 || w.Header().Get("Content-Type") != "image/png" {
+		t.Fatal(w.Code, w.Header())
+	}
+	// Clients that only request /favicon.ico get the icon without signing in.
+	if w = staticResponse(s, "GET", "/favicon.ico", "", ""); w.Code != 200 || w.Header().Get("Content-Type") != "image/x-icon" {
 		t.Fatal(w.Code, w.Header())
 	}
 }
