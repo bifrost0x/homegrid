@@ -82,17 +82,19 @@ func (s *Server) cleanUploads(w http.ResponseWriter, r *http.Request) {
 		s.result(w, 0, nil, e)
 		return
 	}
-	deletable := map[string]bool{}
-	for _, f := range unused {
-		deletable[f.Name] = true
+	// The request only selects files; every path comes from the server's own
+	// listing of unused uploads, never from the request.
+	selected := make(map[string]bool, len(body.Names))
+	for _, name := range body.Names {
+		selected[name] = true
 	}
 	dir := filepath.Join(s.cfg.DataDir, "uploads")
 	deleted := 0
-	for _, name := range body.Names {
-		if !deletable[name] {
+	for _, f := range unused {
+		if !selected[f.Name] {
 			continue
 		}
-		delete(deletable, name)
+		name := f.Name
 		path := filepath.Join(dir, name)
 		// Writes hold uploadsMu too, but check the file once more right
 		// before removing it.
