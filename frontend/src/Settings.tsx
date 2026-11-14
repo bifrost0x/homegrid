@@ -29,8 +29,8 @@ export type SettingsTab =
   "Appearance" | "Layout" | "Backup" | "Account" | "About";
 const tabs: { name: SettingsTab; Icon: typeof Info; hint: string }[] = [
   { name: "Appearance", Icon: Paintbrush, hint: "Presets, colors, background" },
-  { name: "Layout", Icon: LayoutGrid, hint: "Width, columns, card style" },
-  { name: "Backup", Icon: Archive, hint: "Export and import" },
+  { name: "Layout", Icon: LayoutGrid, hint: "Columns, status, web search" },
+  { name: "Backup", Icon: Archive, hint: "Export, import, cleanup" },
   { name: "Account", Icon: UserRound, hint: "Password and sessions" },
   { name: "About", Icon: Info, hint: "Version and project links" },
 ];
