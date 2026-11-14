@@ -82,7 +82,8 @@ export function LayoutControls({
       <p className="field-hint">
         HomeGrid's server then sends a request to each application's address
         about once a minute while the dashboard is open, and reports only online
-        or offline.
+        or offline. Addresses on the HomeGrid host itself, such as localhost,
+        are not checked.
       </p>
       <label>
         Web search in quick search

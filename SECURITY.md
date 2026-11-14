@@ -29,7 +29,8 @@ allows. There is no guaranteed response deadline or formal security certificatio
 
 Use HTTPS at a trusted reverse proxy and enable secure cookies when serving over
 HTTPS. Protect access to the dashboard, its data volume, backups, and exports.
-Sessions expire after seven days without use and always 30 days after sign-in;
+Sessions expire after seven days without use and always 30 days after sign-in.
+Background polls of an open dashboard (undo and status) do not count as use;
 changing the password signs out every other session.
 Keep dependencies and the container image updated. Do not publish real `.env`
 files, database files, or private screenshots in issues or pull requests.
@@ -51,6 +52,8 @@ redirects, never read a response body, verify certificates (a certificate
 that fails verification still shows that the service answers), stop after four
 seconds per URL and fifteen seconds per sweep, and run at most eight at a
 time. Only up, down or unknown is reported, and no history is stored.
+Loopback addresses are refused like for icon lookups, so services entered as
+`localhost` or `127.0.0.1` always show as unknown.
 
 Icon lookups happen at a service URL the administrator enters
 (`POST /api/icons/discover`). They are authenticated and CSRF-protected,

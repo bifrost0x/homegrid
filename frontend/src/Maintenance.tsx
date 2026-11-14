@@ -43,7 +43,9 @@ export function UnusedUploads() {
       <h3>Unused images</h3>
       <p>
         Icons and backgrounds stay on disk after you replace them. Review the
-        images nothing uses anymore before deleting them.
+        images nothing uses anymore before deleting them. Images uploaded in the
+        last 24 hours are kept. JSON exports do not contain images, so an older
+        export that refers to a deleted image shows a fallback icon.
       </p>
       <button
         type="button"

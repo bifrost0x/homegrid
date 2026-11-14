@@ -130,6 +130,8 @@ export async function api<T>(
   path: string,
   method = "GET",
   body?: unknown,
+  /** Background polls do not count as use and never extend the session. */
+  options: { background?: boolean } = {},
 ): Promise<T> {
   const form = body instanceof FormData;
   const response = await fetch("/api" + path, {
@@ -138,6 +140,7 @@ export async function api<T>(
     headers: {
       ...(body && !form ? { "Content-Type": "application/json" } : {}),
       ...(method !== "GET" ? { "X-CSRF-Token": csrf } : {}),
+      ...(options.background ? { "X-HomeGrid-Background": "1" } : {}),
     },
     body: body === undefined ? undefined : form ? body : JSON.stringify(body),
   });

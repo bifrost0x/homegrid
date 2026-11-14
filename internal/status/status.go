@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"net/netip"
 	"net/url"
+	"sort"
 	"sync"
 	"syscall"
 	"time"
@@ -36,7 +37,8 @@ const (
 	// TTL is how long a result is reused before the URL is checked again.
 	TTL          = time.Minute
 	checkTimeout = 4 * time.Second
-	sweepTimeout = 15 * time.Second
+	// sweepTimeout stays well below the server's write timeout.
+	sweepTimeout = 10 * time.Second
 	concurrency  = 8
 )
 
@@ -54,7 +56,9 @@ type entry struct {
 type Checker struct {
 	client *http.Client
 	now    func() time.Time
-	// sweep serializes checks so concurrent dashboards share one sweep.
+	// deadline bounds one sweep; tests shorten it.
+	deadline time.Duration
+	// sweep allows one sweep at a time; concurrent callers get cached results.
 	sweep sync.Mutex
 	mu    sync.Mutex
 	cache map[string]entry
@@ -93,16 +97,21 @@ func New(policy AddressPolicy) *Checker {
 			// A redirect is an answer; following it could reach other hosts.
 			CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
 		},
-		now:   time.Now,
-		cache: map[string]entry{},
+		now:      time.Now,
+		deadline: sweepTimeout,
+		cache:    map[string]entry{},
 	}
 }
 
 // Check returns the state of every URL. Results younger than TTL are reused;
 // the remaining URLs are checked with bounded concurrency within one sweep
-// deadline. Cached results for URLs not in urls are dropped.
+// deadline, oldest results first. While another sweep runs, Check returns the
+// cached results without waiting. Cached results for URLs not in urls are
+// dropped.
 func (c *Checker) Check(ctx context.Context, urls []string) map[string]State {
-	c.sweep.Lock()
+	if !c.sweep.TryLock() {
+		return c.cached(urls)
+	}
 	defer c.sweep.Unlock()
 	now := c.now()
 	wanted := map[string]bool{}
@@ -122,11 +131,14 @@ func (c *Checker) Check(ctx context.Context, urls []string) map[string]State {
 			delete(c.cache, u)
 		}
 	}
+	// Never-checked URLs first, then the oldest results, so a sweep cut off
+	// by its deadline still makes progress through a long list.
+	sort.SliceStable(stale, func(i, j int) bool { return c.cache[stale[i]].at.Before(c.cache[stale[j]].at) })
 	c.mu.Unlock()
 
 	if len(stale) > 0 {
 		// The sweep outlives a disconnecting client so its work is cached.
-		sweepCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), sweepTimeout)
+		sweepCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), c.deadline)
 		slots := make(chan struct{}, concurrency)
 		var wg sync.WaitGroup
 		for _, u := range stale {
@@ -142,9 +154,10 @@ func (c *Checker) Check(ctx context.Context, urls []string) map[string]State {
 				defer wg.Done()
 				defer func() { <-slots }()
 				state := c.probe(sweepCtx, u)
-				// A check cut off by the sweep deadline stays stale.
+				// A check cut off by the sweep deadline proves nothing; caching
+				// it as unknown keeps the next request from sweeping it again.
 				if sweepCtx.Err() != nil && state == Down {
-					return
+					state = Unknown
 				}
 				c.mu.Lock()
 				c.cache[u] = entry{state: state, at: c.now()}
@@ -155,10 +168,15 @@ func (c *Checker) Check(ctx context.Context, urls []string) map[string]State {
 		cancel()
 	}
 
-	out := make(map[string]State, len(wanted))
+	return c.cached(urls)
+}
+
+// cached returns the cached state of every URL, unknown when none exists.
+func (c *Checker) cached(urls []string) map[string]State {
+	out := make(map[string]State, len(urls))
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	for u := range wanted {
+	for _, u := range urls {
 		if e, ok := c.cache[u]; ok {
 			out[u] = e.state
 		} else {
@@ -201,11 +219,18 @@ func (c *Checker) probe(ctx context.Context, raw string) State {
 }
 
 // untrustedCertificate reports whether a TLS handshake reached certificate
-// verification, which means the service is answering on that address.
+// verification or a peer alert, which means the service answers on that
+// address.
 func untrustedCertificate(e error) bool {
 	var verification *tls.CertificateVerificationError
 	var unknown x509.UnknownAuthorityError
 	var hostname x509.HostnameError
 	var invalid x509.CertificateInvalidError
-	return errors.As(e, &verification) || errors.As(e, &unknown) || errors.As(e, &hostname) || errors.As(e, &invalid)
+	// A TLS alert also shows that the peer answers: one it sent ("remote
+	// error"), for example when it requires a client certificate, or one sent
+	// in reply to its handshake messages, for example for an old TLS version.
+	var alert tls.AlertError
+	var op *net.OpError
+	remoteAlert := errors.As(e, &op) && op.Op == "remote error"
+	return errors.As(e, &verification) || errors.As(e, &unknown) || errors.As(e, &hostname) || errors.As(e, &invalid) || errors.As(e, &alert) || remoteAlert
 }

@@ -12,6 +12,7 @@ import (
 	"net/netip"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -40,10 +41,13 @@ type Server struct {
 	static        map[string]staticAsset
 	icons         *icondiscovery.Fetcher
 	status        *status.Checker
-	// uploadsMu serializes upload cleanups.
+	// uploadsMu serializes writing stored images with upload cleanup, so a
+	// cleanup never removes a file that was just written again.
 	uploadsMu sync.Mutex
-	// proxyWarning logs an untrusted forwarding proxy once per process.
-	proxyWarning sync.Once
+	// proxyWarned is the Unix time of the last untrusted proxy warning; the
+	// warning repeats at most hourly, so a client that sends forwarding
+	// headers directly cannot suppress a later real misconfiguration.
+	proxyWarned atomic.Int64
 }
 
 func New(cfg Config) (*Server, error) {
@@ -82,9 +86,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.securityHeaders(w, r)
 	defer s.recoverPanic(w, r)
 	if forwarded(r) && !s.trusted(remoteIP(r)) {
-		s.proxyWarning.Do(func() {
+		now := time.Now().Unix()
+		if last := s.proxyWarned.Load(); now-last >= 3600 && s.proxyWarned.CompareAndSwap(last, now) {
 			s.cfg.Logger.Warn("request forwarded by an untrusted proxy; rate limits apply to the proxy address. Add it to HOMEGRID_TRUSTED_PROXIES if you control it.", "proxy", remoteIP(r))
-		})
+		}
 	}
 	s.mux.ServeHTTP(w, r)
 }

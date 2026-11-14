@@ -85,6 +85,8 @@ func (s *Server) upload(w http.ResponseWriter, r *http.Request) {
 // storeImage saves already re-encoded image bytes under their content hash and
 // returns the public /uploads path.
 func (s *Server) storeImage(data []byte, ext string) (string, error) {
+	s.uploadsMu.Lock()
+	defer s.uploadsMu.Unlock()
 	sum := sha256.Sum256(data)
 	name := hex.EncodeToString(sum[:]) + "." + ext
 	dir := filepath.Join(s.cfg.DataDir, "uploads")

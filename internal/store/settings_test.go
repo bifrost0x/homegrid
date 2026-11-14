@@ -258,6 +258,8 @@ func TestWebSearchSettings(t *testing.T) {
 		{WebSearch: "custom", WebSearchURL: "https://user:pw@searx.home.arpa/?q=%s"},
 		{WebSearch: "custom", WebSearchURL: "/search?q=%s"},
 		{WebSearch: "", WebSearchURL: "ftp://files/%s"},
+		{WebSearch: "custom", WebSearchURL: "https://%s/"},
+		{WebSearch: "custom", WebSearchURL: "https://%s.example.com/search"},
 	}
 	for _, v := range invalid {
 		s := base

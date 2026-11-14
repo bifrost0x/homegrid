@@ -23,14 +23,17 @@ const app = (id: number, name: string): Application => ({
 
 function setup(statusChecks: boolean) {
   const requested: string[] = [];
+  const background: string[] = [];
   vi.stubGlobal("matchMedia", () => ({
     matches: false,
     addEventListener() {},
     removeEventListener() {},
   }));
-  vi.stubGlobal("fetch", async (url: string) => {
+  vi.stubGlobal("fetch", async (url: string, init?: RequestInit) => {
     const path = String(url).replace("/api", "");
     requested.push(path);
+    const headers = (init?.headers ?? {}) as Record<string, string>;
+    if (headers["X-HomeGrid-Background"] === "1") background.push(path);
     const data =
       path === "/auth/session"
         ? { authenticated: true, username: "owner", csrf_token: "token" }
@@ -57,11 +60,11 @@ function setup(statusChecks: boolean) {
       <App />
     </QueryClientProvider>,
   );
-  return requested;
+  return { requested, background };
 }
 
 it("shows each application's status when status checks are enabled", async () => {
-  setup(true);
+  const { background } = setup(true);
   const atlas = await screen.findByRole("link", { name: /Atlas, Online/ });
   expect(within(atlas).getByTitle("Online")).toHaveClass("status-dot", "up");
   expect(
@@ -70,10 +73,13 @@ it("shows each application's status when status checks are enabled", async () =>
   expect(
     screen.getByRole("link", { name: /Comet, Status unknown/ }),
   ).toBeInTheDocument();
+  // Polls are marked so they do not keep an unattended session alive.
+  expect(background).toContain("/status");
+  expect(background).not.toContain("/apps");
 });
 
 it("never requests status while status checks are disabled", async () => {
-  const requested = setup(false);
+  const { requested } = setup(false);
   await screen.findByRole("link", { name: /Atlas/ });
   expect(requested).not.toContain("/status");
   expect(document.querySelector(".status-dot")).toBeNull();

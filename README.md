@@ -113,6 +113,8 @@ service advertises and stores a re-encoded copy. And if you turn on
 **Show whether services are online** in the layout settings, it sends one
 `HEAD` request per application address about once a minute while a dashboard
 is open; it follows no redirects, reads no response and keeps no history.
+Addresses on the HomeGrid host itself (`localhost`, `127.0.0.1`) are never
+checked and show as unknown; use the host's LAN address instead.
 Both are off unless the administrator acts; loopback, link-local (including
 cloud metadata) and multicast addresses are refused at connect time,
 certificates are verified, and requests are size- and time-limited.

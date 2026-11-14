@@ -34,13 +34,15 @@ export function useDashboardData() {
   });
   const undoQ = useQuery({
     queryKey: ["undo"],
-    queryFn: () => api<UndoRecord[]>("/undo"),
+    queryFn: () =>
+      api<UndoRecord[]>("/undo", "GET", undefined, { background: true }),
     refetchInterval: 30000,
   });
   // The server only contacts services while status checks are enabled.
   const statusQ = useQuery({
     queryKey: ["status"],
-    queryFn: () => api<ServiceStatus>("/status"),
+    queryFn: () =>
+      api<ServiceStatus>("/status", "GET", undefined, { background: true }),
     enabled: settingsQ.data?.status_checks === true,
     refetchInterval: 60000,
   });

@@ -2,10 +2,13 @@ package status
 
 import (
 	"context"
+	"crypto/tls"
+	"errors"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/netip"
+	"strconv"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -99,5 +102,112 @@ func TestCanceledRequestStillCompletesSweep(t *testing.T) {
 	c := New(allowAll)
 	if got := c.Check(ctx, []string{server.URL})[server.URL]; got != Up {
 		t.Fatal(got)
+	}
+}
+
+// blackHole accepts connections and never answers.
+func blackHole(t *testing.T) (string, *atomic.Int32) {
+	t.Helper()
+	l, e := net.Listen("tcp", "127.0.0.1:0")
+	if e != nil {
+		t.Fatal(e)
+	}
+	var accepted atomic.Int32
+	var conns []net.Conn
+	done := make(chan struct{})
+	go func() {
+		defer close(done)
+		for {
+			c, e := l.Accept()
+			if e != nil {
+				return
+			}
+			accepted.Add(1)
+			conns = append(conns, c)
+		}
+	}()
+	t.Cleanup(func() {
+		l.Close()
+		<-done
+		for _, c := range conns {
+			c.Close()
+		}
+	})
+	return "http://" + l.Addr().String(), &accepted
+}
+
+func TestDeadlineCutSweepIsCachedAsUnknown(t *testing.T) {
+	base, accepted := blackHole(t)
+	var urls []string
+	for i := range 40 {
+		urls = append(urls, base+"/service/"+strconv.Itoa(i))
+	}
+	c := New(allowAll)
+	c.deadline = 300 * time.Millisecond
+	start := time.Now()
+	got := c.Check(context.Background(), urls)
+	if elapsed := time.Since(start); elapsed > 2*time.Second {
+		t.Fatal("sweep exceeded its deadline", elapsed)
+	}
+	for _, u := range urls[:concurrency] {
+		if got[u] != Unknown {
+			t.Fatal("cut-off check reported as", got[u])
+		}
+	}
+	first := accepted.Load()
+	if first == 0 || first > concurrency {
+		t.Fatal("unexpected number of connections", first)
+	}
+	// The next request continues with URLs that were never checked instead of
+	// repeating the cut-off ones.
+	c.Check(context.Background(), urls)
+	second := accepted.Load() - first
+	if second == 0 {
+		t.Fatal("the next sweep made no progress")
+	}
+	if _, ok := c.cache[urls[0]]; !ok {
+		t.Fatal("cut-off result was not cached")
+	}
+}
+
+func TestConcurrentCheckReturnsCachedResultsWithoutWaiting(t *testing.T) {
+	release := make(chan struct{})
+	slow := httptest.NewServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) { <-release }))
+	defer slow.Close()
+	defer close(release)
+	c := New(allowAll)
+	done := make(chan map[string]State)
+	go func() { done <- c.Check(context.Background(), []string{slow.URL}) }()
+	// Wait until the first sweep holds the lock.
+	for c.sweep.TryLock() {
+		c.sweep.Unlock()
+		time.Sleep(5 * time.Millisecond)
+	}
+	start := time.Now()
+	if got := c.Check(context.Background(), []string{slow.URL})[slow.URL]; got != Unknown {
+		t.Fatal("concurrent check reported", got)
+	}
+	if elapsed := time.Since(start); elapsed > time.Second {
+		t.Fatal("concurrent check waited for the sweep", elapsed)
+	}
+	release <- struct{}{}
+	if got := (<-done)[slow.URL]; got != Up {
+		t.Fatal("sweep result", got)
+	}
+}
+
+func TestTLSAlertsCountAsAnswer(t *testing.T) {
+	server := httptest.NewUnstartedServer(http.HandlerFunc(func(http.ResponseWriter, *http.Request) {}))
+	server.TLS = &tls.Config{ClientAuth: tls.RequireAnyClientCert}
+	server.StartTLS()
+	defer server.Close()
+	if got := New(allowAll).Check(context.Background(), []string{server.URL})[server.URL]; got != Up {
+		t.Fatal("server requiring a client certificate reported as", got)
+	}
+	if untrustedCertificate(errors.New("connection refused")) {
+		t.Fatal("plain error treated as an answer")
+	}
+	if !untrustedCertificate(&net.OpError{Op: "remote error", Err: errors.New("tls: handshake failure")}) {
+		t.Fatal("remote TLS alert not treated as an answer")
 	}
 }

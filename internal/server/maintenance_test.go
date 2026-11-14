@@ -21,7 +21,7 @@ func TestUnusedUploadCleanup(t *testing.T) {
 		t.Fatal(e)
 	}
 	name := func(ch string) string { return strings.Repeat(ch, 64) + ".png" }
-	old := time.Now().Add(-2 * time.Hour)
+	old := time.Now().Add(-48 * time.Hour)
 	for _, n := range []string{name("a"), name("b"), name("c"), name("d"), "notes.txt"} {
 		path := filepath.Join(dir, n)
 		if e := os.WriteFile(path, []byte("x"), 0600); e != nil {
@@ -58,6 +58,12 @@ func TestUnusedUploadCleanup(t *testing.T) {
 			t.Errorf("%s exists=%v want %v", n, e == nil, want)
 		}
 	}
+	c.req("POST", "/api/uploads/cleanup", map[string]any{"names": []string{}, "confirm": true}, 400)
+	tooMany := make([]string, 10001)
+	for i := range tooMany {
+		tooMany[i] = name("c")
+	}
+	c.req("POST", "/api/uploads/cleanup", map[string]any{"names": tooMany, "confirm": true}, 400)
 	c.csrf = "bad"
 	c.req("POST", "/api/uploads/cleanup", map[string]any{"names": []string{name("a")}, "confirm": true}, 403)
 }

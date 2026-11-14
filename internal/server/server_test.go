@@ -633,3 +633,32 @@ func TestSessionSlidesOnUseAndRenewsCookie(t *testing.T) {
 		}
 	}
 }
+
+func TestBackgroundPollsDoNotExtendSessions(t *testing.T) {
+	c, db := newClient(t)
+	c.setup()
+	now := time.Now().Unix()
+	if _, e := db.DB.Exec("UPDATE sessions SET expires_at=?,created_at=?", now+120, now-7200); e != nil {
+		t.Fatal(e)
+	}
+	for _, path := range []string{"/api/undo", "/api/status"} {
+		req := httptest.NewRequest("GET", path, nil)
+		req.Header.Set("X-HomeGrid-Background", "1")
+		for _, cookie := range c.cookies {
+			req.AddCookie(cookie)
+		}
+		w := httptest.NewRecorder()
+		c.h.ServeHTTP(w, req)
+		if w.Code != 200 {
+			t.Fatal(path, w.Code, w.Body.String())
+		}
+		if len(w.Result().Cookies()) != 0 {
+			t.Fatal("background poll renewed the session cookie", path)
+		}
+	}
+	var expires int64
+	db.DB.QueryRow("SELECT expires_at FROM sessions").Scan(&expires)
+	if expires != now+120 {
+		t.Fatal("background poll extended the session", expires-now)
+	}
+}

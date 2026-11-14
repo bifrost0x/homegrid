@@ -342,8 +342,10 @@ func validSearchTemplate(v string) bool {
 	if len(v) > 2048 || strings.Count(v, "%s") != 1 || !utf8.ValidString(v) {
 		return false
 	}
-	u, e := url.Parse(strings.Replace(v, "%s", "query", 1))
-	return e == nil && (u.Scheme == "http" || u.Scheme == "https") && u.Hostname() != "" && u.User == nil && validBrowserHost(u)
+	// The search terms must not choose the host the browser opens.
+	const marker = "homegridsearchterms"
+	u, e := url.Parse(strings.Replace(v, "%s", marker, 1))
+	return e == nil && (u.Scheme == "http" || u.Scheme == "https") && u.Hostname() != "" && u.User == nil && validBrowserHost(u) && !strings.Contains(u.Host, marker)
 }
 func (s *Store) Apps(ctx context.Context) ([]App, error) {
 	rows, e := s.DB.QueryContext(ctx, "SELECT id,name,url,description,icon,category_id,sort_order,open_in_new_tab,favorite,icon_color FROM applications ORDER BY sort_order,id")

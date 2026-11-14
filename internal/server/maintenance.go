@@ -14,8 +14,9 @@ import (
 )
 
 // uploadGrace keeps recent uploads out of cleanup: an icon or background is
-// uploaded before the application or settings that refer to it are saved.
-const uploadGrace = time.Hour
+// uploaded before the application or settings that refer to it are saved, and
+// an edit form may stay open for a while in between.
+const uploadGrace = 24 * time.Hour
 
 type unusedUpload struct {
 	Name     string    `json:"name"`
@@ -92,7 +93,13 @@ func (s *Server) cleanUploads(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		delete(deletable, name)
-		if e := os.Remove(filepath.Join(dir, name)); e != nil && !errors.Is(e, fs.ErrNotExist) {
+		path := filepath.Join(dir, name)
+		// Writes hold uploadsMu too, but check the file once more right
+		// before removing it.
+		if info, e := os.Lstat(path); e != nil || !info.Mode().IsRegular() || time.Since(info.ModTime()) < uploadGrace {
+			continue
+		}
+		if e := os.Remove(path); e != nil && !errors.Is(e, fs.ErrNotExist) {
 			s.cfg.Logger.Error("unable to delete unused upload", "name", name, "error", e)
 			fail(w, 500, "internal", "Some images could not be deleted")
 			return
