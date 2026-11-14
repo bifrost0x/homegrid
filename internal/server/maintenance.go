@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"io/fs"
 	"net/http"
 	"os"
@@ -25,13 +26,9 @@ type unusedUpload struct {
 	Modified time.Time `json:"modified"`
 }
 
-// unusedUploads lists stored images that nothing refers to and that are
-// older than uploadGrace.
-func (s *Server) unusedUploads(r *http.Request) ([]unusedUpload, error) {
-	refs, e := s.cfg.Store.ReferencedUploads(r.Context())
-	if e != nil {
-		return nil, e
-	}
+// unusedUploads lists stored images that are not in refs and that are older
+// than uploadGrace.
+func (s *Server) unusedUploads(refs map[string]bool) ([]unusedUpload, error) {
 	entries, e := os.ReadDir(filepath.Join(s.cfg.DataDir, "uploads"))
 	if errors.Is(e, fs.ErrNotExist) {
 		return []unusedUpload{}, nil
@@ -57,12 +54,18 @@ func (s *Server) unusedUploads(r *http.Request) ([]unusedUpload, error) {
 }
 
 func (s *Server) listUnusedUploads(w http.ResponseWriter, r *http.Request) {
-	files, e := s.unusedUploads(r)
+	refs, e := s.cfg.Store.ReferencedUploads(r.Context())
+	if e != nil {
+		s.result(w, 0, nil, e)
+		return
+	}
+	files, e := s.unusedUploads(refs)
 	s.result(w, 200, map[string]any{"files": files}, e)
 }
 
-// cleanUploads deletes the reviewed files that are still unused. Each name is
-// checked again so a file that became referenced since the review is kept.
+// cleanUploads deletes the reviewed files that are still unused. References
+// are read and files deleted inside one store transaction, so no save,
+// import or undo can start using a file while it is being removed.
 func (s *Server) cleanUploads(w http.ResponseWriter, r *http.Request) {
 	var body struct {
 		Names   []string `json:"names"`
@@ -75,38 +78,37 @@ func (s *Server) cleanUploads(w http.ResponseWriter, r *http.Request) {
 		fail(w, 400, "validation", "Review the unused images and confirm their deletion")
 		return
 	}
-	s.uploadsMu.Lock()
-	defer s.uploadsMu.Unlock()
-	unused, e := s.unusedUploads(r)
-	if e != nil {
-		s.result(w, 0, nil, e)
-		return
-	}
 	// The request only selects files; every path comes from the server's own
 	// listing of unused uploads, never from the request.
 	selected := make(map[string]bool, len(body.Names))
 	for _, name := range body.Names {
 		selected[name] = true
 	}
+	s.uploadsMu.Lock()
+	defer s.uploadsMu.Unlock()
 	dir := filepath.Join(s.cfg.DataDir, "uploads")
 	deleted := 0
-	for _, f := range unused {
-		if !selected[f.Name] {
-			continue
+	e := s.cfg.Store.WithUploadReferences(r.Context(), func(refs map[string]bool) error {
+		unused, e := s.unusedUploads(refs)
+		if e != nil {
+			return e
 		}
-		name := f.Name
-		path := filepath.Join(dir, name)
-		// Writes hold uploadsMu too, but check the file once more right
-		// before removing it.
-		if info, e := os.Lstat(path); e != nil || !info.Mode().IsRegular() || time.Since(info.ModTime()) < uploadGrace {
-			continue
+		for _, f := range unused {
+			if !selected[f.Name] {
+				continue
+			}
+			path := filepath.Join(dir, f.Name)
+			if e := os.Remove(path); e != nil && !errors.Is(e, fs.ErrNotExist) {
+				return fmt.Errorf("delete unused upload %s: %w", f.Name, e)
+			}
+			deleted++
 		}
-		if e := os.Remove(path); e != nil && !errors.Is(e, fs.ErrNotExist) {
-			s.cfg.Logger.Error("unable to delete unused upload", "name", name, "error", e)
-			fail(w, 500, "internal", "Some images could not be deleted")
-			return
-		}
-		deleted++
+		return nil
+	})
+	if e != nil {
+		s.cfg.Logger.Error("unable to clean up unused uploads", "error", e)
+		fail(w, 500, "internal", "Some images could not be deleted")
+		return
 	}
 	write(w, 200, map[string]int{"deleted": deleted})
 }

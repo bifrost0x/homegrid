@@ -57,6 +57,9 @@ function single(value: unknown): [string, unknown] | undefined {
 
 function link(value: unknown) {
   if (typeof value !== "string") return undefined;
+  // Unresolved Homepage templates such as {{HOMEPAGE_VAR_URL}} would survive
+  // URL normalization percent-encoded and create a broken application.
+  if (/\{\{|\}\}/.test(value)) return undefined;
   try {
     const url = new URL(value.trim());
     if (

@@ -17,6 +17,10 @@ const homepage = `
         href: "{{HOMEPAGE_VAR_SONARR_URL}}"
         widget:
           type: sonarr
+    - NAS:
+        href: https://nas.home.arpa/{{HOMEPAGE_VAR_PATH}}
+    - Search:
+        href: https://search.home.arpa/?token={{HOMEPAGE_VAR_TOKEN}}
     - Downloads:
         - qBittorrent:
             href: http://192.168.1.20:8080
@@ -92,8 +96,9 @@ describe("foreign dashboard configurations", () => {
         },
       ],
     });
-    // The templated Sonarr link cannot be resolved outside Homepage.
-    expect(result.skipped).toBe(1);
+    // Templated links cannot be resolved outside Homepage, wherever the
+    // placeholder appears.
+    expect(result.skipped).toBe(3);
   });
 
   it("converts Homer services and skips non-HTTP links", async () => {

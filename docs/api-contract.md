@@ -68,9 +68,11 @@ catalog IDs, including `service:jellyfin` and `service:nextcloud`.
 POST /api/icons/discover `{url}` asks the service at that HTTP(S) URL for its advertised icon (page links, web manifest, `/apple-touch-icon.png`, `/favicon.ico`), stores a re-encoded PNG and returns `{url, title}` (201); `url` works like an upload path and `title` is the page title (may be empty). Errors: 400 invalid URL, 404 `not_found` when no usable icon exists, 502 `unreachable` when the service cannot be contacted or its address is refused.
 Authenticated GET `/api/uploads/unused` returns `{files:[{name,url,size,modified}]}`:
 stored images older than 24 hours that no application icon, settings value or
-undo record references. CSRF-protected POST `/api/uploads/cleanup`
+unexpired undo record references. CSRF-protected POST `/api/uploads/cleanup`
 `{names:[...],confirm:true}` deletes the listed names that are still unused at
-that moment, ignores everything else and returns `{deleted}`.
+that moment, ignores everything else and returns `{deleted}`. References are
+read and files deleted in one database transaction, so no concurrent save,
+import or undo can start using a file while it is removed.
 Authenticated GET `/api/diagnostics` returns `{untrusted_proxy}`: the peer
 address when the request carries forwarding headers from a peer outside
 `HOMEGRID_TRUSTED_PROXIES`, otherwise empty.
