@@ -47,6 +47,9 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   card menu; the favorite toggle appears on hover or focus and stays visible
   once set. The dashboard heading summarizes applications and categories.
 - Optional example cards that require configuration before launch.
+- Optional web search in quick search: DuckDuckGo, Startpage, Brave Search,
+  Google, Bing or a custom address such as a self-hosted SearXNG. Off by
+  default; the browser opens the search in a new tab.
 - Optional service status: when enabled in the layout settings, a dot after
   each application name shows whether its address answers. The server sends
   one HEAD request per address at most once a minute, follows no redirects,

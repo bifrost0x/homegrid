@@ -1908,3 +1908,15 @@ legend {
   border: 2px solid #d1453b;
   opacity: 1;
 }
+
+/* Web search option at the end of quick search results. */
+.web-search-icon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--accent);
+  background: var(--accent-soft);
+}

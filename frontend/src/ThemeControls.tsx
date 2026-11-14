@@ -1,4 +1,5 @@
-import { type Settings } from "./lib";
+import { useId } from "react";
+import { searchEngines, type Settings } from "./lib";
 
 export function LayoutControls({
   settings,
@@ -7,6 +8,7 @@ export function LayoutControls({
   settings: Settings;
   onChange: (settings: Settings) => void;
 }) {
+  const searchHintId = useId();
   const update = (key: keyof Settings, value: string) =>
     onChange({ ...settings, [key]: value });
   return (
@@ -81,6 +83,39 @@ export function LayoutControls({
         HomeGrid's server then sends a request to each application's address
         about once a minute while the dashboard is open, and reports only online
         or offline.
+      </p>
+      <label>
+        Web search in quick search
+        <select
+          value={settings.web_search}
+          onChange={(e) => update("web_search", e.target.value)}
+        >
+          <option value="">Off</option>
+          {Object.entries(searchEngines).map(([id, engine]) => (
+            <option key={id} value={id}>
+              {engine.name}
+            </option>
+          ))}
+          <option value="custom">Custom address</option>
+        </select>
+      </label>
+      {settings.web_search === "custom" && (
+        <label>
+          Search address
+          <input
+            type="url"
+            value={settings.web_search_url}
+            maxLength={2048}
+            placeholder="https://searx.home.arpa/search?q=%s"
+            aria-describedby={searchHintId}
+            onChange={(e) => update("web_search_url", e.target.value)}
+          />
+        </label>
+      )}
+      <p className="field-hint" id={searchHintId}>
+        {settings.web_search === "custom"
+          ? "Use %s where the search terms go, for example with a self-hosted SearXNG."
+          : "Ctrl+K or Cmd+K then also offers to search the web in a new tab."}
       </p>
       <button
         type="button"

@@ -46,7 +46,8 @@ and optional local source builds.
   image, or use its browser favicon.
 - **Keep everyday tools close.** Favorite applications, duplicate an existing
   card, and find services with **Ctrl+K** or **Cmd+K**. Search includes names,
-  descriptions and categories.
+  descriptions and categories. Optionally, the same search continues on the web
+  with DuckDuckGo, Startpage, Brave Search, Google, Bing or your own SearXNG.
 - **Organize in place.** Turn on **Organize** to arrange cards and categories
   with drag-and-drop, keyboard sorting or explicit controls. Move cards directly
   between categories, including empty or collapsed groups, with persisted undo.

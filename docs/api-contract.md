@@ -9,8 +9,12 @@ by migration 002 and carried through create/update/export/import. Older backup
 files without the field remain supported. The default category can be renamed;
 its protected identity remains ID 1.
 
-Settings: `{title,theme,accent,density,radius,background,blur,show_descriptions,design,wallpaper,custom_accent,background_strength,content_width,columns,group_columns,card_style,status_checks}`.
-`status_checks` is a boolean, false when omitted.
+Settings: `{title,theme,accent,density,radius,background,blur,show_descriptions,design,wallpaper,custom_accent,background_strength,content_width,columns,group_columns,card_style,status_checks,web_search,web_search_url}`.
+`status_checks` is a boolean, false when omitted. `web_search` is empty (off),
+duckduckgo/startpage/brave/google/bing, or custom; `web_search_url` is empty or
+an HTTP(S) URL without credentials of at most 2048 bytes containing exactly one
+`%s`, required when `web_search` is custom. The browser opens web searches
+directly; the server never contacts a search engine.
 
 Authenticated GET `/api/status` returns `{enabled,statuses}`. While
 `status_checks` is false it contacts nothing and returns `{enabled:false,statuses:{}}`.

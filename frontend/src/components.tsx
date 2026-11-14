@@ -93,20 +93,36 @@ export function CommandPalette({
   apps,
   categories,
   onClose,
+  webSearch,
 }: {
   apps: Application[];
   categories: Category[];
   onClose: () => void;
+  /** Returns the web search address for a query while web search is on. */
+  webSearch?: (query: string) => string | undefined;
 }) {
   const [query, setQuery] = useState(""),
     [selected, setSelected] = useState(0);
   const results = filterApps(apps, categories, query);
-  const selectedIndex = Math.max(0, Math.min(selected, results.length - 1));
+  const searchUrl = webSearch?.(query);
+  // The web search is the last option after every matching application.
+  const optionCount = results.length + (searchUrl ? 1 : 0);
+  const selectedIndex = Math.max(0, Math.min(selected, optionCount - 1));
+  const activeId =
+    selectedIndex < results.length
+      ? results[selectedIndex]
+        ? "result-" + results[selectedIndex].id
+        : undefined
+      : "result-web";
+  const searchWeb = () => {
+    if (!searchUrl) return;
+    window.open(searchUrl, "_blank", "noopener,noreferrer");
+    onClose();
+  };
   useEffect(() => {
-    document
-      .getElementById("result-" + results[selectedIndex]?.id)
-      ?.scrollIntoView?.({ block: "nearest" });
-  }, [selectedIndex, query, apps]);
+    if (activeId)
+      document.getElementById(activeId)?.scrollIntoView?.({ block: "nearest" });
+  }, [activeId, query, apps]);
   return (
     <Modal
       title="Find an application"
@@ -121,11 +137,7 @@ export function CommandPalette({
           role="combobox"
           aria-expanded="true"
           aria-controls="search-results"
-          aria-activedescendant={
-            results[selectedIndex]
-              ? "result-" + results[selectedIndex].id
-              : undefined
-          }
+          aria-activedescendant={activeId}
           placeholder="Where would you like to go?"
           value={query}
           onChange={(e) => {
@@ -135,9 +147,7 @@ export function CommandPalette({
           onKeyDown={(e) => {
             if (e.key === "ArrowDown") {
               e.preventDefault();
-              setSelected((i) =>
-                Math.max(0, Math.min(i + 1, results.length - 1)),
-              );
+              setSelected((i) => Math.max(0, Math.min(i + 1, optionCount - 1)));
             }
             if (e.key === "ArrowUp") {
               e.preventDefault();
@@ -146,6 +156,8 @@ export function CommandPalette({
             if (e.key === "Enter" && results[selectedIndex]) {
               launch(results[selectedIndex]);
               onClose();
+            } else if (e.key === "Enter" && activeId === "result-web") {
+              searchWeb();
             }
           }}
         />
@@ -175,7 +187,29 @@ export function CommandPalette({
             <ArrowUpRight size={17} />
           </button>
         ))}
-        {results.length === 0 && (
+        {searchUrl && (
+          <button
+            role="option"
+            aria-selected={activeId === "result-web"}
+            id="result-web"
+            className={
+              "search-result web-search " +
+              (activeId === "result-web" ? "active" : "")
+            }
+            onMouseMove={() => setSelected(results.length)}
+            onClick={searchWeb}
+          >
+            <span className="web-search-icon" aria-hidden="true">
+              <Globe size={20} />
+            </span>
+            <span>
+              <strong>Search the web for “{query.trim()}”</strong>
+              <small>{new URL(searchUrl).hostname}</small>
+            </span>
+            <ArrowUpRight size={17} />
+          </button>
+        )}
+        {results.length === 0 && !searchUrl && (
           <div className="search-empty">
             <Search size={24} />
             <h3>No applications found</h3>
