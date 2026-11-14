@@ -64,6 +64,8 @@ and optional local source builds.
 - **Keep your configuration portable.** Export and import applications,
   categories and appearance as JSON, with an import preview and merge or replace
   choices. Use a full data-volume backup to preserve uploaded files and accounts.
+- **Install it like an app.** Add HomeGrid to a phone's home screen or install
+  it from the browser; it opens in its own window without browser controls.
 - **Manage it in one place.** Settings open as one sheet with sections for
   appearance, layout, backup, your account and the installed version. The
   account menu in the top bar jumps straight to each section.

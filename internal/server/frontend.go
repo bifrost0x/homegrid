@@ -39,9 +39,14 @@ func (s *Server) frontend(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Build the frontend with npm ci and npm run build in frontend/ before starting HomeGrid.", 503)
 		return
 	}
-	if path.Ext(p) == ".html" || path.Ext(p) == "" {
+	switch path.Ext(p) {
+	case ".webmanifest":
+		// The distroless image has no MIME database to resolve this extension.
+		w.Header().Set("Content-Type", "application/manifest+json")
 		w.Header().Set("Cache-Control", "no-cache")
-	} else {
+	case ".html", "":
+		w.Header().Set("Cache-Control", "no-cache")
+	default:
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 	}
 	http.ServeContent(w, r, p, time.Time{}, bytes.NewReader(b))

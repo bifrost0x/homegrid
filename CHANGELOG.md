@@ -64,6 +64,8 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
 - Tag-driven releases: versioned AMD64/ARM64 images with SBOM, build provenance
   and a vulnerability scan gate, GitHub releases with a pinned Compose file, a
   weekly rescan of the published image, and a project website on GitHub Pages.
+- Installable web app: a manifest, app icons and a favicon let browsers add
+  HomeGrid to the home screen or install it as a standalone window.
 - Cached gzip delivery for embedded JavaScript and CSS; authenticated APIs,
   backups and uploaded files remain uncompressed.
 
