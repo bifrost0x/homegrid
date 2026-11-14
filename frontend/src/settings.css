@@ -392,3 +392,25 @@
   top: -3px;
   border-top: 1px solid var(--line);
 }
+
+.about-support {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+.about-support > * {
+  justify-self: stretch;
+}
+.about-support > .text-button {
+  justify-self: start;
+}
+.about-support h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+}
+.about-support h4 svg,
+.about-support .about-links a > svg:first-child {
+  color: #c2414b;
+}

@@ -1969,3 +1969,51 @@ legend {
 .proxy-hint code {
   font-size: 12px;
 }
+
+/* Dismissible project note below the dashboard. */
+.credits {
+  margin: 56px auto 8px;
+  width: fit-content;
+  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 14px;
+  padding: 8px 8px 8px 16px;
+  border-radius: 18px;
+  font-size: 12px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  border: 1px solid var(--line);
+}
+.credits a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-weight: 650;
+  text-decoration: none;
+}
+.credits a:hover,
+.credits a:focus-visible {
+  text-decoration: underline;
+}
+.credits .brand-mark {
+  transform: scale(0.75);
+}
+.credits-love {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.credits-love svg {
+  color: #c2414b;
+}
+.credits .text-button {
+  font-size: 12px;
+}
+.credits-hide {
+  width: 28px;
+  height: 28px;
+}

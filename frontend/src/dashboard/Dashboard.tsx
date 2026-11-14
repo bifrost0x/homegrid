@@ -27,6 +27,7 @@ import {
 import {
   api,
   moveApplication,
+  webSearchName,
   webSearchUrl,
   type Application,
   type Session,
@@ -43,6 +44,7 @@ import { CategorySection } from "./CategorySection";
 import { DashboardContext, type DashboardState } from "./context";
 import { DashboardDialogs, type DialogState } from "./DashboardDialogs";
 import { Favorites } from "./Favorites";
+import { Credits } from "./Credits";
 import { Feedback } from "./Feedback";
 import { LogoSuggestionBanner, LogoSuggestionDialog } from "./LogoSuggestions";
 import {
@@ -232,6 +234,7 @@ export function Dashboard({ session }: { session: Session }) {
       organizing || apps.some((app) => app.category_id === category.id),
   );
   const wallpaper = backgroundImage(settings);
+  const searchEngine = webSearchName(settings);
   return (
     <div
       className={
@@ -366,7 +369,11 @@ export function Dashboard({ session }: { session: Session }) {
         <div className="toolbar" hidden={empty}>
           <button className="dashboard-search" onClick={() => setPalette(true)}>
             <Search size={19} />
-            <span>Find an application…</span>
+            <span>
+              {searchEngine
+                ? `Find an application or browse the web via ${searchEngine}…`
+                : "Find an application…"}
+            </span>
             <kbd>Ctrl K</kbd>
           </button>
           <button
@@ -466,6 +473,11 @@ export function Dashboard({ session }: { session: Session }) {
             }
           />
         )}
+        {!loading && (
+          <Credits
+            onSupport={() => setDialog({ kind: "settings", tab: "About" })}
+          />
+        )}
       </main>
       {palette && (
         <CommandPalette
@@ -473,6 +485,7 @@ export function Dashboard({ session }: { session: Session }) {
           categories={categories}
           onClose={() => setPalette(false)}
           webSearch={(query) => webSearchUrl(settings, query)}
+          webSearchName={searchEngine}
         />
       )}
       {reviewLogos && logoSuggestions.length > 0 && (

@@ -49,7 +49,11 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
 - Optional example cards that require configuration before launch.
 - Optional web search in quick search: DuckDuckGo, Startpage, Brave Search,
   Google, Bing or a custom address such as a self-hosted SearXNG. Off by
-  default; the browser opens the search in a new tab.
+  default; the browser opens the search in a new tab. The search field names
+  the selected engine.
+- A small note below the dashboard links to the project and to the support
+  options in Settings → About, which lists GitHub Sponsors, Buy Me a Coffee
+  and Patreon. The note can be hidden per browser and shown again from About.
 - Optional service status: when enabled in the layout settings, a dot after
   each application name shows whether its address answers. The server sends
   one HEAD request per address at most once a minute, follows no redirects,

@@ -10,6 +10,7 @@ interface HomeGridEvents {
   "homegrid:session-refreshed": Session;
   "homegrid:undo-available": undefined;
   "homegrid:configure-example": Application;
+  "homegrid:credits-changed": boolean;
 }
 type EventName = keyof HomeGridEvents;
 

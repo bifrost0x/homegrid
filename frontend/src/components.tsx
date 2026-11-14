@@ -94,12 +94,15 @@ export function CommandPalette({
   categories,
   onClose,
   webSearch,
+  webSearchName,
 }: {
   apps: Application[];
   categories: Category[];
   onClose: () => void;
   /** Returns the web search address for a query while web search is on. */
   webSearch?: (query: string) => string | undefined;
+  /** Name of the selected web search, shown in the description. */
+  webSearchName?: string;
 }) {
   const [query, setQuery] = useState(""),
     [selected, setSelected] = useState(0);
@@ -126,7 +129,11 @@ export function CommandPalette({
   return (
     <Modal
       title="Find an application"
-      description="Search your services by name, description, or category."
+      description={
+        webSearchName
+          ? `Search your services by name, description, or category, or browse the web via ${webSearchName}.`
+          : "Search your services by name, description, or category."
+      }
       onClose={onClose}
     >
       <div className="palette-search">

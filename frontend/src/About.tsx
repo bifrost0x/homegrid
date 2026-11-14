@@ -5,12 +5,18 @@ import {
   ExternalLink,
   Code,
   Globe,
+  Heart,
   ShieldCheck,
   Tag,
 } from "lucide-react";
+import { on } from "./events";
 import { api } from "./lib";
-
-const repository = "https://github.com/bifrost0x/homegrid";
+import {
+  creditsHidden,
+  donations,
+  repository,
+  setCreditsHidden,
+} from "./project";
 const links = [
   {
     label: "Website",
@@ -79,6 +85,8 @@ export function About() {
       current = false;
     };
   }, []);
+  const [noteHidden, setNoteHidden] = useState(creditsHidden);
+  useEffect(() => on("homegrid:credits-changed", setNoteHidden), []);
   const commit = health.data?.commit ?? "";
   // Release builds carry the full commit hash; local builds a placeholder.
   const shortCommit = /^[0-9a-f]{40}$/.test(commit) ? commit.slice(0, 12) : "";
@@ -132,6 +140,39 @@ export function About() {
           </li>
         ))}
       </ul>
+      <section className="about-support" aria-labelledby="about-support-title">
+        <h4 id="about-support-title">
+          <Heart size={16} aria-hidden="true" fill="currentColor" />
+          Support HomeGrid
+        </h4>
+        <p className="about-lead">
+          HomeGrid is free and open source, made for the homelab community. If
+          it is useful to you, a donation helps keep it maintained.
+        </p>
+        <ul className="about-links">
+          {donations.map(({ label, hint, href }) => (
+            <li key={label}>
+              <a href={href} target="_blank" rel="noopener noreferrer">
+                <Heart size={18} />
+                <span>
+                  <strong>{label}</strong>
+                  <small>{hint}</small>
+                </span>
+                <ExternalLink size={14} aria-hidden="true" />
+              </a>
+            </li>
+          ))}
+        </ul>
+        {noteHidden && (
+          <button
+            type="button"
+            className="text-button"
+            onClick={() => setCreditsHidden(false)}
+          >
+            Show the HomeGrid note below the dashboard again
+          </button>
+        )}
+      </section>
     </div>
   );
 }
