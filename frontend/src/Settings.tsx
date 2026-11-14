@@ -22,6 +22,7 @@ import { applyPreset } from "./themes";
 import { LayoutControls } from "./ThemeControls";
 import { AppearanceEditor } from "./AppearanceEditor";
 import { About } from "./About";
+import { UnusedUploads } from "./Maintenance";
 import type { ForeignFormat } from "./foreignImport";
 
 export type SettingsTab =
@@ -459,6 +460,7 @@ export function SettingsPanel({
               </button>
             </div>
           )}
+          <UnusedUploads />
         </section>
         <div
           role="tabpanel"

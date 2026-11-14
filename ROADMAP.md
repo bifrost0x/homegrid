@@ -26,9 +26,6 @@ promise; issues, pull requests and release notes are the source of truth.
 - **Offline shell** for the installed web app, without caching dashboard data
   beyond the session.
 - **Automatic group layout** that places small categories side by side.
-- **Reverse proxy hint** when requests arrive through an untrusted proxy, since
-  rate limits then apply to the proxy address.
-- **Unused upload cleanup** with an explicit review step.
 
 ## Out of scope for now
 

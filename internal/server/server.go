@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -39,6 +40,10 @@ type Server struct {
 	static        map[string]staticAsset
 	icons         *icondiscovery.Fetcher
 	status        *status.Checker
+	// uploadsMu serializes upload cleanups.
+	uploadsMu sync.Mutex
+	// proxyWarning logs an untrusted forwarding proxy once per process.
+	proxyWarning sync.Once
 }
 
 func New(cfg Config) (*Server, error) {
@@ -76,6 +81,11 @@ func New(cfg Config) (*Server, error) {
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.securityHeaders(w, r)
 	defer s.recoverPanic(w, r)
+	if forwarded(r) && !s.trusted(remoteIP(r)) {
+		s.proxyWarning.Do(func() {
+			s.cfg.Logger.Warn("request forwarded by an untrusted proxy; rate limits apply to the proxy address. Add it to HOMEGRID_TRUSTED_PROXIES if you control it.", "proxy", remoteIP(r))
+		})
+	}
 	s.mux.ServeHTTP(w, r)
 }
 func (s *Server) routes() {
@@ -104,6 +114,9 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/settings", s.protected(s.settings))
 	s.mux.HandleFunc("PATCH /api/settings", s.protected(s.settings))
 	s.mux.HandleFunc("POST /api/uploads", s.protected(s.upload))
+	s.mux.HandleFunc("GET /api/uploads/unused", s.protected(s.listUnusedUploads))
+	s.mux.HandleFunc("POST /api/uploads/cleanup", s.protected(s.cleanUploads))
+	s.mux.HandleFunc("GET /api/diagnostics", s.protected(s.diagnostics))
 	s.mux.HandleFunc("POST /api/icons/discover", s.protected(s.discoverIcon))
 	s.mux.HandleFunc("GET /uploads/{name}", s.protected(s.serveUpload))
 	s.mux.HandleFunc("GET /api/export", s.protected(s.export))

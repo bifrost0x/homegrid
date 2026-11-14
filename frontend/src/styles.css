@@ -1920,3 +1920,52 @@ legend {
   color: var(--accent);
   background: var(--accent-soft);
 }
+
+/* Unused image review in the backup settings. */
+.unused-uploads {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 28px;
+}
+.unused-review {
+  align-self: stretch;
+  padding: 15px;
+  background: var(--surface-alt);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13px;
+}
+.unused-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  align-self: stretch;
+}
+.unused-grid img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: block;
+}
+.proxy-hint {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--amber-soft);
+  color: var(--text);
+  font-size: 13px;
+}
+.proxy-hint code {
+  font-size: 12px;
+}

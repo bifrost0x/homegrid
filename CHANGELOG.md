@@ -77,6 +77,12 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   weekly rescan of the published image, and a project website on GitHub Pages.
 - Installable web app: a manifest, app icons and a favicon let browsers add
   HomeGrid to the home screen or install it as a standalone window.
+- Unused image cleanup in the backup settings: review uploaded icons and
+  backgrounds that nothing uses anymore, then delete them after confirming.
+  Images referenced by a pending undo and recent uploads are kept.
+- A hint in Settings → About and one log warning when requests arrive through
+  a proxy outside `HOMEGRID_TRUSTED_PROXIES`, where rate limits would count
+  every visitor as the proxy.
 - Cached gzip delivery for embedded JavaScript and CSS; authenticated APIs,
   backups and uploaded files remain uncompressed.
 

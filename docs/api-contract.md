@@ -65,6 +65,14 @@ the UI does not navigate to them. `service:<id>` icons accept only the forty loc
 catalog IDs, including `service:jellyfin` and `service:nextcloud`.
 
 POST /api/icons/discover `{url}` asks the service at that HTTP(S) URL for its advertised icon (page links, web manifest, `/apple-touch-icon.png`, `/favicon.ico`), stores a re-encoded PNG and returns `{url, title}` (201); `url` works like an upload path and `title` is the page title (may be empty). Errors: 400 invalid URL, 404 `not_found` when no usable icon exists, 502 `unreachable` when the service cannot be contacted or its address is refused.
+Authenticated GET `/api/uploads/unused` returns `{files:[{name,url,size,modified}]}`:
+stored images older than one hour that no application icon, settings value or
+undo record references. CSRF-protected POST `/api/uploads/cleanup`
+`{names:[...],confirm:true}` deletes the listed names that are still unused at
+that moment, ignores everything else and returns `{deleted}`.
+Authenticated GET `/api/diagnostics` returns `{untrusted_proxy}`: the peer
+address when the request carries forwarding headers from a peer outside
+`HOMEGRID_TRUSTED_PROXIES`, otherwise empty.
 POST /api/uploads multipart form field file returns `{url}`. PNG/JPEG/WebP <=5MB, max 16 million pixels, authenticated serving /uploads/. Icons: `builtin:server`, `builtin:cloud`, `builtin:database`, `builtin:film`, `builtin:music`, `builtin:home`, `builtin:shield`, `builtin:code`, `builtin:globe`, `builtin:folder`, `builtin:network`, `builtin:hard-drive`; `favicon` for browser-only URL-origin favicon; or upload URL. No arbitrary icon URL.
 
 GET /api/export returns `{version:1,apps:[...],categories:[...],settings:{...}}`. POST /api/import/preview body is raw backup JSON or Homarr-derived `{apps:[{name,url,category,icon,description}]}` (`description` optional; the frontend converts Homepage, Homer and Dashy YAML into this list); returns `{apps:number,categories:number,duplicates:number}`. POST /api/import/apply body `{data:<same parsed JSON>,mode:"merge"|"replace",confirm:true}`; returns `{imported:number}`. Replace preserves admin and sessions. Merge skips duplicate normalized URLs.
