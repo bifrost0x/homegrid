@@ -9,7 +9,12 @@ import {
   Star,
   Trash2,
 } from "lucide-react";
-import { appHostname, isExampleApp, type Application } from "../lib";
+import {
+  appHostname,
+  isExampleApp,
+  type Application,
+  type ServiceState,
+} from "../lib";
 import { Icon } from "../components";
 import { CardMenu } from "./CardMenu";
 import { useDashboard } from "./context";
@@ -23,7 +28,7 @@ export function AppCard({
   first: boolean;
   last: boolean;
 }) {
-  const { busy, organizing, descriptions, categories, applications } =
+  const { busy, organizing, descriptions, statuses, categories, applications } =
     useDashboard();
   const sortable = useSortable({
     id: "app-" + app.id,
@@ -69,7 +74,12 @@ export function AppCard({
       >
         <Icon app={app} />
         <span className="app-copy">
-          <strong>{app.name}</strong>
+          <strong>
+            {app.name}
+            {statuses && !example && (
+              <StatusDot state={statuses[String(app.id)] ?? "unknown"} />
+            )}
+          </strong>
           {example ? (
             <small className="example-label">Example · Add your URL</small>
           ) : (
@@ -166,6 +176,25 @@ export function AppCard({
         </select>
       )}
     </article>
+  );
+}
+
+const stateLabels: Record<ServiceState, string> = {
+  up: "Online",
+  down: "Offline",
+  unknown: "Status unknown",
+};
+
+function StatusDot({ state }: { state: ServiceState }) {
+  return (
+    <>
+      <span
+        className={"status-dot " + state}
+        title={stateLabels[state]}
+        aria-hidden="true"
+      />
+      <span className="visually-hidden">, {stateLabels[state]}</span>
+    </>
   );
 }
 

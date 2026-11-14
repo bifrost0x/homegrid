@@ -63,6 +63,8 @@ type Settings struct {
 	Columns            string `json:"columns"`
 	GroupColumns       string `json:"group_columns"`
 	CardStyle          string `json:"card_style"`
+	// StatusChecks lets the server check whether application URLs answer.
+	StatusChecks bool `json:"status_checks"`
 }
 
 func Open(dir string) (*Store, error) {

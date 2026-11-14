@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"github.com/bifrost0x/homegrid/internal/icondiscovery"
+	"github.com/bifrost0x/homegrid/internal/status"
 	"github.com/bifrost0x/homegrid/internal/store"
 	"github.com/bifrost0x/homegrid/web"
 	"io/fs"
@@ -24,6 +25,9 @@ type Config struct {
 	// IconPolicy limits which addresses icon discovery may contact; nil uses
 	// icondiscovery.DefaultPolicy. Tests use it to reach local test servers.
 	IconPolicy icondiscovery.AddressPolicy
+	// StatusPolicy does the same for status checks; nil uses
+	// icondiscovery.DefaultPolicy.
+	StatusPolicy status.AddressPolicy
 }
 type Server struct {
 	cfg           Config
@@ -34,6 +38,7 @@ type Server struct {
 	assets        fs.FS
 	static        map[string]staticAsset
 	icons         *icondiscovery.Fetcher
+	status        *status.Checker
 }
 
 func New(cfg Config) (*Server, error) {
@@ -59,6 +64,11 @@ func New(cfg Config) (*Server, error) {
 		policy = icondiscovery.DefaultPolicy
 	}
 	s.icons = icondiscovery.New(policy)
+	statusPolicy := cfg.StatusPolicy
+	if statusPolicy == nil {
+		statusPolicy = status.AddressPolicy(icondiscovery.DefaultPolicy)
+	}
+	s.status = status.New(statusPolicy)
 	s.routes()
 	s.removeStaleUploadTemps(time.Now().Add(-time.Hour))
 	return s, nil
@@ -90,6 +100,7 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/undo", s.protected(s.pendingUndo))
 	s.mux.HandleFunc("POST /api/undo", s.protected(s.undo))
 	s.mux.HandleFunc("POST /api/examples", s.protected(s.examples))
+	s.mux.HandleFunc("GET /api/status", s.protected(s.serviceStatus))
 	s.mux.HandleFunc("GET /api/settings", s.protected(s.settings))
 	s.mux.HandleFunc("PATCH /api/settings", s.protected(s.settings))
 	s.mux.HandleFunc("POST /api/uploads", s.protected(s.upload))

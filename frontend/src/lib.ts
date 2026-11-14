@@ -36,6 +36,12 @@ export interface Settings {
   columns: "auto" | "2" | "3" | "4" | "5" | "6";
   group_columns: "1" | "2" | "3";
   card_style: "cards" | "tiles" | "list";
+  status_checks: boolean;
+}
+export type ServiceState = "up" | "down" | "unknown";
+export interface ServiceStatus {
+  enabled: boolean;
+  statuses: Record<string, ServiceState>;
 }
 export interface Session {
   setup_required: boolean;
@@ -72,6 +78,7 @@ export const defaults: Settings = {
   columns: "auto",
   group_columns: "1",
   card_style: "cards",
+  status_checks: false,
 };
 let csrf = "";
 export function setSession(session: Session) {

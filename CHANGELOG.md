@@ -47,6 +47,10 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   card menu; the favorite toggle appears on hover or focus and stays visible
   once set. The dashboard heading summarizes applications and categories.
 - Optional example cards that require configuration before launch.
+- Optional service status: when enabled in the layout settings, a dot after
+  each application name shows whether its address answers. The server sends
+  one HEAD request per address at most once a minute, follows no redirects,
+  refuses loopback and link-local addresses and keeps no history.
 - In-dashboard Organize mode with drag-and-drop, keyboard and explicit sorting
   controls; empty categories are hidden during normal use.
 - Appearance settings in clear layers: twenty presets, light/dark/system mode,

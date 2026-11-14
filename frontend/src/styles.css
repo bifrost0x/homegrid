@@ -1885,3 +1885,26 @@ legend {
     margin-left: 0;
   }
 }
+
+/* Service status: a small dot after the application name. */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-left: 7px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--muted);
+  opacity: 0.55;
+}
+.status-dot.up {
+  background: #2f9d58;
+  opacity: 1;
+}
+/* Offline is a ring, so the states differ by shape as well as color. */
+.status-dot.down {
+  box-sizing: border-box;
+  background: transparent;
+  border: 2px solid #d1453b;
+  opacity: 1;
+}

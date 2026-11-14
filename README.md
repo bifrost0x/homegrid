@@ -105,13 +105,16 @@ the database and uploads.
 
 Bundled icons and backgrounds work offline. Optional browser favicon discovery
 requests `/favicon.ico` directly from the service origin; browser access or
-certificate restrictions can cause a fallback icon. HomeGrid does not monitor
-services. Its backend contacts a service in exactly one case: when you add an
-application whose logo is not bundled, or press **From service**, it asks that
-URL once for the icon the service advertises and stores a re-encoded copy. Only
-the administrator can trigger this; loopback, link-local (including cloud
-metadata) and multicast addresses are refused at connect time, certificates are
-verified, and responses are size- and time-limited.
+certificate restrictions can cause a fallback icon. Its backend contacts a
+service in two cases only. When you add an application whose logo is not
+bundled, or press **From service**, it asks that URL once for the icon the
+service advertises and stores a re-encoded copy. And if you turn on
+**Show whether services are online** in the layout settings, it sends one
+`HEAD` request per application address about once a minute while a dashboard
+is open; it follows no redirects, reads no response and keeps no history.
+Both are off unless the administrator acts; loopback, link-local (including
+cloud metadata) and multicast addresses are refused at connect time,
+certificates are verified, and requests are size- and time-limited.
 
 HomeGrid has one local administrator. Use an HTTPS reverse proxy when accessing
 it over an untrusted network and enable secure cookies. There is no multi-user

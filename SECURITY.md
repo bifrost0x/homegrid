@@ -39,9 +39,21 @@ and the current security boundaries.
 
 ## Outbound requests
 
-HomeGrid sends no telemetry and has no cloud dependency. The only outbound
-requests from the server are icon lookups at a service URL the administrator
-enters (`POST /api/icons/discover`). They are authenticated and CSRF-protected,
+HomeGrid sends no telemetry and has no cloud dependency. The server makes
+outbound requests in two cases only, both to service URLs the administrator
+entered.
+
+Optional status checks (`GET /api/status`) are off by default. Once the
+administrator enables them, each application URL receives one `HEAD` request
+without cookies or credentials at most once a minute while a dashboard asks
+for status. Checks use the same address policy as icon lookups, follow no
+redirects, never read a response body, verify certificates (a certificate
+that fails verification still shows that the service answers), stop after four
+seconds per URL and fifteen seconds per sweep, and run at most eight at a
+time. Only up, down or unknown is reported, and no history is stored.
+
+Icon lookups happen at a service URL the administrator enters
+(`POST /api/icons/discover`). They are authenticated and CSRF-protected,
 limited to HTTP(S) without credentials, refuse loopback, link-local, multicast,
 broadcast and unspecified addresses after DNS resolution (so DNS rebinding cannot
 redirect them), follow at most three redirects, ignore proxy environment

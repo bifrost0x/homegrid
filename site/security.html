@@ -42,7 +42,7 @@
       <h3>Restrictive browser policy</h3>
       <p>Responses carry a Content Security Policy that only allows scripts and styles from HomeGrid itself, deny framing and send no referrer. Uploads are limited to validated PNG, JPEG and WebP images, and icons are limited to bundled IDs, uploads or the service's own favicon; arbitrary icon URLs are rejected.</p>
       <h3>Nothing leaves your network</h3>
-      <p>HomeGrid has no telemetry, analytics or cloud dependency. Bundled logos, icons and backgrounds work offline. The backend never monitors your services. It contacts a service only when you add one whose logo is not bundled, or press From service: it asks that URL once for its icon, refusing loopback, link-local and multicast addresses at connect time, verifying certificates and storing a re-encoded copy. The optional browser favicon is requested by your browser directly from the service origin.</p>
+      <p>HomeGrid has no telemetry, analytics or cloud dependency. Bundled logos, icons and backgrounds work offline. The backend contacts a service only when you add one whose logo is not bundled, or press From service: it asks that URL once for its icon, refusing loopback, link-local and multicast addresses at connect time, verifying certificates and storing a re-encoded copy. Optional status checks, off by default, send one HEAD request per application address at most once a minute under the same address rules, follow no redirects, read no response and keep no history. The optional browser favicon is requested by your browser directly from the service origin.</p>
     </section>
 
     <section class="guide-section" id="boundaries">

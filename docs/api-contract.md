@@ -9,7 +9,15 @@ by migration 002 and carried through create/update/export/import. Older backup
 files without the field remain supported. The default category can be renamed;
 its protected identity remains ID 1.
 
-Settings: `{title,theme,accent,density,radius,background,blur,show_descriptions,design,wallpaper,custom_accent,background_strength,content_width,columns,group_columns,card_style}`.
+Settings: `{title,theme,accent,density,radius,background,blur,show_descriptions,design,wallpaper,custom_accent,background_strength,content_width,columns,group_columns,card_style,status_checks}`.
+`status_checks` is a boolean, false when omitted.
+
+Authenticated GET `/api/status` returns `{enabled,statuses}`. While
+`status_checks` is false it contacts nothing and returns `{enabled:false,statuses:{}}`.
+Otherwise `statuses` maps each application ID (as a string) to `up`, `down` or
+`unknown`. Each URL is checked with one HEAD request, cached for one minute;
+gateway errors (502, 503, 504) and connection failures are `down`, refused
+addresses, unsupported URLs, example cards and unfinished checks are `unknown`.
 Theme is system/light/dark; accent sage/blue/amber/rose/violet/cyan; density
 comfortable/compact; radius rounded/square; background empty or a validated
 `/uploads/id.ext` image path; blur and show_descriptions are booleans.

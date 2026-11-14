@@ -67,6 +67,21 @@ export function LayoutControls({
           <option value="list">List · one application per row</option>
         </select>
       </label>
+      <label className="check-row">
+        <input
+          type="checkbox"
+          checked={settings.status_checks}
+          onChange={(e) =>
+            onChange({ ...settings, status_checks: e.target.checked })
+          }
+        />
+        Show whether services are online
+      </label>
+      <p className="field-hint">
+        HomeGrid's server then sends a request to each application's address
+        about once a minute while the dashboard is open, and reports only online
+        or offline.
+      </p>
       <button
         type="button"
         className="text-button layout-reset"

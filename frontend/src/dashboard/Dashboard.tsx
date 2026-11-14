@@ -168,6 +168,7 @@ export function Dashboard({ session }: { session: Session }) {
     busy,
     organizing,
     descriptions: settings.show_descriptions,
+    statuses: data.statuses,
     categories,
     applications: {
       edit: (app) => setDialog({ kind: "app", app }),

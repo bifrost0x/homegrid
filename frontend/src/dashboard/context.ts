@@ -1,5 +1,5 @@
 import { createContext, useContext } from "react";
-import type { Application, Category } from "../lib";
+import type { Application, Category, ServiceState } from "../lib";
 
 export interface ApplicationActions {
   edit: (app: Application) => void;
@@ -21,6 +21,8 @@ export interface DashboardState {
   busy: boolean;
   organizing: boolean;
   descriptions: boolean;
+  /** Reachability per application ID while status checks are enabled. */
+  statuses?: Record<string, ServiceState>;
   categories: Category[];
   applications: ApplicationActions;
   categoryActions: CategoryActions;
