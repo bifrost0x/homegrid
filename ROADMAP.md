@@ -14,13 +14,6 @@ promise; issues, pull requests and release notes are the source of truth.
   contacts service URLs for icon lookups and opt-in status checks.
 - Work equally well on phones, tablets and large screens.
 
-## Now: first public release
-
-- Publish 0.1.0 through the tag-driven release workflow with versioned
-  AMD64/ARM64 images, SBOM, provenance and a GitHub release
-  ([docs/releasing.md](docs/releasing.md)).
-- Launch the project website from `site/` on GitHub Pages.
-
 ## Next candidates
 
 - **Offline shell** for the installed web app, without caching dashboard data

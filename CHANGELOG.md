@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 (prepared)
+## 0.1.0 - 2026-11-14
 
 The first HomeGrid release brings a self-hosted application launcher with one
 local administrator, a Go backend, an embedded React frontend and SQLite storage.
@@ -86,5 +86,3 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   every visitor as the proxy.
 - Cached gzip delivery for embedded JavaScript and CSS; authenticated APIs,
   backups and uploaded files remain uncompressed.
-
-This entry describes the prepared 0.1.0 source. Publication is pending.
