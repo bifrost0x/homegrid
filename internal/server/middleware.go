@@ -114,6 +114,10 @@ func (s *Server) protected(next http.HandlerFunc) http.HandlerFunc {
 			fail(w, 403, "csrf", "Refresh the page and try again")
 			return
 		}
+		// Auth endpoints issue or clear the session cookie themselves.
+		if !strings.HasPrefix(r.URL.Path, "/api/auth/") {
+			s.extend(w, r, v)
+		}
 		next(w, r.WithContext(context.WithValue(r.Context(), identityKey{}, v)))
 	}
 }

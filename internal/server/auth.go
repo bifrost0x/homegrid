@@ -16,7 +16,11 @@ const preauthCookie = "homegrid_csrf"
 // dummyHash keeps failed logins before setup as slow as a real verification.
 const dummyHash = "$argon2id$v=19$m=65536,t=2,p=2$MDEyMzQ1Njc4OWFiY2RlZg$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
 
-type identity struct{ Username, CSRF, Hash string }
+type identity struct {
+	Username, CSRF, Hash string
+	token                string
+	expiresAt            int64
+}
 type identityKey struct{}
 
 func (s *Server) lookup(r *http.Request) (identity, bool) {
@@ -24,10 +28,30 @@ func (s *Server) lookup(r *http.Request) (identity, bool) {
 	if e != nil || len(c.Value) != 64 {
 		return identity{}, false
 	}
-	var v identity
-	v.Hash = auth.TokenHash(c.Value)
-	v.Username, v.CSRF, e = s.cfg.Store.SessionByTokenHash(r.Context(), v.Hash, time.Now().Unix())
-	return v, e == nil
+	v := identity{Hash: auth.TokenHash(c.Value), token: c.Value}
+	info, e := s.cfg.Store.SessionInfo(r.Context(), v.Hash, time.Now().Unix())
+	if e != nil {
+		return identity{}, false
+	}
+	v.Username, v.CSRF, v.expiresAt = info.Username, info.CSRF, info.ExpiresAt
+	return v, true
+}
+
+// extend slides an authenticated session forward and renews its cookie. A
+// failed refresh keeps the current, still valid session.
+func (s *Server) extend(w http.ResponseWriter, r *http.Request, v identity) {
+	now := time.Now().Unix()
+	if v.expiresAt-now > store.SessionIdleTimeout-store.SessionRefreshInterval {
+		return
+	}
+	expires, changed, e := s.cfg.Store.RefreshSession(r.Context(), v.Hash, now)
+	if e != nil {
+		s.cfg.Logger.Warn("session refresh failed", "error", e)
+		return
+	}
+	if changed && expires > now {
+		s.cookie(w, sessionCookie, v.token, int(expires-now))
+	}
 }
 func (s *Server) cookie(w http.ResponseWriter, name, value string, maxAge int) {
 	http.SetCookie(w, &http.Cookie{Name: name, Value: value, Path: "/", HttpOnly: true, Secure: s.cfg.SecureCookie, SameSite: http.SameSiteStrictMode, MaxAge: maxAge})
@@ -39,6 +63,7 @@ func (s *Server) session(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if v, ok := s.lookup(r); ok {
+		s.extend(w, r, v)
 		write(w, 200, map[string]any{"setup_required": required, "authenticated": true, "username": v.Username, "csrf_token": v.CSRF})
 		return
 	}
@@ -136,7 +161,7 @@ func (s *Server) newSession(w http.ResponseWriter, r *http.Request, username str
 		s.result(w, 0, nil, e)
 		return
 	}
-	s.cookie(w, sessionCookie, token, 86400)
+	s.cookie(w, sessionCookie, token, int(store.SessionIdleTimeout))
 	s.cookie(w, preauthCookie, "", -1)
 	write(w, status, map[string]any{"setup_required": false, "authenticated": true, "username": username, "csrf_token": csrf})
 }
@@ -190,7 +215,7 @@ func (s *Server) changePassword(w http.ResponseWriter, r *http.Request) {
 		s.result(w, 0, nil, e)
 		return
 	}
-	s.cookie(w, sessionCookie, token, 86400)
+	s.cookie(w, sessionCookie, token, int(store.SessionIdleTimeout))
 	s.cookie(w, preauthCookie, "", -1)
 	write(w, 200, map[string]any{"setup_required": false, "authenticated": true, "username": session.Username, "csrf_token": csrf})
 }

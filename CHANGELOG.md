@@ -7,6 +7,9 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
 
 - First-run administrator creation with no default credentials; password changes
   verify the current password and sign out other sessions.
+- Sessions stay signed in while the dashboard is in use: each visit extends the
+  session to seven days, up to 30 days after sign-in. Then HomeGrid asks for the
+  password again.
 - Application and category management, persistent favorites, duplication, and
   keyboard command search across names, descriptions and categories.
 - Drag cards directly between categories, including empty or collapsed groups,

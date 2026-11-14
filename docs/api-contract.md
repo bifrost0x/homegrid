@@ -29,6 +29,10 @@ Unsupported enum values or custom accent formats return validation errors before
 writes; uploaded backgrounds remain subject to the existing path validation.
 
 GET /api/auth/session returns `{setup_required,authenticated,username,csrf_token}`. When authenticated csrf_token is supplied and mutations include X-CSRF-Token. Login/setup POST `{username,password}` returns same session object and sets cookie. Public session query returns a pre-auth CSRF token cookie and response; setup/login must send X-CSRF-Token too. All browser requests use same-origin credentials. POST logout requires token.
+Sessions slide: an authenticated request that is not an `/api/auth/` mutation
+extends the session to seven days from now, at most 30 days after sign-in, and
+renews the cookie. Expiry writes happen at most once per hour per session.
+Sessions older than 30 days are invalid regardless of their stored expiry.
 
 CRUD /api/apps and /api/categories as specified. PUT /api/apps/reorder and /api/categories/reorder body `{ids:[...]}` containing ALL IDs of that resource. Application reorder also accepts optional `move:{id,category_id}` to move one application to an existing category and assign the complete order atomically with one persisted undo record. Invalid/incomplete IDs or unknown categories return 400 without changing state. Ordinary app edits can still change category via PATCH. Category collapsed saved by PATCH. GET/PATCH /api/settings.
 

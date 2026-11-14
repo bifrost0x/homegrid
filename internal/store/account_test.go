@@ -169,7 +169,7 @@ func TestCreateSessionReplacesAndPurges(t *testing.T) {
 	var csrf string
 	var expires int64
 	s.DB.QueryRow("SELECT csrf_token,expires_at FROM sessions WHERE token_hash='new-session'").Scan(&csrf, &expires)
-	if csrf != "new-csrf" || expires != now+86400 {
+	if csrf != "new-csrf" || expires != now+SessionIdleTimeout {
 		t.Fatal(csrf, expires)
 	}
 	if e = s.DeleteSession(ctx, "new-session"); e != nil {
@@ -203,5 +203,39 @@ func TestCreateSessionEvictsOldestBeyondCap(t *testing.T) {
 	}
 	if e := s.DB.QueryRow("SELECT 1 FROM sessions WHERE token_hash='newest'").Scan(&n); e != nil {
 		t.Fatal("new session evicted", e)
+	}
+}
+
+func TestRefreshSessionSlidesWithinMaximumLifetime(t *testing.T) {
+	s := passwordStore(t)
+	ctx := context.Background()
+	now := time.Now().Unix()
+	s.DB.Exec("UPDATE sessions SET created_at=?,expires_at=?", now-3600, now+60)
+	expires, changed, e := s.RefreshSession(ctx, "old-session", now)
+	if e != nil || !changed || expires != now+SessionIdleTimeout {
+		t.Fatal("session did not slide", expires, changed, e)
+	}
+	// A second use within the refresh interval does not write again.
+	if expires, changed, e = s.RefreshSession(ctx, "old-session", now+10); e != nil || changed || expires != now+SessionIdleTimeout {
+		t.Fatal("refresh was not throttled", expires, changed, e)
+	}
+	// Near the hard limit the expiry is capped at the maximum lifetime.
+	created := now - SessionMaxLifetime + 600
+	s.DB.Exec("UPDATE sessions SET created_at=?,expires_at=?", created, now+60)
+	if expires, changed, e = s.RefreshSession(ctx, "old-session", now); e != nil || !changed || expires != created+SessionMaxLifetime {
+		t.Fatal("maximum lifetime not enforced", expires, changed, e)
+	}
+	// Past the maximum lifetime the session is invalid even with a future expiry.
+	s.DB.Exec("UPDATE sessions SET created_at=?,expires_at=?", now-SessionMaxLifetime, now+3600)
+	if _, _, e = s.SessionByTokenHash(ctx, "old-session", now); !errors.Is(e, sql.ErrNoRows) {
+		t.Fatal("session beyond maximum lifetime returned", e)
+	}
+	if _, changed, _ = s.RefreshSession(ctx, "old-session", now); changed {
+		t.Fatal("session beyond maximum lifetime was extended")
+	}
+	// Expired sessions are never revived.
+	s.DB.Exec("UPDATE sessions SET created_at=?,expires_at=?", now-100, now)
+	if _, changed, _ = s.RefreshSession(ctx, "old-session", now); changed {
+		t.Fatal("expired session was revived")
 	}
 }

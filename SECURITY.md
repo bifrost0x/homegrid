@@ -29,6 +29,8 @@ allows. There is no guaranteed response deadline or formal security certificatio
 
 Use HTTPS at a trusted reverse proxy and enable secure cookies when serving over
 HTTPS. Protect access to the dashboard, its data volume, backups, and exports.
+Sessions expire after seven days without use and always 30 days after sign-in;
+changing the password signs out every other session.
 Keep dependencies and the container image updated. Do not publish real `.env`
 files, database files, or private screenshots in issues or pull requests.
 
