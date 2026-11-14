@@ -74,8 +74,8 @@ and optional local source builds.
 - **Support the project.** HomeGrid is free and open source. Settings → About
   links to [GitHub Sponsors](https://github.com/sponsors/bifrost0x),
   [Buy Me a Coffee](https://buymeacoffee.com/bifrost0x) and
-  [Patreon](https://www.patreon.com/bifrost0x); the small note below the
-  dashboard can be hidden.
+  [Patreon](https://www.patreon.com/bifrost0x); the slim note at the bottom
+  of the dashboard can be hidden.
 - **Manage it in one place.** Settings open as one sheet with sections for
   appearance, layout, backup, your account and the installed version. The
   account menu in the top bar jumps straight to each section.

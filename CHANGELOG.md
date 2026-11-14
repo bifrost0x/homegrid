@@ -51,7 +51,7 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   Google, Bing or a custom address such as a self-hosted SearXNG. Off by
   default; the browser opens the search in a new tab. The search field names
   the selected engine.
-- A small note below the dashboard links to the project and to the support
+- A slim note fixed to the bottom of the dashboard links to the project and to the support
   options in Settings → About, which lists GitHub Sponsors, Buy Me a Coffee
   and Patreon. The note can be hidden per browser and shown again from About.
 - Optional service status: when enabled in the layout settings, a dot after

@@ -1970,50 +1970,76 @@ legend {
   font-size: 12px;
 }
 
-/* Dismissible project note below the dashboard. */
+/* Dismissible project note, fixed to the bottom edge of the window. */
 .credits {
-  margin: 56px auto 8px;
-  width: fit-content;
-  max-width: 100%;
+  position: fixed;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  z-index: 5;
+  max-width: calc(100vw - 24px);
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: 6px 14px;
-  padding: 8px 8px 8px 16px;
-  border-radius: 18px;
-  font-size: 12px;
+  gap: 8px;
+  padding: 3px 3px 3px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
   color: var(--muted);
-  background: color-mix(in srgb, var(--surface) 72%, transparent);
-  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  backdrop-filter: blur(8px);
 }
 .credits a {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   color: var(--text);
   font-weight: 650;
   text-decoration: none;
 }
 .credits a:hover,
-.credits a:focus-visible {
+.credits a:focus-visible,
+.credits .text-button:hover,
+.credits .text-button:focus-visible {
   text-decoration: underline;
 }
 .credits .brand-mark {
-  transform: scale(0.75);
+  transform: scale(0.55);
+  margin: -4px;
 }
 .credits-love {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .credits-love svg {
   color: #c2414b;
+  flex: none;
 }
 .credits .text-button {
-  font-size: 12px;
+  font-size: 11px;
+  padding: 0;
 }
-.credits-hide {
-  width: 28px;
-  height: 28px;
+.credits-hide.icon-button {
+  width: 24px;
+  height: 24px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+}
+/* Keep the last row and notifications clear of the note. */
+.main-content:has(> .credits) {
+  padding-bottom: 48px;
+}
+body:has(.credits) .feedback {
+  bottom: 44px;
+}
+@media (max-width: 520px) {
+  .credits-love {
+    display: none;
+  }
 }

@@ -27,8 +27,13 @@ export function Credits({ onSupport }: { onSupport: () => void }) {
         Made with <Heart size={13} aria-hidden="true" fill="currentColor" />
         <span className="visually-hidden">love</span> for the homelab community
       </span>
-      <button type="button" className="text-button" onClick={onSupport}>
-        Support HomeGrid
+      <button
+        type="button"
+        className="text-button"
+        aria-label="Support HomeGrid"
+        onClick={onSupport}
+      >
+        Support
       </button>
       <button
         type="button"
@@ -37,7 +42,7 @@ export function Credits({ onSupport }: { onSupport: () => void }) {
         title="Hide this note"
         onClick={() => setCreditsHidden(true)}
       >
-        <X size={14} />
+        <X size={13} />
       </button>
     </footer>
   );
