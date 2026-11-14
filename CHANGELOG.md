@@ -75,7 +75,8 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
 - Tag-driven releases: versioned AMD64/ARM64 images with SBOM, build provenance
   and a vulnerability scan gate, GitHub releases with a pinned Compose file, a
   weekly rescan of the published image, and a project website on GitHub Pages.
-- Installable web app: a manifest, app icons and a favicon let browsers add
+- Installable web app: a manifest, app icons and an SVG favicon with an ICO
+  fallback let browsers show the HomeGrid icon in tabs and bookmarks and add
   HomeGrid to the home screen or install it as a standalone window.
 - Unused image cleanup in the backup settings: review uploaded icons and
   backgrounds that nothing uses anymore, then delete them after confirming.

@@ -6,6 +6,9 @@ import html from "../index.html?raw";
 const icons = Object.keys(
   import.meta.glob("../public/icons/*.png", { query: "?url" }),
 ).map((path) => path.replace("../public", ""));
+const favicons = Object.keys(
+  import.meta.glob("../public/favicon.*", { query: "?url" }),
+).map((path) => path.replace("../public", ""));
 
 describe("installable web app", () => {
   const manifest = JSON.parse(manifestSource) as {
@@ -41,6 +44,11 @@ describe("installable web app", () => {
       'rel="apple-touch-icon" href="/icons/apple-touch-icon.png"',
     );
     expect(html).toContain('rel="icon" href="/favicon.svg"');
+    // Browsers without SVG favicon support and plain /favicon.ico requests.
+    expect(html).toContain('rel="icon" href="/favicon.ico"');
+    expect(favicons).toEqual(
+      expect.arrayContaining(["/favicon.ico", "/favicon.svg"]),
+    );
     expect(icons).toContain("/icons/apple-touch-icon.png");
   });
 });
