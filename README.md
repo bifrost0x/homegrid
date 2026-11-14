@@ -71,6 +71,11 @@ and optional local source builds.
   logos, and skips widgets and templated links it cannot resolve.
 - **Install it like an app.** Add HomeGrid to a phone's home screen or install
   it from the browser; it opens in its own window without browser controls.
+- **Support the project.** HomeGrid is free and open source. Settings → About
+  links to [GitHub Sponsors](https://github.com/sponsors/bifrost0x),
+  [Buy Me a Coffee](https://buymeacoffee.com/bifrost0x) and
+  [Patreon](https://www.patreon.com/bifrost0x); the slim note at the bottom
+  of the dashboard can be hidden.
 - **Manage it in one place.** Settings open as one sheet with sections for
   appearance, layout, backup, your account and the installed version. The
   account menu in the top bar jumps straight to each section.

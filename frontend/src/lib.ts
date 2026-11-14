@@ -58,6 +58,19 @@ export const searchEngines: Record<
   google: { name: "Google", template: "https://www.google.com/search?q=%s" },
   bing: { name: "Bing", template: "https://www.bing.com/search?q=%s" },
 };
+/**
+ * The name of the selected web search: the engine's name, or the host of a
+ * custom address. Undefined while web search is off or misconfigured.
+ */
+export function webSearchName(
+  settings: Pick<Settings, "web_search" | "web_search_url">,
+) {
+  const url = webSearchUrl(settings, "x");
+  if (!url) return undefined;
+  return settings.web_search === "custom"
+    ? new URL(url).hostname
+    : searchEngines[settings.web_search as keyof typeof searchEngines]?.name;
+}
 /** The web search address for a query, or undefined while web search is off. */
 export function webSearchUrl(
   settings: Pick<Settings, "web_search" | "web_search_url">,

@@ -23,7 +23,7 @@ it("shows the release version and a short build hash", async () => {
     expect(link).toHaveAttribute("target", "_blank");
     expect(link).toHaveAttribute("rel", "noopener noreferrer");
     expect(link.getAttribute("href")).toMatch(
-      /^https:\/\/(github\.com\/bifrost0x\/homegrid|bifrost0x\.github\.io\/homegrid\/)/,
+      /^https:\/\/(github\.com\/bifrost0x\/homegrid|bifrost0x\.github\.io\/homegrid\/|github\.com\/sponsors\/bifrost0x$|buymeacoffee\.com\/bifrost0x$|www\.patreon\.com\/bifrost0x$)/,
     );
   }
 });
