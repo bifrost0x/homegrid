@@ -229,3 +229,43 @@ func TestAllDesignsAndLayoutOptionsAccepted(t *testing.T) {
 		}
 	}
 }
+
+func TestWebSearchSettings(t *testing.T) {
+	base := normalizeSettings(Settings{Title: "Home", Theme: "system", Accent: "sage", Density: "comfortable", Radius: "rounded"})
+	if e := ValidateSettings(base); e != nil {
+		t.Fatal("web search off by default rejected", e)
+	}
+	valid := []Settings{
+		{WebSearch: "duckduckgo"},
+		{WebSearch: "custom", WebSearchURL: "https://searx.home.arpa/search?q=%s"},
+		{WebSearch: "custom", WebSearchURL: "http://192.168.1.5:8888/?q=%s&language=de"},
+		// A custom template is kept while a known engine is selected.
+		{WebSearch: "brave", WebSearchURL: "https://searx.home.arpa/search?q=%s"},
+	}
+	for _, v := range valid {
+		s := base
+		s.WebSearch, s.WebSearchURL = v.WebSearch, v.WebSearchURL
+		if e := ValidateSettings(s); e != nil {
+			t.Errorf("%+v rejected: %v", v, e)
+		}
+	}
+	invalid := []Settings{
+		{WebSearch: "yahoo"},
+		{WebSearch: "custom"},
+		{WebSearch: "custom", WebSearchURL: "https://searx.home.arpa/search"},
+		{WebSearch: "custom", WebSearchURL: "https://searx.home.arpa/?q=%s&x=%s"},
+		{WebSearch: "custom", WebSearchURL: "javascript:alert(%s)"},
+		{WebSearch: "custom", WebSearchURL: "https://user:pw@searx.home.arpa/?q=%s"},
+		{WebSearch: "custom", WebSearchURL: "/search?q=%s"},
+		{WebSearch: "", WebSearchURL: "ftp://files/%s"},
+		{WebSearch: "custom", WebSearchURL: "https://%s/"},
+		{WebSearch: "custom", WebSearchURL: "https://%s.example.com/search"},
+	}
+	for _, v := range invalid {
+		s := base
+		s.WebSearch, s.WebSearchURL = v.WebSearch, v.WebSearchURL
+		if e := ValidateSettings(s); e == nil {
+			t.Errorf("%+v accepted", v)
+		}
+	}
+}

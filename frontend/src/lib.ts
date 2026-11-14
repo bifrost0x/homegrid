@@ -36,6 +36,52 @@ export interface Settings {
   columns: "auto" | "2" | "3" | "4" | "5" | "6";
   group_columns: "1" | "2" | "3";
   card_style: "cards" | "tiles" | "list";
+  status_checks: boolean;
+  web_search: WebSearchEngine | "";
+  web_search_url: string;
+}
+export type WebSearchEngine =
+  "duckduckgo" | "startpage" | "brave" | "google" | "bing" | "custom";
+export const searchEngines: Record<
+  Exclude<WebSearchEngine, "custom">,
+  { name: string; template: string }
+> = {
+  duckduckgo: { name: "DuckDuckGo", template: "https://duckduckgo.com/?q=%s" },
+  startpage: {
+    name: "Startpage",
+    template: "https://www.startpage.com/do/search?q=%s",
+  },
+  brave: {
+    name: "Brave Search",
+    template: "https://search.brave.com/search?q=%s",
+  },
+  google: { name: "Google", template: "https://www.google.com/search?q=%s" },
+  bing: { name: "Bing", template: "https://www.bing.com/search?q=%s" },
+};
+/** The web search address for a query, or undefined while web search is off. */
+export function webSearchUrl(
+  settings: Pick<Settings, "web_search" | "web_search_url">,
+  query: string,
+) {
+  const terms = query.trim();
+  if (!terms || !settings.web_search) return undefined;
+  const template =
+    settings.web_search === "custom"
+      ? settings.web_search_url
+      : searchEngines[settings.web_search]?.template;
+  if (!template || !template.includes("%s")) return undefined;
+  const url = template.replace("%s", encodeURIComponent(terms));
+  try {
+    const protocol = new URL(url).protocol;
+    return protocol === "http:" || protocol === "https:" ? url : undefined;
+  } catch {
+    return undefined;
+  }
+}
+export type ServiceState = "up" | "down" | "unknown";
+export interface ServiceStatus {
+  enabled: boolean;
+  statuses: Record<string, ServiceState>;
 }
 export interface Session {
   setup_required: boolean;
@@ -72,6 +118,9 @@ export const defaults: Settings = {
   columns: "auto",
   group_columns: "1",
   card_style: "cards",
+  status_checks: false,
+  web_search: "",
+  web_search_url: "",
 };
 let csrf = "";
 export function setSession(session: Session) {
@@ -81,6 +130,8 @@ export async function api<T>(
   path: string,
   method = "GET",
   body?: unknown,
+  /** Background polls do not count as use and never extend the session. */
+  options: { background?: boolean } = {},
 ): Promise<T> {
   const form = body instanceof FormData;
   const response = await fetch("/api" + path, {
@@ -89,6 +140,7 @@ export async function api<T>(
     headers: {
       ...(body && !form ? { "Content-Type": "application/json" } : {}),
       ...(method !== "GET" ? { "X-CSRF-Token": csrf } : {}),
+      ...(options.background ? { "X-HomeGrid-Background": "1" } : {}),
     },
     body: body === undefined ? undefined : form ? body : JSON.stringify(body),
   });

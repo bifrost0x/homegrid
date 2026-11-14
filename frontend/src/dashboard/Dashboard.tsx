@@ -24,7 +24,13 @@ import {
   KeyRound,
   Info,
 } from "lucide-react";
-import { api, moveApplication, type Application, type Session } from "../lib";
+import {
+  api,
+  moveApplication,
+  webSearchUrl,
+  type Application,
+  type Session,
+} from "../lib";
 import { on } from "../events";
 import { CommandPalette, ErrorMessage } from "../components";
 import { backgroundImage } from "../themes";
@@ -168,6 +174,7 @@ export function Dashboard({ session }: { session: Session }) {
     busy,
     organizing,
     descriptions: settings.show_descriptions,
+    statuses: data.statuses,
     categories,
     applications: {
       edit: (app) => setDialog({ kind: "app", app }),
@@ -465,6 +472,7 @@ export function Dashboard({ session }: { session: Session }) {
           apps={apps}
           categories={categories}
           onClose={() => setPalette(false)}
+          webSearch={(query) => webSearchUrl(settings, query)}
         />
       )}
       {reviewLogos && logoSuggestions.length > 0 && (

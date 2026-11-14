@@ -46,7 +46,8 @@ and optional local source builds.
   image, or use its browser favicon.
 - **Keep everyday tools close.** Favorite applications, duplicate an existing
   card, and find services with **Ctrl+K** or **Cmd+K**. Search includes names,
-  descriptions and categories.
+  descriptions and categories. Optionally, the same search continues on the web
+  with DuckDuckGo, Startpage, Brave Search, Google, Bing or your own SearXNG.
 - **Organize in place.** Turn on **Organize** to arrange cards and categories
   with drag-and-drop, keyboard sorting or explicit controls. Move cards directly
   between categories, including empty or collapsed groups, with persisted undo.
@@ -64,6 +65,12 @@ and optional local source builds.
 - **Keep your configuration portable.** Export and import applications,
   categories and appearance as JSON, with an import preview and merge or replace
   choices. Use a full data-volume backup to preserve uploaded files and accounts.
+- **Move over from another dashboard.** Import `services.yaml` and
+  `bookmarks.yaml` from Homepage, `config.yml` from Homer or `conf.yml` from
+  Dashy. HomeGrid takes over names, links, descriptions and groups, recognizes
+  logos, and skips widgets and templated links it cannot resolve.
+- **Install it like an app.** Add HomeGrid to a phone's home screen or install
+  it from the browser; it opens in its own window without browser controls.
 - **Manage it in one place.** Settings open as one sheet with sections for
   appearance, layout, backup, your account and the installed version. The
   account menu in the top bar jumps straight to each section.
@@ -99,13 +106,18 @@ the database and uploads.
 
 Bundled icons and backgrounds work offline. Optional browser favicon discovery
 requests `/favicon.ico` directly from the service origin; browser access or
-certificate restrictions can cause a fallback icon. HomeGrid does not monitor
-services. Its backend contacts a service in exactly one case: when you add an
-application whose logo is not bundled, or press **From service**, it asks that
-URL once for the icon the service advertises and stores a re-encoded copy. Only
-the administrator can trigger this; loopback, link-local (including cloud
-metadata) and multicast addresses are refused at connect time, certificates are
-verified, and responses are size- and time-limited.
+certificate restrictions can cause a fallback icon. Its backend contacts a
+service in two cases only. When you add an application whose logo is not
+bundled, or press **From service**, it asks that URL once for the icon the
+service advertises and stores a re-encoded copy. And if you turn on
+**Show whether services are online** in the layout settings, it sends one
+`HEAD` request per application address about once a minute while a dashboard
+is open; it follows no redirects, reads no response and keeps no history.
+Addresses on the HomeGrid host itself (`localhost`, `127.0.0.1`) are never
+checked and show as unknown; use the host's LAN address instead.
+Both are off unless the administrator acts; loopback, link-local (including
+cloud metadata) and multicast addresses are refused at connect time,
+certificates are verified, and requests are size- and time-limited.
 
 HomeGrid has one local administrator. Use an HTTPS reverse proxy when accessing
 it over an untrusted network and enable secure cookies. There is no multi-user

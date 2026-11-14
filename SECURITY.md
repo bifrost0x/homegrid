@@ -29,6 +29,9 @@ allows. There is no guaranteed response deadline or formal security certificatio
 
 Use HTTPS at a trusted reverse proxy and enable secure cookies when serving over
 HTTPS. Protect access to the dashboard, its data volume, backups, and exports.
+Sessions expire after seven days without use and always 30 days after sign-in.
+Background polls of an open dashboard (undo and status) do not count as use;
+changing the password signs out every other session.
 Keep dependencies and the container image updated. Do not publish real `.env`
 files, database files, or private screenshots in issues or pull requests.
 
@@ -37,9 +40,23 @@ and the current security boundaries.
 
 ## Outbound requests
 
-HomeGrid sends no telemetry and has no cloud dependency. The only outbound
-requests from the server are icon lookups at a service URL the administrator
-enters (`POST /api/icons/discover`). They are authenticated and CSRF-protected,
+HomeGrid sends no telemetry and has no cloud dependency. The server makes
+outbound requests in two cases only, both to service URLs the administrator
+entered.
+
+Optional status checks (`GET /api/status`) are off by default. Once the
+administrator enables them, each application URL receives one `HEAD` request
+without cookies or credentials at most once a minute while a dashboard asks
+for status. Checks use the same address policy as icon lookups, follow no
+redirects, never read a response body, verify certificates (a certificate
+that fails verification still shows that the service answers), stop after four
+seconds per URL and fifteen seconds per sweep, and run at most eight at a
+time. Only up, down or unknown is reported, and no history is stored.
+Loopback addresses are refused like for icon lookups, so services entered as
+`localhost` or `127.0.0.1` always show as unknown.
+
+Icon lookups happen at a service URL the administrator enters
+(`POST /api/icons/discover`). They are authenticated and CSRF-protected,
 limited to HTTP(S) without credentials, refuse loopback, link-local, multicast,
 broadcast and unspecified addresses after DNS resolution (so DNS rebinding cannot
 redirect them), follow at most three redirects, ignore proxy environment

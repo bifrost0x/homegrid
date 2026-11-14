@@ -10,8 +10,8 @@ promise; issues, pull requests and release notes are the source of truth.
   and be arranged without manual work.
 - Stay small: one container, one data volume, no cloud dependency, no
   telemetry, no Docker socket.
-- Keep privileged actions explicit and server-validated; the dashboard never
-  fetches service URLs unless a future feature is enabled on purpose.
+- Keep privileged actions explicit and server-validated; the server only
+  contacts service URLs for icon lookups and opt-in status checks.
 - Work equally well on phones, tablets and large screens.
 
 ## Now: first public release
@@ -23,18 +23,9 @@ promise; issues, pull requests and release notes are the source of truth.
 
 ## Next candidates
 
-- **Importers** for Homepage (`services.yaml`), Homer and Dashy configurations,
-  combined with automatic logo recognition.
-- **Optional reachability indicator** per application. This would be the first
-  backend request to a service URL, so it must stay opt-in and bounded:
-  administrator-configured targets only, strict timeouts, no redirects, and a
-  plain up/down result.
-- **Installable web app** (manifest and offline shell) for phone home screens.
+- **Offline shell** for the installed web app, without caching dashboard data
+  beyond the session.
 - **Automatic group layout** that places small categories side by side.
-- **Sliding sessions** that extend on use, with a hard upper limit.
-- **Reverse proxy hint** when requests arrive through an untrusted proxy, since
-  rate limits then apply to the proxy address.
-- **Unused upload cleanup** with an explicit review step.
 
 ## Out of scope for now
 

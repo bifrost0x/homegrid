@@ -63,6 +63,12 @@ type Settings struct {
 	Columns            string `json:"columns"`
 	GroupColumns       string `json:"group_columns"`
 	CardStyle          string `json:"card_style"`
+	// StatusChecks lets the server check whether application URLs answer.
+	StatusChecks bool `json:"status_checks"`
+	// WebSearch offers a web search in quick search: empty (off), a known
+	// engine, or "custom" with WebSearchURL as the template.
+	WebSearch    string `json:"web_search"`
+	WebSearchURL string `json:"web_search_url"`
 }
 
 func Open(dir string) (*Store, error) {
@@ -321,7 +327,25 @@ func ValidateSettings(v Settings) error {
 		!in(v.Columns, "auto", "2", "3", "4", "5", "6") || !in(v.GroupColumns, "1", "2", "3") || !in(v.CardStyle, "cards", "tiles", "list") {
 		return fmt.Errorf("%w: invalid appearance settings", ErrInvalid)
 	}
+	if !in(v.WebSearch, "", "duckduckgo", "startpage", "brave", "google", "bing", "custom") {
+		return fmt.Errorf("%w: choose a supported web search", ErrInvalid)
+	}
+	if (v.WebSearch == "custom" || v.WebSearchURL != "") && !validSearchTemplate(v.WebSearchURL) {
+		return fmt.Errorf("%w: enter an HTTP or HTTPS search address with %%s where the search terms go", ErrInvalid)
+	}
 	return nil
+}
+
+// validSearchTemplate accepts an HTTP(S) URL without credentials that
+// contains exactly one %s placeholder for the encoded search terms.
+func validSearchTemplate(v string) bool {
+	if len(v) > 2048 || strings.Count(v, "%s") != 1 || !utf8.ValidString(v) {
+		return false
+	}
+	// The search terms must not choose the host the browser opens.
+	const marker = "homegridsearchterms"
+	u, e := url.Parse(strings.Replace(v, "%s", marker, 1))
+	return e == nil && (u.Scheme == "http" || u.Scheme == "https") && u.Hostname() != "" && u.User == nil && validBrowserHost(u) && !strings.Contains(u.Host, marker)
 }
 func (s *Store) Apps(ctx context.Context) ([]App, error) {
 	rows, e := s.DB.QueryContext(ctx, "SELECT id,name,url,description,icon,category_id,sort_order,open_in_new_tab,favorite,icon_color FROM applications ORDER BY sort_order,id")

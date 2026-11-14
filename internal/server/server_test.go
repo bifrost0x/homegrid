@@ -582,3 +582,83 @@ func TestAPIMethodAndUnknownEndpointStatus(t *testing.T) {
 	c.req("PUT", "/api/health", nil, 405)
 	c.req("GET", "/api/does-not-exist", nil, 404)
 }
+
+func TestSessionSlidesOnUseAndRenewsCookie(t *testing.T) {
+	c, db := newClient(t)
+	c.setup()
+	now := time.Now().Unix()
+	if _, e := db.DB.Exec("UPDATE sessions SET expires_at=?,created_at=?", now+120, now-7200); e != nil {
+		t.Fatal(e)
+	}
+	req := httptest.NewRequest("GET", "/api/apps", nil)
+	for _, cookie := range c.cookies {
+		req.AddCookie(cookie)
+	}
+	w := httptest.NewRecorder()
+	c.h.ServeHTTP(w, req)
+	if w.Code != 200 {
+		t.Fatal(w.Code, w.Body.String())
+	}
+	renewed := false
+	for _, cookie := range w.Result().Cookies() {
+		if cookie.Name == sessionCookie && cookie.Value != "" && cookie.MaxAge > int(store.SessionIdleTimeout)-60 && cookie.HttpOnly && cookie.SameSite == http.SameSiteStrictMode {
+			renewed = true
+		}
+	}
+	if !renewed {
+		t.Fatal("session cookie was not renewed", w.Result().Cookies())
+	}
+	var expires int64
+	db.DB.QueryRow("SELECT expires_at FROM sessions").Scan(&expires)
+	if expires < now+store.SessionIdleTimeout-60 {
+		t.Fatal("session expiry did not slide", expires)
+	}
+	// Logout must clear the cookie rather than renew it.
+	if _, e := db.DB.Exec("UPDATE sessions SET expires_at=?", now+120); e != nil {
+		t.Fatal(e)
+	}
+	req = httptest.NewRequest("POST", "/api/auth/logout", nil)
+	for _, cookie := range c.cookies {
+		req.AddCookie(cookie)
+	}
+	req.Header.Set("X-CSRF-Token", c.csrf)
+	w = httptest.NewRecorder()
+	c.h.ServeHTTP(w, req)
+	if w.Code != 204 {
+		t.Fatal(w.Code, w.Body.String())
+	}
+	for _, cookie := range w.Result().Cookies() {
+		if cookie.Name == sessionCookie && cookie.MaxAge >= 0 {
+			t.Fatal("logout renewed the session cookie", cookie)
+		}
+	}
+}
+
+func TestBackgroundPollsDoNotExtendSessions(t *testing.T) {
+	c, db := newClient(t)
+	c.setup()
+	now := time.Now().Unix()
+	if _, e := db.DB.Exec("UPDATE sessions SET expires_at=?,created_at=?", now+120, now-7200); e != nil {
+		t.Fatal(e)
+	}
+	for _, path := range []string{"/api/undo", "/api/status"} {
+		req := httptest.NewRequest("GET", path, nil)
+		req.Header.Set("X-HomeGrid-Background", "1")
+		for _, cookie := range c.cookies {
+			req.AddCookie(cookie)
+		}
+		w := httptest.NewRecorder()
+		c.h.ServeHTTP(w, req)
+		if w.Code != 200 {
+			t.Fatal(path, w.Code, w.Body.String())
+		}
+		if len(w.Result().Cookies()) != 0 {
+			t.Fatal("background poll renewed the session cookie", path)
+		}
+	}
+	var expires int64
+	db.DB.QueryRow("SELECT expires_at FROM sessions").Scan(&expires)
+	if expires != now+120 {
+		t.Fatal("background poll extended the session", expires-now)
+	}
+}

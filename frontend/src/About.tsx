@@ -67,6 +67,18 @@ export function About() {
       current = false;
     };
   }, []);
+  const [proxy, setProxy] = useState("");
+  useEffect(() => {
+    let current = true;
+    // Diagnostics are a hint only; the About section works without them.
+    api<{ untrusted_proxy: string }>("/diagnostics").then(
+      (data) => current && setProxy(data.untrusted_proxy || ""),
+      () => {},
+    );
+    return () => {
+      current = false;
+    };
+  }, []);
   const commit = health.data?.commit ?? "";
   // Release builds carry the full commit hash; local builds a placeholder.
   const shortCommit = /^[0-9a-f]{40}$/.test(commit) ? commit.slice(0, 12) : "";
@@ -94,9 +106,18 @@ export function About() {
       </div>
       <p className="about-lead">
         A self-hosted homepage for your homelab. HomeGrid sends no telemetry and
-        contacts your services only to fetch a logo you ask for; the links below
-        open in a new tab.
+        contacts your services only to fetch a logo you ask for and, if you turn
+        it on, to check whether they are online; the links below open in a new
+        tab.
       </p>
+      {proxy && (
+        <p className="proxy-hint" role="note">
+          This page reached HomeGrid through a proxy at <code>{proxy}</code>{" "}
+          that is not listed in <code>HOMEGRID_TRUSTED_PROXIES</code>. Sign-in
+          rate limits then count every visitor as that proxy. If you control it,
+          add its address to <code>HOMEGRID_TRUSTED_PROXIES</code>.
+        </p>
+      )}
       <ul className="about-links">
         {links.map(({ label, hint, href, Icon }) => (
           <li key={label}>

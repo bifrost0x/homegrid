@@ -3,6 +3,7 @@ package server
 import (
 	"errors"
 	"github.com/bifrost0x/homegrid/internal/icondiscovery"
+	"github.com/bifrost0x/homegrid/internal/status"
 	"github.com/bifrost0x/homegrid/internal/store"
 	"github.com/bifrost0x/homegrid/web"
 	"io/fs"
@@ -10,6 +11,8 @@ import (
 	"net/http"
 	"net/netip"
 	"strings"
+	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -24,6 +27,9 @@ type Config struct {
 	// IconPolicy limits which addresses icon discovery may contact; nil uses
 	// icondiscovery.DefaultPolicy. Tests use it to reach local test servers.
 	IconPolicy icondiscovery.AddressPolicy
+	// StatusPolicy does the same for status checks; nil uses
+	// icondiscovery.DefaultPolicy.
+	StatusPolicy status.AddressPolicy
 }
 type Server struct {
 	cfg           Config
@@ -34,6 +40,14 @@ type Server struct {
 	assets        fs.FS
 	static        map[string]staticAsset
 	icons         *icondiscovery.Fetcher
+	status        *status.Checker
+	// uploadsMu serializes writing stored images with upload cleanup, so a
+	// cleanup never removes a file that was just written again.
+	uploadsMu sync.Mutex
+	// proxyWarned is the Unix time of the last untrusted proxy warning; the
+	// warning repeats at most hourly, so a client that sends forwarding
+	// headers directly cannot suppress a later real misconfiguration.
+	proxyWarned atomic.Int64
 }
 
 func New(cfg Config) (*Server, error) {
@@ -59,6 +73,11 @@ func New(cfg Config) (*Server, error) {
 		policy = icondiscovery.DefaultPolicy
 	}
 	s.icons = icondiscovery.New(policy)
+	statusPolicy := cfg.StatusPolicy
+	if statusPolicy == nil {
+		statusPolicy = status.AddressPolicy(icondiscovery.DefaultPolicy)
+	}
+	s.status = status.New(statusPolicy)
 	s.routes()
 	s.removeStaleUploadTemps(time.Now().Add(-time.Hour))
 	return s, nil
@@ -66,6 +85,12 @@ func New(cfg Config) (*Server, error) {
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	s.securityHeaders(w, r)
 	defer s.recoverPanic(w, r)
+	if forwarded(r) && !s.trusted(remoteIP(r)) {
+		now := time.Now().Unix()
+		if last := s.proxyWarned.Load(); now-last >= 3600 && s.proxyWarned.CompareAndSwap(last, now) {
+			s.cfg.Logger.Warn("request forwarded by an untrusted proxy; rate limits apply to the proxy address. Add it to HOMEGRID_TRUSTED_PROXIES if you control it.", "proxy", remoteIP(r))
+		}
+	}
 	s.mux.ServeHTTP(w, r)
 }
 func (s *Server) routes() {
@@ -90,9 +115,13 @@ func (s *Server) routes() {
 	s.mux.HandleFunc("GET /api/undo", s.protected(s.pendingUndo))
 	s.mux.HandleFunc("POST /api/undo", s.protected(s.undo))
 	s.mux.HandleFunc("POST /api/examples", s.protected(s.examples))
+	s.mux.HandleFunc("GET /api/status", s.protected(s.serviceStatus))
 	s.mux.HandleFunc("GET /api/settings", s.protected(s.settings))
 	s.mux.HandleFunc("PATCH /api/settings", s.protected(s.settings))
 	s.mux.HandleFunc("POST /api/uploads", s.protected(s.upload))
+	s.mux.HandleFunc("GET /api/uploads/unused", s.protected(s.listUnusedUploads))
+	s.mux.HandleFunc("POST /api/uploads/cleanup", s.protected(s.cleanUploads))
+	s.mux.HandleFunc("GET /api/diagnostics", s.protected(s.diagnostics))
 	s.mux.HandleFunc("POST /api/icons/discover", s.protected(s.discoverIcon))
 	s.mux.HandleFunc("GET /uploads/{name}", s.protected(s.serveUpload))
 	s.mux.HandleFunc("GET /api/export", s.protected(s.export))

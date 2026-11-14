@@ -9,7 +9,19 @@ by migration 002 and carried through create/update/export/import. Older backup
 files without the field remain supported. The default category can be renamed;
 its protected identity remains ID 1.
 
-Settings: `{title,theme,accent,density,radius,background,blur,show_descriptions,design,wallpaper,custom_accent,background_strength,content_width,columns,group_columns,card_style}`.
+Settings: `{title,theme,accent,density,radius,background,blur,show_descriptions,design,wallpaper,custom_accent,background_strength,content_width,columns,group_columns,card_style,status_checks,web_search,web_search_url}`.
+`status_checks` is a boolean, false when omitted. `web_search` is empty (off),
+duckduckgo/startpage/brave/google/bing, or custom; `web_search_url` is empty or
+an HTTP(S) URL without credentials of at most 2048 bytes containing exactly one
+`%s` after the host, required when `web_search` is custom. The browser opens web searches
+directly; the server never contacts a search engine.
+
+Authenticated GET `/api/status` returns `{enabled,statuses}`. While
+`status_checks` is false it contacts nothing and returns `{enabled:false,statuses:{}}`.
+Otherwise `statuses` maps each application ID (as a string) to `up`, `down` or
+`unknown`. Each URL is checked with one HEAD request, cached for one minute;
+gateway errors (502, 503, 504) and connection failures are `down`, refused
+addresses, unsupported URLs, example cards and unfinished checks are `unknown`.
 Theme is system/light/dark; accent sage/blue/amber/rose/violet/cyan; density
 comfortable/compact; radius rounded/square; background empty or a validated
 `/uploads/id.ext` image path; blur and show_descriptions are booleans.
@@ -29,6 +41,11 @@ Unsupported enum values or custom accent formats return validation errors before
 writes; uploaded backgrounds remain subject to the existing path validation.
 
 GET /api/auth/session returns `{setup_required,authenticated,username,csrf_token}`. When authenticated csrf_token is supplied and mutations include X-CSRF-Token. Login/setup POST `{username,password}` returns same session object and sets cookie. Public session query returns a pre-auth CSRF token cookie and response; setup/login must send X-CSRF-Token too. All browser requests use same-origin credentials. POST logout requires token.
+Sessions slide: an authenticated request that is not an `/api/auth/` mutation
+and does not carry `X-HomeGrid-Background: 1` (sent by the dashboard's
+periodic undo and status polls) extends the session to seven days from now, at most 30 days after sign-in, and
+renews the cookie. Expiry writes happen at most once per hour per session.
+Sessions older than 30 days are invalid regardless of their stored expiry.
 
 CRUD /api/apps and /api/categories as specified. PUT /api/apps/reorder and /api/categories/reorder body `{ids:[...]}` containing ALL IDs of that resource. Application reorder also accepts optional `move:{id,category_id}` to move one application to an existing category and assign the complete order atomically with one persisted undo record. Invalid/incomplete IDs or unknown categories return 400 without changing state. Ordinary app edits can still change category via PATCH. Category collapsed saved by PATCH. GET/PATCH /api/settings.
 
@@ -49,9 +66,19 @@ the UI does not navigate to them. `service:<id>` icons accept only the forty loc
 catalog IDs, including `service:jellyfin` and `service:nextcloud`.
 
 POST /api/icons/discover `{url}` asks the service at that HTTP(S) URL for its advertised icon (page links, web manifest, `/apple-touch-icon.png`, `/favicon.ico`), stores a re-encoded PNG and returns `{url, title}` (201); `url` works like an upload path and `title` is the page title (may be empty). Errors: 400 invalid URL, 404 `not_found` when no usable icon exists, 502 `unreachable` when the service cannot be contacted or its address is refused.
+Authenticated GET `/api/uploads/unused` returns `{files:[{name,url,size,modified}]}`:
+stored images older than 24 hours that no application icon, settings value or
+unexpired undo record references. CSRF-protected POST `/api/uploads/cleanup`
+`{names:[...],confirm:true}` deletes the listed names that are still unused at
+that moment, ignores everything else and returns `{deleted}`. References are
+read and files deleted in one database transaction, so no concurrent save,
+import or undo can start using a file while it is removed.
+Authenticated GET `/api/diagnostics` returns `{untrusted_proxy}`: the peer
+address when the request carries forwarding headers from a peer outside
+`HOMEGRID_TRUSTED_PROXIES`, otherwise empty.
 POST /api/uploads multipart form field file returns `{url}`. PNG/JPEG/WebP <=5MB, max 16 million pixels, authenticated serving /uploads/. Icons: `builtin:server`, `builtin:cloud`, `builtin:database`, `builtin:film`, `builtin:music`, `builtin:home`, `builtin:shield`, `builtin:code`, `builtin:globe`, `builtin:folder`, `builtin:network`, `builtin:hard-drive`; `favicon` for browser-only URL-origin favicon; or upload URL. No arbitrary icon URL.
 
-GET /api/export returns `{version:1,apps:[...],categories:[...],settings:{...}}`. POST /api/import/preview body is raw backup JSON or Homarr-derived `{apps:[{name,url,category,icon}]}`; returns `{apps:number,categories:number,duplicates:number}`. POST /api/import/apply body `{data:<same parsed JSON>,mode:"merge"|"replace",confirm:true}`; returns `{imported:number}`. Replace preserves admin and sessions. Merge skips duplicate normalized URLs.
+GET /api/export returns `{version:1,apps:[...],categories:[...],settings:{...}}`. POST /api/import/preview body is raw backup JSON or Homarr-derived `{apps:[{name,url,category,icon,description}]}` (`description` optional; the frontend converts Homepage, Homer and Dashy YAML into this list); returns `{apps:number,categories:number,duplicates:number}`. POST /api/import/apply body `{data:<same parsed JSON>,mode:"merge"|"replace",confirm:true}`; returns `{imported:number}`. Replace preserves admin and sessions. Merge skips duplicate normalized URLs.
 
 Health GET /api/health returns `{status:"ok",version,commit}`. Never exposes sensitive config.
 

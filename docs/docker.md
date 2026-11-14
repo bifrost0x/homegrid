@@ -53,7 +53,9 @@ validates the browser-facing hostname and port, independently of the proxy's
 HTTP connection to the container. Preserve the original Host and Origin headers
 through the proxy. Set `HOMEGRID_TRUSTED_PROXIES` only when you need forwarded
 client IPs for rate limiting, and only to addresses or CIDRs you control; leaving
-it empty ignores forwarded client IPs. A proxy on the host can use a localhost host-port
+it empty ignores forwarded client IPs. When a proxy that is not listed forwards
+requests, **Settings → About** names its address and HomeGrid logs one warning.
+A proxy on the host can use a localhost host-port
 binding; a proxy in another container needs an appropriate shared network or
 reachable host binding.
 

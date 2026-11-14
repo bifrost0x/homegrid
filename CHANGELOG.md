@@ -7,6 +7,9 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
 
 - First-run administrator creation with no default credentials; password changes
   verify the current password and sign out other sessions.
+- Sessions stay signed in while the dashboard is in use: each visit extends the
+  session to seven days, up to 30 days after sign-in. Then HomeGrid asks for the
+  password again.
 - Application and category management, persistent favorites, duplication, and
   keyboard command search across names, descriptions and categories.
 - Drag cards directly between categories, including empty or collapsed groups,
@@ -44,6 +47,13 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   card menu; the favorite toggle appears on hover or focus and stays visible
   once set. The dashboard heading summarizes applications and categories.
 - Optional example cards that require configuration before launch.
+- Optional web search in quick search: DuckDuckGo, Startpage, Brave Search,
+  Google, Bing or a custom address such as a self-hosted SearXNG. Off by
+  default; the browser opens the search in a new tab.
+- Optional service status: when enabled in the layout settings, a dot after
+  each application name shows whether its address answers. The server sends
+  one HEAD request per address at most once a minute, follows no redirects,
+  refuses loopback and link-local addresses and keeps no history.
 - In-dashboard Organize mode with drag-and-drop, keyboard and explicit sorting
   controls; empty categories are hidden during normal use.
 - Appearance settings in clear layers: twenty presets, light/dark/system mode,
@@ -56,11 +66,24 @@ local administrator, a Go backend, an embedded React frontend and SQLite storage
   appearance/layout changes, with a 30-minute window and conflict protection.
 - Versioned JSON export, validated import previews, merge and confirmed replace;
   compatibility with a simple Homarr-derived application list.
+- Import from Homepage (`services.yaml`, `bookmarks.yaml`), Homer (`config.yml`)
+  and Dashy (`conf.yml`): names, links, descriptions and groups are carried
+  over with logo recognition; widgets and non-HTTP(S) links are skipped and
+  counted in the preview.
 - A single non-root container with a read-only root filesystem, persistent data
   volume, built-in health check and no Docker socket requirement.
 - Tag-driven releases: versioned AMD64/ARM64 images with SBOM, build provenance
   and a vulnerability scan gate, GitHub releases with a pinned Compose file, a
   weekly rescan of the published image, and a project website on GitHub Pages.
+- Installable web app: a manifest, app icons and a favicon let browsers add
+  HomeGrid to the home screen or install it as a standalone window.
+- Unused image cleanup in the backup settings: review uploaded icons and
+  backgrounds that nothing uses anymore, then delete them after confirming.
+  Images referenced by a pending undo and uploads from the last 24 hours are
+  kept.
+- A hint in Settings → About and one log warning when requests arrive through
+  a proxy outside `HOMEGRID_TRUSTED_PROXIES`, where rate limits would count
+  every visitor as the proxy.
 - Cached gzip delivery for embedded JavaScript and CSS; authenticated APIs,
   backups and uploaded files remain uncompressed.
 

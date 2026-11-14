@@ -63,10 +63,11 @@ func ParseImport(raw []byte) (ImportData, error) {
 	} else {
 		var b struct {
 			Apps []struct {
-				Name     string `json:"name"`
-				URL      string `json:"url"`
-				Category string `json:"category"`
-				Icon     string `json:"icon"`
+				Name        string `json:"name"`
+				URL         string `json:"url"`
+				Category    string `json:"category"`
+				Icon        string `json:"icon"`
+				Description string `json:"description"`
 			} `json:"apps"`
 		}
 		if e := decodeStrict(raw, &b); e != nil {
@@ -88,7 +89,7 @@ func ParseImport(raw []byte) (ImportData, error) {
 				byName[name] = id
 				out.Categories = append(out.Categories, Category{ID: id, Name: name, SortOrder: len(out.Categories)})
 			}
-			out.Apps = append(out.Apps, App{Name: a.Name, URL: a.URL, Icon: a.Icon, CategoryID: id, SortOrder: len(out.Apps), OpenInNewTab: true})
+			out.Apps = append(out.Apps, App{Name: a.Name, URL: a.URL, Icon: a.Icon, Description: strings.TrimSpace(a.Description), CategoryID: id, SortOrder: len(out.Apps), OpenInNewTab: true})
 		}
 	}
 	if len(out.Apps) > 5000 || len(out.Categories) > 500 {

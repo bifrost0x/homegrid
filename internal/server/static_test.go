@@ -208,3 +208,23 @@ func TestAuthenticatedContentNeverCompressed(t *testing.T) {
 		}
 	}
 }
+func TestWebAppManifestIsPublicWithManifestType(t *testing.T) {
+	db, e := store.Open(t.TempDir())
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() { db.Close() })
+	assets := fstest.MapFS{"index.html": {Data: []byte("<!doctype html>")}, "manifest.webmanifest": {Data: []byte(`{"name":"HomeGrid"}`)}, "icons/icon-192.png": {Data: []byte("\x89PNG\r\n\x1a\n")}}
+	s, e := New(Config{Store: db, Assets: assets})
+	if e != nil {
+		t.Fatal(e)
+	}
+	// Browsers fetch manifests and icons without credentials.
+	w := staticResponse(s, "GET", "/manifest.webmanifest", "", "")
+	if w.Code != 200 || w.Header().Get("Content-Type") != "application/manifest+json" || w.Header().Get("Cache-Control") != "no-cache" || w.Body.String() != `{"name":"HomeGrid"}` {
+		t.Fatal(w.Code, w.Header(), w.Body.String())
+	}
+	if w = staticResponse(s, "GET", "/icons/icon-192.png", "", ""); w.Code != 200 || w.Header().Get("Content-Type") != "image/png" {
+		t.Fatal(w.Code, w.Header())
+	}
+}

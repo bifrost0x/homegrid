@@ -1885,3 +1885,87 @@ legend {
     margin-left: 0;
   }
 }
+
+/* Service status: a small dot after the application name. */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-left: 7px;
+  border-radius: 50%;
+  vertical-align: middle;
+  background: var(--muted);
+  opacity: 0.55;
+}
+.status-dot.up {
+  background: #2f9d58;
+  opacity: 1;
+}
+/* Offline is a ring, so the states differ by shape as well as color. */
+.status-dot.down {
+  box-sizing: border-box;
+  background: transparent;
+  border: 2px solid #d1453b;
+  opacity: 1;
+}
+
+/* Web search option at the end of quick search results. */
+.web-search-icon {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Unused image review in the backup settings. */
+.unused-uploads {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 28px;
+}
+.unused-review {
+  align-self: stretch;
+  padding: 15px;
+  background: var(--surface-alt);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 13px;
+}
+.unused-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(56px, 1fr));
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  align-self: stretch;
+}
+.unused-grid img {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  display: block;
+}
+.proxy-hint {
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: var(--amber-soft);
+  color: var(--text);
+  font-size: 13px;
+}
+.proxy-hint code {
+  font-size: 12px;
+}
