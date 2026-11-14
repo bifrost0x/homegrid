@@ -399,7 +399,7 @@ export function SettingsPanel({
                 <p>
                   {preview.format} configuration
                   {preview.skipped > 0 &&
-                    ` · ${preview.skipped} entries without an HTTP or HTTPS link skipped`}
+                    ` · ${preview.skipped} ${preview.skipped === 1 ? "entry" : "entries"} without an HTTP or HTTPS link skipped`}
                 </p>
               )}
               <p>

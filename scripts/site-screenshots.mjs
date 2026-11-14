@@ -1,7 +1,12 @@
-// Captures the product screenshots used by README.md and the project website,
-// plus two animated WebPs for the README: a montage of presets and appearance
-// options, and a short interaction tour. Both are encoded with ffmpeg, which
-// must be on PATH and built with libwebp.
+// Captures the product screenshots used by README.md and the project website:
+// the dashboard, a gallery of designs and layouts, quick search with the web
+// search, the add dialog, settings, the dashboard importer and the phone
+// layout. It also records two animated WebPs for the README: a montage of
+// presets and appearance options, and a short interaction tour. Both are
+// encoded with ffmpeg, which must be on PATH and built with libwebp.
+//
+// The example services do not exist, so status checks are answered by the
+// browser with a fixed example result; HomeGrid never contacts them.
 //
 // Run against a disposable, empty HomeGrid instance; the script creates the
 // administrator and fills the dashboard with fictional example services:
@@ -185,7 +190,64 @@ const appearance = {
   group_columns: "2",
   columns: "auto",
   show_descriptions: true,
+  status_checks: true,
+  web_search: "duckduckgo",
 };
+
+// Example status shown on the cards: everything answers except one service.
+const offline = new Set(["Prometheus"]);
+
+// Gallery of designs and layouts, one still per entry. Each starts from a
+// preset; `settings` refines it.
+const gallery = [
+  {
+    name: "design-midnight",
+    preset: "midnight",
+    settings: { group_columns: "2" },
+  },
+  {
+    name: "design-tiles",
+    preset: "dune",
+    settings: { card_style: "tiles", group_columns: "2" },
+  },
+  {
+    name: "design-list",
+    preset: "arctic",
+    settings: { card_style: "list", group_columns: "3" },
+  },
+  { name: "design-nebula", preset: "nebula", settings: { group_columns: "2" } },
+  {
+    name: "design-compact",
+    preset: "forest",
+    settings: {
+      density: "compact",
+      show_descriptions: false,
+      group_columns: "3",
+    },
+  },
+  {
+    name: "design-paper",
+    preset: "paper",
+    settings: { group_columns: "2", radius: "square" },
+  },
+];
+
+// A short Homepage services.yaml for the import preview.
+const homepageImport = [
+  "- Media:",
+  "    - Jellyfin:",
+  "        href: https://jellyfin.home.arpa",
+  "        description: Films and series",
+  "    - Sonarr:",
+  '        href: "{{HOMEPAGE_VAR_SONARR_URL}}"',
+  "- Network:",
+  "    - Pi-hole:",
+  "        href: https://pihole.home.arpa/admin",
+  "        description: DNS filtering",
+  "    - Unifi:",
+  "        href: https://unifi.home.arpa",
+  "",
+].join("\n");
 
 // Fail before seeding the instance rather than after the screenshots.
 try {
@@ -232,7 +294,7 @@ const montageScenes = [
     panel: { heading: "Background" },
   },
   {
-    caption: "Width, columns and card style",
+    caption: "Layout, status and web search",
     preset: "arctic",
     panel: { tab: "Layout" },
   },
@@ -316,6 +378,7 @@ try {
   });
 
   let order = 0;
+  const statuses = {};
   for (const [index, group] of categories.entries()) {
     const category =
       index === 0
@@ -337,7 +400,7 @@ try {
       service,
       favorite = false,
     ] of group.apps) {
-      await api("/apps", "POST", {
+      const app = await api("/apps", "POST", {
         name,
         url,
         description,
@@ -348,8 +411,13 @@ try {
         open_in_new_tab: true,
         favorite,
       });
+      statuses[app.id] = offline.has(name) ? "down" : "up";
     }
   }
+  // Every browser context answers status checks with this example result.
+  const exampleStatus = (route) =>
+    route.fulfill({ json: { enabled: true, statuses } });
+  await context.route(base + "/api/status", exampleStatus);
   const baseline = { ...(await api("/settings")), ...appearance };
   await api("/settings", "PATCH", baseline);
 
@@ -420,13 +488,54 @@ try {
   await page.keyboard.press("Escape");
   await expect(dialog).toBeHidden();
 
+  // Quick search continues on the web.
+  await page.keyboard.press("Control+k");
+  const search = page.getByLabel("Search applications");
+  await search.fill("pro");
+  await expect(
+    page.getByRole("option", { name: /Search the web/ }),
+  ).toBeVisible();
+  await page.waitForTimeout(300);
+  await save(await page.screenshot(), "quick-search");
+  await page.keyboard.press("Escape");
+  await expect(search).toBeHidden();
+
   // Appearance settings.
   await page.getByRole("button", { name: "Open settings" }).click();
   const settings = page.getByRole("dialog");
   await expect(settings.locator(".preset-grid .design-option")).toHaveCount(20);
   await page.waitForTimeout(400);
   await save(await page.screenshot(), "appearance");
+
+  // Importing a Homepage configuration shows a preview before anything changes.
+  await settings.getByRole("tab", { name: "Backup" }).click();
+  await settings.getByLabel("Import configuration").setInputFiles({
+    name: "services.yaml",
+    mimeType: "application/yaml",
+    buffer: Buffer.from(homepageImport),
+  });
+  await expect(settings.getByText("Homepage configuration")).toBeVisible();
+  await page.waitForTimeout(300);
+  await save(await page.screenshot(), "import-homepage");
   await page.keyboard.press("Escape");
+  await expect(settings).toBeHidden();
+
+  // Gallery of designs and layouts, without the project note so every card
+  // stays visible.
+  await page.evaluate(() =>
+    localStorage.setItem("homegrid:credits-hidden", "1"),
+  );
+  for (const entry of gallery) {
+    await api("/settings", "PATCH", {
+      ...applyPreset(baseline, entry.preset),
+      ...entry.settings,
+    });
+    await ready(page);
+    await page.mouse.move(720, 128);
+    await save(await page.screenshot(), entry.name);
+  }
+  await page.evaluate(() => localStorage.removeItem("homegrid:credits-hidden"));
+  await api("/settings", "PATCH", baseline);
 
   // Mobile dashboard.
   const mobile = await browser.newContext({
@@ -442,12 +551,13 @@ try {
     (url) => !url.href.startsWith(base),
     (route) => route.abort(),
   );
+  await mobile.route(base + "/api/status", exampleStatus);
   const phone = await mobile.newPage();
   await ready(phone);
   await save(await phone.screenshot(), "dashboard-mobile");
   await mobile.close();
 
-  await recordTour(await context.storageState(), ready);
+  await recordTour(await context.storageState(), ready, exampleStatus);
   await recordMontage(page, api, baseline, ready);
 
   // Dark mode, last, because it changes the saved appearance.
@@ -462,7 +572,7 @@ try {
 // Records a short walk through search, quick add and appearance presets, and
 // encodes it as an animated WebP. Playwright videos show no mouse pointer, so
 // the page draws one that follows the synthetic mouse.
-async function recordTour(storageState, ready) {
+async function recordTour(storageState, ready, exampleStatus) {
   const size = { width: 1280, height: 800 };
   const tour = await browser.newContext({
     viewport: size,
@@ -474,6 +584,7 @@ async function recordTour(storageState, ready) {
     (url) => !url.href.startsWith(base),
     (route) => route.abort(),
   );
+  await tour.route(base + "/api/status", exampleStatus);
   await tour.addInitScript(() => {
     addEventListener("DOMContentLoaded", () => {
       const dot = document.createElement("div");
@@ -525,7 +636,12 @@ async function recordTour(storageState, ready) {
   await pause(400);
   await search.pressSequentially("graf", { delay: 160 });
   await expect(tab.getByRole("option", { name: /Grafana/ })).toBeVisible();
-  await pause(1300);
+  await expect(
+    tab.getByRole("option", { name: /Search the web/ }),
+  ).toBeVisible();
+  await pause(900);
+  await tab.keyboard.press("ArrowDown");
+  await pause(1100);
   await tab.keyboard.press("Escape");
   await expect(search).toBeHidden();
   await pause(400);
