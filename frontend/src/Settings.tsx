@@ -34,6 +34,15 @@ const tabs: { name: SettingsTab; Icon: typeof Info; hint: string }[] = [
   { name: "Account", Icon: UserRound, hint: "Password and sessions" },
   { name: "About", Icon: Info, hint: "Version and project links" },
 ];
+/** Whether an import carries settings, which only full backups do. */
+function hasSettings(data: unknown) {
+  return (
+    typeof data === "object" &&
+    data !== null &&
+    typeof (data as { settings?: unknown }).settings === "object"
+  );
+}
+
 export function SettingsPanel({
   settings,
   onSave,
@@ -425,6 +434,13 @@ export function SettingsPanel({
                   </option>
                 </select>
               </label>
+              <p className="field-hint">
+                {mode === "merge"
+                  ? "Adds new applications and categories. Appearance and search settings stay unchanged."
+                  : hasSettings(data)
+                    ? "Applications, categories and appearance settings are replaced."
+                    : "Current applications and categories are replaced."}
+              </p>
               {mode === "replace" && (
                 <label className="check-row">
                   <input

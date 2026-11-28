@@ -124,7 +124,9 @@ func (s *Server) setup(w http.ResponseWriter, r *http.Request) {
 		s.result(w, 0, nil, e)
 		return
 	}
-	s.newSession(w, r, username, 201, hash)
+	if s.newSession(w, r, username, 201, hash) {
+		s.cfg.Logger.Info("administrator created", "event", "auth.setup", "client", s.clientIP(r), "username", username)
+	}
 }
 func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	username, password, ok := credentials(w, r)
@@ -141,12 +143,20 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	}
 	valid := auth.Verify(hash, password)
 	if !valid || username != stored {
+		// The entered username is not logged: a password typed into the
+		// wrong field would otherwise end up in the log.
+		s.cfg.Logger.Warn("sign-in failed", "event", "auth.login_failed", "client", s.clientIP(r))
 		fail(w, 401, "credentials", "Invalid username or password")
 		return
 	}
-	s.newSession(w, r, stored, 200, hash)
+	if s.newSession(w, r, stored, 200, hash) {
+		s.cfg.Logger.Info("signed in", "event", "auth.login", "client", s.clientIP(r), "username", stored)
+	}
 }
-func (s *Server) newSession(w http.ResponseWriter, r *http.Request, username string, status int, expectedPasswordHash string) {
+
+// newSession creates a session, sets its cookie and writes the response. It
+// reports whether the session was created.
+func (s *Server) newSession(w http.ResponseWriter, r *http.Request, username string, status int, expectedPasswordHash string) bool {
 	token, csrf := auth.Token(), auth.Token()
 	replaced := ""
 	if old, e := r.Cookie(sessionCookie); e == nil {
@@ -155,15 +165,17 @@ func (s *Server) newSession(w http.ResponseWriter, r *http.Request, username str
 	e := s.cfg.Store.CreateSession(r.Context(), expectedPasswordHash, replaced, auth.TokenHash(token), csrf, time.Now().Unix())
 	if errors.Is(e, store.ErrPasswordChanged) {
 		fail(w, 401, "credentials", "Password changed. Sign in again.")
-		return
+		return false
 	}
 	if e != nil {
 		s.result(w, 0, nil, e)
-		return
+		return false
 	}
+	s.limiter.reset(limitKey(s.clientIP(r)))
 	s.cookie(w, sessionCookie, token, int(store.SessionIdleTimeout))
 	s.cookie(w, preauthCookie, "", -1)
 	write(w, status, map[string]any{"setup_required": false, "authenticated": true, "username": username, "csrf_token": csrf})
+	return true
 }
 func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 	v := r.Context().Value(identityKey{}).(identity)
@@ -171,6 +183,7 @@ func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 		s.result(w, 0, nil, e)
 		return
 	}
+	s.cfg.Logger.Info("signed out", "event", "auth.logout", "client", s.clientIP(r), "username", v.Username)
 	s.cookie(w, sessionCookie, "", -1)
 	w.WriteHeader(204)
 }
@@ -196,6 +209,7 @@ func (s *Server) changePassword(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !auth.Verify(currentHash, body.CurrentPassword) {
+		s.cfg.Logger.Warn("password change failed", "event", "auth.password_change_failed", "client", s.clientIP(r))
 		fail(w, 400, "validation", "Current password is incorrect")
 		return
 	}
@@ -215,6 +229,8 @@ func (s *Server) changePassword(w http.ResponseWriter, r *http.Request) {
 		s.result(w, 0, nil, e)
 		return
 	}
+	s.cfg.Logger.Info("password changed; other sessions signed out", "event", "auth.password_changed", "client", s.clientIP(r), "username", session.Username)
+	s.limiter.reset(limitKey(s.clientIP(r)))
 	s.cookie(w, sessionCookie, token, int(store.SessionIdleTimeout))
 	s.cookie(w, preauthCookie, "", -1)
 	write(w, 200, map[string]any{"setup_required": false, "authenticated": true, "username": session.Username, "csrf_token": csrf})

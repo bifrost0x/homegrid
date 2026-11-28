@@ -32,7 +32,23 @@ HTTPS. Protect access to the dashboard, its data volume, backups, and exports.
 Sessions expire after seven days without use and always 30 days after sign-in.
 Background polls of an open dashboard (undo and status) do not count as use;
 changing the password signs out every other session.
-Keep dependencies and the container image updated. Do not publish real `.env`
+Keep dependencies and the container image updated.
+
+Sign-in attempts are limited to ten per client address within five minutes;
+IPv6 clients share one limit per /64 network, and a successful sign-in clears
+the count. Clients behind one address, such as a NAT or a reverse proxy missing
+from `HOMEGRID_TRUSTED_PROXIES`, share one limit. The server log records sign-ins, failed sign-ins, sign-outs,
+administrator setup, password changes and configuration imports as JSON lines
+with an `event` field and the client address, never passwords, session tokens
+or CSRF tokens. Tools such as fail2ban or CrowdSec can act on
+`"event":"auth.login_failed"`. Set `HOMEGRID_TRUSTED_PROXIES` behind a reverse
+proxy so the log and the limit see the browser's address.
+
+A forgotten password is reset from the host with
+`docker exec homegrid /homegrid reset-password`. It prints a new random
+password once and signs out every session; see the Docker guide. The sign-in
+limit lives in the running server, so after a lockout wait five minutes or
+restart the container before signing in with it. Do not publish real `.env`
 files, database files, or private screenshots in issues or pull requests.
 
 See the deployment and security notes in [README.md](README.md) for configuration
@@ -50,7 +66,7 @@ without cookies or credentials at most once a minute while a dashboard asks
 for status. Checks use the same address policy as icon lookups, follow no
 redirects, never read a response body, verify certificates (a certificate
 that fails verification still shows that the service answers), stop after four
-seconds per URL and fifteen seconds per sweep, and run at most eight at a
+seconds per URL and ten seconds per sweep, and run at most eight at a
 time. Only up, down or unknown is reported, and no history is stored.
 Loopback addresses are refused like for icon lookups, so services entered as
 `localhost` or `127.0.0.1` always show as unknown.

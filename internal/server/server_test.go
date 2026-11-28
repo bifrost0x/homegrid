@@ -8,6 +8,7 @@ import (
 	"hash/crc32"
 	"image"
 	"image/png"
+	"log/slog"
 	"mime/multipart"
 	"net/http"
 	"net/http/httptest"
@@ -660,5 +661,144 @@ func TestBackgroundPollsDoNotExtendSessions(t *testing.T) {
 	db.DB.QueryRow("SELECT expires_at FROM sessions").Scan(&expires)
 	if expires != now+120 {
 		t.Fatal("background poll extended the session", expires-now)
+	}
+}
+func TestMergeImportKeepsSettings(t *testing.T) {
+	c, _ := newClient(t)
+	c.setup()
+	var backup map[string]any
+	json.Unmarshal(c.req("GET", "/api/export", nil, 200), &backup)
+	settings := backup["settings"].(map[string]any)
+	settings["title"] = "Imported title"
+	settings["status_checks"] = true
+	settings["web_search"] = "custom"
+	settings["web_search_url"] = "https://search.example.net/?q=%s"
+	backup["apps"] = []any{map[string]any{"name": "Merged", "url": "https://merged.local", "category_id": 1}}
+	c.req("POST", "/api/import/apply", map[string]any{"data": backup, "mode": "merge", "confirm": true}, 200)
+	var got map[string]any
+	json.Unmarshal(c.req("GET", "/api/settings", nil, 200), &got)
+	if got["title"] == "Imported title" || got["status_checks"] != false || got["web_search"] != "" || got["web_search_url"] != "" {
+		t.Fatal("merge import changed settings", got)
+	}
+	var apps []any
+	json.Unmarshal(c.req("GET", "/api/apps", nil, 200), &apps)
+	if len(apps) != 1 {
+		t.Fatal("merge import skipped applications", apps)
+	}
+	c.req("POST", "/api/import/apply", map[string]any{"data": backup, "mode": "replace", "confirm": true}, 200)
+	json.Unmarshal(c.req("GET", "/api/settings", nil, 200), &got)
+	if got["title"] != "Imported title" || got["web_search_url"] != "https://search.example.net/?q=%s" {
+		t.Fatal("replace import did not restore settings", got)
+	}
+}
+func TestRateLimiterFullTableStillAdmitsNewClients(t *testing.T) {
+	now := time.Now()
+	l := &rateLimiter{entries: map[string]attempts{}}
+	for i := 0; i < limitEntries; i++ {
+		l.allow("flood-"+strconv.Itoa(i), now.Add(time.Duration(i)*time.Microsecond))
+	}
+	if !l.allow("admin", now.Add(time.Second)) {
+		t.Fatal("full limiter refused a new client")
+	}
+	if len(l.entries) > limitEntries {
+		t.Fatal("limiter exceeded its bound", len(l.entries))
+	}
+	if _, ok := l.entries["flood-0"]; ok {
+		t.Fatal("eviction kept the entry closest to expiry")
+	}
+	for i := 0; i < limitAttempts-1; i++ {
+		l.allow("admin", now.Add(time.Second))
+	}
+	if l.allow("admin", now.Add(time.Second)) {
+		t.Fatal("eviction bypassed the per-client limit")
+	}
+}
+func TestRateLimiterEvictionKeepsLockedClientsLocked(t *testing.T) {
+	now := time.Now()
+	l := &rateLimiter{entries: map[string]attempts{}}
+	for i := 0; i < limitAttempts; i++ {
+		l.allow("attacker", now)
+	}
+	for i := 1; i < limitEntries; i++ {
+		l.allow("flood-"+strconv.Itoa(i), now.Add(time.Duration(i)*time.Microsecond))
+	}
+	l.allow("new", now.Add(time.Second))
+	if l.allow("attacker", now.Add(time.Second)) {
+		t.Fatal("eviction gave a locked client its attempts back")
+	}
+	if _, ok := l.entries["flood-1"]; ok {
+		t.Fatal("eviction kept the oldest unlocked entry")
+	}
+}
+func TestRateLimitKeyGroupsIPv6Networks(t *testing.T) {
+	for _, tc := range []struct{ a, b string }{
+		{"2001:db8:1:2::1", "2001:db8:1:2:ffff:ffff:ffff:ffff"},
+		{"::ffff:192.0.2.7", "192.0.2.7"},
+	} {
+		if limitKey(tc.a) != limitKey(tc.b) {
+			t.Fatalf("%s and %s use different limits", tc.a, tc.b)
+		}
+	}
+	if limitKey("2001:db8:1:2::1") == limitKey("2001:db8:1:3::1") || limitKey("192.0.2.7") == limitKey("192.0.2.8") {
+		t.Fatal("distinct networks share a limit")
+	}
+}
+func TestSuccessfulSignInResetsRateLimit(t *testing.T) {
+	c, _ := newClient(t)
+	c.setup()
+	c.req("POST", "/api/auth/logout", nil, 204)
+	var sess struct {
+		CSRF string `json:"csrf_token"`
+	}
+	json.Unmarshal(c.req("GET", "/api/auth/session", nil, 200), &sess)
+	c.csrf = sess.CSRF
+	for i := 0; i < limitAttempts-2; i++ {
+		c.req("POST", "/api/auth/login", map[string]string{"username": "admin", "password": "wrong"}, 401)
+	}
+	json.Unmarshal(c.req("POST", "/api/auth/login", map[string]string{"username": "admin", "password": "a-secure-test-password"}, 200), &sess)
+	c.csrf = sess.CSRF
+	c.req("POST", "/api/auth/logout", nil, 204)
+	json.Unmarshal(c.req("GET", "/api/auth/session", nil, 200), &sess)
+	c.csrf = sess.CSRF
+	for i := 0; i < limitAttempts; i++ {
+		c.req("POST", "/api/auth/login", map[string]string{"username": "admin", "password": "wrong"}, 401)
+	}
+	c.req("POST", "/api/auth/login", map[string]string{"username": "admin", "password": "wrong"}, 429)
+}
+func TestAuthEventsAreLoggedWithoutSecrets(t *testing.T) {
+	db, e := store.Open(t.TempDir())
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() { db.Close() })
+	var logs bytes.Buffer
+	s, e := New(Config{Store: db, DataDir: db.DataDir, Logger: slog.New(slog.NewJSONHandler(&logs, nil))})
+	if e != nil {
+		t.Fatal(e)
+	}
+	c := &client{t: t, h: s}
+	c.setup()
+	c.req("POST", "/api/auth/logout", nil, 204)
+	var sess struct {
+		CSRF string `json:"csrf_token"`
+	}
+	json.Unmarshal(c.req("GET", "/api/auth/session", nil, 200), &sess)
+	c.csrf = sess.CSRF
+	c.req("POST", "/api/auth/login", map[string]string{"username": "pasted-password-value", "password": "wrong-password-value"}, 401)
+	if bytes.Contains(logs.Bytes(), []byte(`"event":"auth.login"`)) {
+		t.Fatal("failed sign-in logged as success")
+	}
+	for _, event := range []string{"auth.setup", "auth.logout", "auth.login_failed"} {
+		if !bytes.Contains(logs.Bytes(), []byte(`"event":"`+event+`"`)) {
+			t.Fatalf("missing %s in %s", event, logs.String())
+		}
+	}
+	if !bytes.Contains(logs.Bytes(), []byte(`"client":"192.0.2.1"`)) {
+		t.Fatal("client address missing", logs.String())
+	}
+	for _, secret := range []string{"a-secure-test-password", "wrong-password-value", "pasted-password-value", c.csrf} {
+		if bytes.Contains(logs.Bytes(), []byte(secret)) {
+			t.Fatal("log contains a secret")
+		}
 	}
 }

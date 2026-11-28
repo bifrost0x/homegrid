@@ -43,5 +43,8 @@ func (s *Server) applyImport(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	n, e := s.cfg.Store.Import(r.Context(), v, body.Mode == "replace")
+	if e == nil {
+		s.cfg.Logger.Info("configuration imported", "event", "config.imported", "client", s.clientIP(r), "mode", body.Mode, "imported", n)
+	}
 	s.result(w, 200, map[string]int{"imported": n}, e)
 }

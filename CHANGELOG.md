@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Importing a configuration with Merge no longer changes appearance, web
+  search or status check settings; only Replace restores them.
+- `docker exec homegrid /homegrid reset-password` recovers a forgotten
+  password: it prints a new random password and signs out every session.
+- The server log records sign-ins, failed sign-ins, sign-outs, setup, password
+  changes and imports with the client address, for tools such as fail2ban.
+- The sign-in limit groups IPv6 clients by /64 network, resets after a
+  successful sign-in, and can no longer be filled up to refuse new clients.
+
 - The import preview says "1 entry" instead of "1 entries" when one entry is
   skipped.
 - README and website show the 0.1.0 features with new screenshots: a gallery of

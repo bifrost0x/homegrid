@@ -127,6 +127,23 @@ docker compose restart
 `restart` does not apply changed Compose settings. Use
 `docker compose up -d --wait` after editing settings.
 
+The log is JSON. Failed sign-ins carry `"event":"auth.login_failed"` and the
+client address, which fail2ban or CrowdSec can match; behind a reverse proxy
+set `HOMEGRID_TRUSTED_PROXIES` so the address is the browser's.
+
+### Forgotten password
+
+```sh
+docker exec homegrid /homegrid reset-password
+```
+
+The command sets a new random password, prints it once in your terminal and
+signs out every session. It does not write the password to the container log.
+Sign in with it and choose your own password under Settings → Account. The
+username stays the same; the command prints it as a reminder. After many failed
+attempts the sign-in limit can still answer "Too many password attempts" for
+up to five minutes; wait or run `docker compose restart` to clear it.
+
 ## Optional source build
 
 For development, use a source checkout with the additional
@@ -143,7 +160,9 @@ Compose file uses the public registry image.
 ## Back up
 
 Settings → Backup exports portable JSON containing applications, categories and
-appearance settings. It excludes passwords and sessions and references uploaded
+appearance settings. Importing it with **Merge** adds applications and
+categories only; **Replace** also restores the appearance and search settings.
+It excludes passwords and sessions and references uploaded
 image paths without embedding those files.
 
 A full volume backup preserves the database, uploaded files and administrator

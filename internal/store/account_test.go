@@ -239,3 +239,48 @@ func TestRefreshSessionSlidesWithinMaximumLifetime(t *testing.T) {
 		t.Fatal("expired session was revived")
 	}
 }
+func TestResetPasswordReplacesHashAndEndsSessions(t *testing.T) {
+	s := passwordStore(t)
+	username, e := s.ResetPassword(context.Background(), "reset-hash")
+	if e != nil || username != "admin" {
+		t.Fatal(username, e)
+	}
+	hash, e := s.PasswordHash(context.Background())
+	if e != nil || hash != "reset-hash" {
+		t.Fatal(hash, e)
+	}
+	var n int
+	if e = s.DB.QueryRow("SELECT count(*) FROM sessions").Scan(&n); e != nil || n != 0 {
+		t.Fatal("sessions survived the reset", n, e)
+	}
+	empty, e := Open(t.TempDir())
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() { empty.Close() })
+	if _, e = empty.ResetPassword(context.Background(), "reset-hash"); !errors.Is(e, ErrNotFound) {
+		t.Fatal("reset before setup", e)
+	}
+}
+func TestResetPasswordWaitsForConcurrentWriter(t *testing.T) {
+	s := passwordStore(t)
+	server, e := Open(s.DataDir)
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() { server.Close() })
+	tx, e := server.DB.Begin()
+	if e != nil {
+		t.Fatal(e)
+	}
+	if _, e = tx.Exec("UPDATE sessions SET expires_at=expires_at+1"); e != nil {
+		t.Fatal(e)
+	}
+	go func() {
+		time.Sleep(300 * time.Millisecond)
+		tx.Commit()
+	}()
+	if _, e = s.ResetPassword(context.Background(), "reset-hash"); e != nil {
+		t.Fatal("reset failed while another connection was writing", e)
+	}
+}

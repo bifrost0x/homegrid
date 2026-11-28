@@ -235,7 +235,8 @@ func TestPasswordChangeConcurrencyAndAttemptLimits(t *testing.T) {
 	t.Run("attempt limit", func(t *testing.T) {
 		c, _ := newClient(t)
 		c.setup()
-		for i := 0; i < 9; i++ {
+		// The successful setup clears the count, so ten failures remain.
+		for i := 0; i < limitAttempts; i++ {
 			c.req("POST", "/api/auth/password", map[string]string{"current_password": "wrong", "new_password": newPassword}, 400)
 		}
 		c.req("POST", "/api/auth/password", map[string]string{"current_password": "wrong", "new_password": newPassword}, 429)
