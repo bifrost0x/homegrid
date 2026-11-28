@@ -177,13 +177,15 @@ func (s *Store) ResetPassword(ctx context.Context, passwordHash string) (string,
 		return "", e
 	}
 	defer tx.Rollback()
+	// Writing first takes SQLite's write lock at once, so a running server
+	// that commits meanwhile makes this wait for busy_timeout instead of
+	// failing a read-then-write upgrade.
 	var username string
-	if e = tx.QueryRowContext(ctx, "SELECT username FROM users WHERE id=1").Scan(&username); errors.Is(e, sql.ErrNoRows) {
+	e = tx.QueryRowContext(ctx, "UPDATE users SET password_hash=? WHERE id=1 RETURNING username", passwordHash).Scan(&username)
+	if errors.Is(e, sql.ErrNoRows) {
 		return "", ErrNotFound
-	} else if e != nil {
-		return "", e
 	}
-	if _, e = tx.ExecContext(ctx, "UPDATE users SET password_hash=? WHERE id=1", passwordHash); e != nil {
+	if e != nil {
 		return "", e
 	}
 	if _, e = tx.ExecContext(ctx, "DELETE FROM sessions"); e != nil {

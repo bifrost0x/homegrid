@@ -124,8 +124,9 @@ func (s *Server) setup(w http.ResponseWriter, r *http.Request) {
 		s.result(w, 0, nil, e)
 		return
 	}
-	s.cfg.Logger.Info("administrator created", "event", "auth.setup", "client", s.clientIP(r), "username", username)
-	s.newSession(w, r, username, 201, hash)
+	if s.newSession(w, r, username, 201, hash) {
+		s.cfg.Logger.Info("administrator created", "event", "auth.setup", "client", s.clientIP(r), "username", username)
+	}
 }
 func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 	username, password, ok := credentials(w, r)
@@ -148,10 +149,14 @@ func (s *Server) login(w http.ResponseWriter, r *http.Request) {
 		fail(w, 401, "credentials", "Invalid username or password")
 		return
 	}
-	s.cfg.Logger.Info("signed in", "event", "auth.login", "client", s.clientIP(r), "username", stored)
-	s.newSession(w, r, stored, 200, hash)
+	if s.newSession(w, r, stored, 200, hash) {
+		s.cfg.Logger.Info("signed in", "event", "auth.login", "client", s.clientIP(r), "username", stored)
+	}
 }
-func (s *Server) newSession(w http.ResponseWriter, r *http.Request, username string, status int, expectedPasswordHash string) {
+
+// newSession creates a session, sets its cookie and writes the response. It
+// reports whether the session was created.
+func (s *Server) newSession(w http.ResponseWriter, r *http.Request, username string, status int, expectedPasswordHash string) bool {
 	token, csrf := auth.Token(), auth.Token()
 	replaced := ""
 	if old, e := r.Cookie(sessionCookie); e == nil {
@@ -160,16 +165,17 @@ func (s *Server) newSession(w http.ResponseWriter, r *http.Request, username str
 	e := s.cfg.Store.CreateSession(r.Context(), expectedPasswordHash, replaced, auth.TokenHash(token), csrf, time.Now().Unix())
 	if errors.Is(e, store.ErrPasswordChanged) {
 		fail(w, 401, "credentials", "Password changed. Sign in again.")
-		return
+		return false
 	}
 	if e != nil {
 		s.result(w, 0, nil, e)
-		return
+		return false
 	}
 	s.limiter.reset(limitKey(s.clientIP(r)))
 	s.cookie(w, sessionCookie, token, int(store.SessionIdleTimeout))
 	s.cookie(w, preauthCookie, "", -1)
 	write(w, status, map[string]any{"setup_required": false, "authenticated": true, "username": username, "csrf_token": csrf})
+	return true
 }
 func (s *Server) logout(w http.ResponseWriter, r *http.Request) {
 	v := r.Context().Value(identityKey{}).(identity)

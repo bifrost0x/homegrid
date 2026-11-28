@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"testing"
@@ -15,10 +17,21 @@ import (
 func TestResetPassword(t *testing.T) {
 	dir := t.TempDir()
 	var out bytes.Buffer
+	if e := resetPassword(dir, &out); e == nil || !strings.Contains(e.Error(), "no HomeGrid database") {
+		t.Fatal("reset without a database", e)
+	}
+	if _, e := os.Stat(filepath.Join(dir, "homegrid.db")); !os.IsNotExist(e) {
+		t.Fatal("reset created a database", e)
+	}
+	db, e := store.Open(dir)
+	if e != nil {
+		t.Fatal(e)
+	}
+	db.Close()
 	if e := resetPassword(dir, &out); e == nil || !strings.Contains(e.Error(), "no administrator") {
 		t.Fatal("reset before setup", e)
 	}
-	db, e := store.Open(dir)
+	db, e = store.Open(dir)
 	if e != nil {
 		t.Fatal(e)
 	}

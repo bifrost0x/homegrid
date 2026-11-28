@@ -36,7 +36,8 @@ Keep dependencies and the container image updated.
 
 Sign-in attempts are limited to ten per client address within five minutes;
 IPv6 clients share one limit per /64 network, and a successful sign-in clears
-the count. The server log records sign-ins, failed sign-ins, sign-outs,
+the count. Clients behind one address, such as a NAT or a reverse proxy missing
+from `HOMEGRID_TRUSTED_PROXIES`, share one limit. The server log records sign-ins, failed sign-ins, sign-outs,
 administrator setup, password changes and configuration imports as JSON lines
 with an `event` field and the client address, never passwords, session tokens
 or CSRF tokens. Tools such as fail2ban or CrowdSec can act on

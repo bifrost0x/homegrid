@@ -79,3 +79,36 @@ it("invalid replacement files invalidate the previous import approval", async ()
   ).not.toBeChecked();
   expect(fetch).toHaveBeenCalledTimes(2);
 });
+it("does not promise to replace settings for a plain application list", async () => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(
+      async () =>
+        new Response(JSON.stringify({ apps: 1, categories: 1, duplicates: 0 })),
+    ),
+  );
+  render(
+    <SettingsPanel
+      settings={defaults}
+      onSave={async () => {}}
+      onClose={() => {}}
+    />,
+  );
+  await userEvent.click(screen.getByRole("tab", { name: "Backup" }));
+  const list = JSON.stringify({
+    apps: [
+      { name: "NAS", url: "https://nas.home.arpa", category: "", icon: "" },
+    ],
+  });
+  const file = new File([list], "list.json", { type: "application/json" });
+  Object.defineProperty(file, "text", { value: async () => list });
+  await userEvent.upload(screen.getByLabelText("Import configuration"), file);
+  await screen.findByRole("button", { name: "Apply import" });
+  await userEvent.selectOptions(
+    screen.getByLabelText("Import mode"),
+    "replace",
+  );
+  expect(
+    screen.getByText("Current applications and categories are replaced."),
+  ).toBeInTheDocument();
+});

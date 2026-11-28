@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 	"time"
 )
@@ -107,6 +108,10 @@ func healthcheck(listen string) error {
 // printed once to the terminal of the operator who ran the command; it is not
 // written to the server log.
 func resetPassword(dataDir string, out io.Writer) error {
+	// store.Open would create an empty database in a mistyped directory.
+	if _, e := os.Stat(filepath.Join(dataDir, "homegrid.db")); e != nil {
+		return fmt.Errorf("no HomeGrid database in %s; check HOMEGRID_DATA_DIR: %w", dataDir, e)
+	}
 	db, e := store.Open(dataDir)
 	if e != nil {
 		return fmt.Errorf("open database: %w", e)

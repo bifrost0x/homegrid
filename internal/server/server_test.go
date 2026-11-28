@@ -713,6 +713,23 @@ func TestRateLimiterFullTableStillAdmitsNewClients(t *testing.T) {
 		t.Fatal("eviction bypassed the per-client limit")
 	}
 }
+func TestRateLimiterEvictionKeepsLockedClientsLocked(t *testing.T) {
+	now := time.Now()
+	l := &rateLimiter{entries: map[string]attempts{}}
+	for i := 0; i < limitAttempts; i++ {
+		l.allow("attacker", now)
+	}
+	for i := 1; i < limitEntries; i++ {
+		l.allow("flood-"+strconv.Itoa(i), now.Add(time.Duration(i)*time.Microsecond))
+	}
+	l.allow("new", now.Add(time.Second))
+	if l.allow("attacker", now.Add(time.Second)) {
+		t.Fatal("eviction gave a locked client its attempts back")
+	}
+	if _, ok := l.entries["flood-1"]; ok {
+		t.Fatal("eviction kept the oldest unlocked entry")
+	}
+}
 func TestRateLimitKeyGroupsIPv6Networks(t *testing.T) {
 	for _, tc := range []struct{ a, b string }{
 		{"2001:db8:1:2::1", "2001:db8:1:2:ffff:ffff:ffff:ffff"},
@@ -768,6 +785,9 @@ func TestAuthEventsAreLoggedWithoutSecrets(t *testing.T) {
 	json.Unmarshal(c.req("GET", "/api/auth/session", nil, 200), &sess)
 	c.csrf = sess.CSRF
 	c.req("POST", "/api/auth/login", map[string]string{"username": "pasted-password-value", "password": "wrong-password-value"}, 401)
+	if bytes.Contains(logs.Bytes(), []byte(`"event":"auth.login"`)) {
+		t.Fatal("failed sign-in logged as success")
+	}
 	for _, event := range []string{"auth.setup", "auth.logout", "auth.login_failed"} {
 		if !bytes.Contains(logs.Bytes(), []byte(`"event":"`+event+`"`)) {
 			t.Fatalf("missing %s in %s", event, logs.String())

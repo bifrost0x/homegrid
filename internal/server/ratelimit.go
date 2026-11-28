@@ -40,8 +40,10 @@ func (l *rateLimiter) allow(key string, now time.Time) bool {
 	return true
 }
 
-// evict makes room for a new key. Expired entries go first; if every entry is
-// still active, the one closest to expiry is dropped. Refusing new keys
+// evict makes room for a new key. Expired entries go first. Among active
+// entries, clients that are not locked out are dropped before locked ones, so
+// flooding the table does not hand a locked client its attempts back; the
+// entry closest to expiry goes first within each group. Refusing new keys
 // instead would let anyone with enough addresses lock out every other client.
 func (l *rateLimiter) evict(now time.Time) {
 	for k, a := range l.entries {
@@ -50,15 +52,24 @@ func (l *rateLimiter) evict(now time.Time) {
 		}
 	}
 	for len(l.entries) >= limitEntries {
-		var oldest string
-		var until time.Time
+		var victim string
+		var chosen attempts
+		found := false
 		for k, a := range l.entries {
-			if oldest == "" || a.until.Before(until) {
-				oldest, until = k, a.until
+			if !found || evictBefore(a, chosen) {
+				victim, chosen, found = k, a, true
 			}
 		}
-		delete(l.entries, oldest)
+		delete(l.entries, victim)
 	}
+}
+
+func evictBefore(a, b attempts) bool {
+	aLocked, bLocked := a.count >= limitAttempts, b.count >= limitAttempts
+	if aLocked != bLocked {
+		return !aLocked
+	}
+	return a.until.Before(b.until)
 }
 
 // reset forgets the attempts of a client after a successful sign-in, so
