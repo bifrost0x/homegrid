@@ -62,8 +62,9 @@ Authenticated, CSRF-protected POST `/api/examples` returns `{ok:true}` after see
 four clearly marked example applications only if there are no applications.
 Nonempty/repeated seed requests return 409. Settings, accounts and sessions are
 preserved. `example.homegrid.invalid` URLs identify configuration-only examples;
-the UI does not navigate to them. `service:<id>` icons accept only the forty local
-catalog IDs, including `service:jellyfin` and `service:nextcloud`.
+the UI does not navigate to them. `service:<id>` icons accept only the bundled service
+logo IDs generated into `internal/store/service_icons_gen.go`, including
+`service:jellyfin` and `service:nextcloud`.
 
 POST /api/icons/discover `{url}` asks the service at that HTTP(S) URL for its advertised icon (page links, web manifest, `/apple-touch-icon.png`, `/favicon.ico`), stores a re-encoded PNG and returns `{url, title}` (201); `url` works like an upload path and `title` is the page title (may be empty). Errors: 400 invalid URL, 404 `not_found` when no usable icon exists, 502 `unreachable` when the service cannot be contacted or its address is refused.
 Authenticated GET `/api/uploads/unused` returns `{files:[{name,url,size,modified}]}`:
@@ -78,7 +79,10 @@ address when the request carries forwarding headers from a peer outside
 `HOMEGRID_TRUSTED_PROXIES`, otherwise empty.
 POST /api/uploads multipart form field file returns `{url}`. PNG/JPEG/WebP <=5MB, max 16 million pixels, authenticated serving /uploads/. Icons: `builtin:server`, `builtin:cloud`, `builtin:database`, `builtin:film`, `builtin:music`, `builtin:home`, `builtin:shield`, `builtin:code`, `builtin:globe`, `builtin:folder`, `builtin:network`, `builtin:hard-drive`; `favicon` for browser-only URL-origin favicon; or upload URL. No arbitrary icon URL.
 
-GET /api/export returns `{version:1,apps:[...],categories:[...],settings:{...}}`. POST /api/import/preview body is raw backup JSON or Homarr-derived `{apps:[{name,url,category,icon,description}]}` (`description` optional; the frontend converts Homepage, Homer and Dashy YAML into this list); returns `{apps:number,categories:number,duplicates:number}`. POST /api/import/apply body `{data:<same parsed JSON>,mode:"merge"|"replace",confirm:true}`; returns `{imported:number}`. Replace preserves admin and sessions. Merge skips duplicate normalized URLs.
+GET /api/export returns `{version:1,apps:[...],categories:[...],settings:{...}}`. POST /api/import/preview body is raw backup JSON or Homarr-derived `{apps:[{name,url,category,icon,description}]}` (`description` optional; the frontend converts Homepage, Homer and Dashy YAML into this list); returns `{apps:number,categories:number,duplicates:number}`. POST /api/import/apply body `{data:<same parsed JSON>,mode:"merge"|"replace",confirm:true}`; returns `{imported:number}`. Replace preserves admin and sessions and applies the backup's settings. Merge
+adds applications and categories, skips duplicate normalized URLs and leaves the
+current settings unchanged, so a foreign backup cannot change the web search
+address or enable status checks.
 
 Health GET /api/health returns `{status:"ok",version,commit}`. Never exposes sensitive config.
 
@@ -95,8 +99,9 @@ Applications additionally include `icon_color`, one of `auto`, `sage`, `blue`,
 `amber`, `rose`, `violet`, `cyan`. Migration 003 adds default `auto`. Omitted or
 empty values in older requests/imports normalize to `auto`; unsupported values
 return 400 before writes. All CRUD, ordering and backup paths preserve colors
-and favorites. Bundled icon IDs now include the 44 identifiers in
-`frontend/src/catalog.ts`; arbitrary icon URLs remain disallowed.
+and favorites. Built-in icon IDs are the `builtin:` identifiers in
+`frontend/src/catalog.ts`, validated by `store.ValidIcon`; arbitrary icon URLs
+remain disallowed.
 
 Only embedded JS/CSS negotiate cached gzip delivery. Responses vary on
 Accept-Encoding; explicit q=0 is respected. HEAD uses the selected representation

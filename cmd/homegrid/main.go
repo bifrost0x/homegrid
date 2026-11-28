@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/bifrost0x/homegrid/internal/auth"
 	"github.com/bifrost0x/homegrid/internal/config"
 	"github.com/bifrost0x/homegrid/internal/server"
 	"github.com/bifrost0x/homegrid/internal/store"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
@@ -32,8 +34,11 @@ func run(logger *slog.Logger) error {
 		return e
 	}
 	if len(os.Args) > 1 {
-		if os.Args[1] == "healthcheck" {
+		switch os.Args[1] {
+		case "healthcheck":
 			return healthcheck(cfg.Listen)
+		case "reset-password":
+			return resetPassword(cfg.DataDir, os.Stdout)
 		}
 		return fmt.Errorf("unknown command %q", os.Args[1])
 	}
@@ -94,4 +99,31 @@ func healthcheck(listen string) error {
 		return errors.New("server is not healthy")
 	}
 	return nil
+}
+
+// resetPassword sets a new random administrator password and signs out every
+// session. Anyone who can run commands in the container can already read the
+// database, so this adds no access beyond what they have. The password is
+// printed once to the terminal of the operator who ran the command; it is not
+// written to the server log.
+func resetPassword(dataDir string, out io.Writer) error {
+	db, e := store.Open(dataDir)
+	if e != nil {
+		return fmt.Errorf("open database: %w", e)
+	}
+	defer db.Close()
+	password := auth.Token()[:32]
+	hash, e := auth.Hash(password)
+	if e != nil {
+		return fmt.Errorf("hash password: %w", e)
+	}
+	username, e := db.ResetPassword(context.Background(), hash)
+	if errors.Is(e, store.ErrNotFound) {
+		return fmt.Errorf("no administrator exists in %s; check HOMEGRID_DATA_DIR or open HomeGrid in a browser to create one", dataDir)
+	}
+	if e != nil {
+		return fmt.Errorf("reset password: %w", e)
+	}
+	_, e = fmt.Fprintf(out, "Password for %q reset. All sessions were signed out.\nNew password: %s\nSign in and change it under Settings > Account.\n", username, password)
+	return e
 }

@@ -239,3 +239,26 @@ func TestRefreshSessionSlidesWithinMaximumLifetime(t *testing.T) {
 		t.Fatal("expired session was revived")
 	}
 }
+func TestResetPasswordReplacesHashAndEndsSessions(t *testing.T) {
+	s := passwordStore(t)
+	username, e := s.ResetPassword(context.Background(), "reset-hash")
+	if e != nil || username != "admin" {
+		t.Fatal(username, e)
+	}
+	hash, e := s.PasswordHash(context.Background())
+	if e != nil || hash != "reset-hash" {
+		t.Fatal(hash, e)
+	}
+	var n int
+	if e = s.DB.QueryRow("SELECT count(*) FROM sessions").Scan(&n); e != nil || n != 0 {
+		t.Fatal("sessions survived the reset", n, e)
+	}
+	empty, e := Open(t.TempDir())
+	if e != nil {
+		t.Fatal(e)
+	}
+	t.Cleanup(func() { empty.Close() })
+	if _, e = empty.ResetPassword(context.Background(), "reset-hash"); !errors.Is(e, ErrNotFound) {
+		t.Fatal("reset before setup", e)
+	}
+}

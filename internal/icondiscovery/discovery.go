@@ -1,6 +1,7 @@
 // Package icondiscovery finds the icon a web service advertises for itself.
 //
-// It is the only place where HomeGrid's backend contacts a service URL. The
+// Together with the opt-in status checks, it is the only place where
+// HomeGrid's backend contacts a service URL. The
 // administrator supplies the URL; everything the service returns is treated
 // as untrusted: responses are size-limited, only raster images are decoded,
 // and the caller re-encodes the result before storing it.

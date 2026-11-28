@@ -249,7 +249,10 @@ func (s *Store) Import(ctx context.Context, d ImportData, replace bool) (int, er
 		}
 		imported++
 	}
-	if d.Settings != nil {
+	// Merging adds applications only. A backup's settings include the web
+	// search address and status checks, so they are applied only when the
+	// administrator replaces the whole configuration.
+	if replace && d.Settings != nil {
 		b, e := json.Marshal(d.Settings)
 		if e != nil {
 			return 0, e

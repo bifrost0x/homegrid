@@ -39,10 +39,16 @@ it("invalid replacement files invalidate the previous import approval", async ()
   Object.defineProperty(valid, "text", { value: async () => backup });
   await userEvent.upload(screen.getByLabelText("Import configuration"), valid);
   await screen.findByRole("button", { name: "Apply import" });
+  expect(
+    screen.getByText(/Appearance and search settings stay unchanged/),
+  ).toBeInTheDocument();
   await userEvent.selectOptions(
     screen.getByLabelText("Import mode"),
     "replace",
   );
+  expect(
+    screen.getByText(/appearance settings are replaced/),
+  ).toBeInTheDocument();
   await userEvent.click(
     screen.getByRole("checkbox", {
       name: /current configuration will be replaced/,

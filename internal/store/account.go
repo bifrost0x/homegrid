@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 )
 
@@ -164,4 +165,29 @@ func (s *Store) RotatePassword(ctx context.Context, expectedHash, newHash, curre
 		return e
 	}
 	return tx.Commit()
+}
+
+// ResetPassword replaces the administrator's password hash and ends every
+// session. It is the recovery path for a forgotten password and runs from the
+// command line, outside the web interface. It returns the administrator's
+// username, or ErrNotFound before setup.
+func (s *Store) ResetPassword(ctx context.Context, passwordHash string) (string, error) {
+	tx, e := s.DB.BeginTx(ctx, nil)
+	if e != nil {
+		return "", e
+	}
+	defer tx.Rollback()
+	var username string
+	if e = tx.QueryRowContext(ctx, "SELECT username FROM users WHERE id=1").Scan(&username); errors.Is(e, sql.ErrNoRows) {
+		return "", ErrNotFound
+	} else if e != nil {
+		return "", e
+	}
+	if _, e = tx.ExecContext(ctx, "UPDATE users SET password_hash=? WHERE id=1", passwordHash); e != nil {
+		return "", e
+	}
+	if _, e = tx.ExecContext(ctx, "DELETE FROM sessions"); e != nil {
+		return "", e
+	}
+	return username, tx.Commit()
 }

@@ -425,6 +425,13 @@ export function SettingsPanel({
                   </option>
                 </select>
               </label>
+              <p className="field-hint">
+                {mode === "merge"
+                  ? "Adds new applications and categories. Appearance and search settings stay unchanged."
+                  : preview.format
+                    ? "Current applications and categories are replaced."
+                    : "Applications, categories and appearance settings are replaced."}
+              </p>
               {mode === "replace" && (
                 <label className="check-row">
                   <input
